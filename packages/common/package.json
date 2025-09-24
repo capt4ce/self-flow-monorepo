@@ -1,0 +1,19 @@
+{
+  "name": "@self-flow/common",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "exports": {
+    ".": "./index.ts",
+    "./types": "./types/index.ts"
+  },
+  "dependencies": {
+    "zod": "^4.1.8"
+  }
+}

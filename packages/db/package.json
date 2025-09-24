@@ -1,0 +1,24 @@
+{
+  "name": "@self-flow/db",
+  "version": "1.0.0",
+  "description": "Drizzle schema and helpers",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dk-pull": "drizzle-kit pull --config=src/drizzle/config/drizzle.config.ts",
+    "dk-studio": "drizzle-kit studio --config=src/drizzle/config/drizzle.config.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@neondatabase/serverless": "^0.6.0",
+    "dotenv": "^17.2.2",
+    "drizzle-orm": "^0.44.5",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.4"
+  }
+}

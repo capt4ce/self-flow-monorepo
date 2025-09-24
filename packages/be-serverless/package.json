@@ -1,0 +1,17 @@
+{
+  "name": "@self-flow/be-serverless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/zod-openapi": "^1.1.0",
+    "hono": "^4.0.9",
+    "zod": "^4.1.8"
+  }
+}
