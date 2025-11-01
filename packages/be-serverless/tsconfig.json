@@ -5,7 +5,9 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "paths": {
-      "@self-flow/common/*": ["../common/*"]
+      "@self-flow/common/*": ["../common/*"],
+      "@self-flow/be-services/*": ["../be-services/*"],
+      "@self-flow/db/*": ["../db/*"]
     }
   }
 }

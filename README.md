@@ -32,10 +32,13 @@
 
 1. Initialize codebase ✅
 2. setup basic serverless api for BE ✅
-3. setup basic db schema, test, and extend to create DTO
-4. setup basic api in FE (using react query & openapi fetch)
-5. design db schema (need confirmation about MVP scope)
-6. setup db schema
-7. Initialize auth (clerk)
-8. Create basic functionalities for validations (homepage, login & register)
-9. setup deployment pipeline
+3. setup drizzle ✅
+4. backup supabase schema
+5. backup data to neon DB
+6. setup local env, test, and extend to create DTO
+7. setup basic api in FE (using react query & openapi fetch)
+8. design db schema (need confirmation about MVP scope)
+9. setup db schema
+10. Initialize auth (clerk)
+11. Create basic functionalities for validations (homepage, login & register)
+12. setup deployment pipeline

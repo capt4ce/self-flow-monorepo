@@ -9,6 +9,31 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "exports": {
+    "./src/energy/listEnergyReadings": "./src/energy/listEnergyReadings.ts",
+    "./src/energy/createEnergyReading": "./src/energy/createEnergyReading.ts",
+    "./src/energy/updateEnergyReading": "./src/energy/updateEnergyReading.ts",
+    "./src/energy/deleteEnergyReading": "./src/energy/deleteEnergyReading.ts",
+    "./src/goal/listGoals": "./src/goal/listGoals.ts",
+    "./src/goal/createGoal": "./src/goal/createGoal.ts",
+    "./src/goal/updateGoal": "./src/goal/updateGoal.ts",
+    "./src/goal/deleteGoal": "./src/goal/deleteGoal.ts",
+    "./src/task/listTasks": "./src/task/listTasks.ts",
+    "./src/task/createTask": "./src/task/createTask.ts",
+    "./src/task/updateTask": "./src/task/updateTask.ts",
+    "./src/task/deleteTask": "./src/task/deleteTask.ts",
+    "./src/task/updateTaskOrder": "./src/task/updateTaskOrder.ts",
+    "./src/task/listSubtasks": "./src/task/listSubtasks.ts",
+    "./src/task/listTaskSubtaskCount": "./src/task/listTaskSubtaskCount.ts",
+    "./src/taskGroup/createTaskGroup": "./src/taskGroup/createTaskGroup.ts",
+    "./src/taskGroup/updateTaskGroup": "./src/taskGroup/updateTaskGroup.ts",
+    "./src/taskGroup/deleteTaskGroup": "./src/taskGroup/deleteTaskGroup.ts",
+    "./src/user/getMyProfile": "./src/user/getMyProfile.ts"
+  },
+  "dependencies": {
+    "@self-flow/db": "workspace:*",
+    "@self-flow/common": "workspace:*",
+    "drizzle-orm": "^0.44.5"
+  },
   "devDependencies": {}
 }

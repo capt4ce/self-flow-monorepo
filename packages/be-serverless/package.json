@@ -11,6 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "@hono/zod-openapi": "^1.1.0",
+    "@self-flow/be-auth": "workspace:*",
+    "@self-flow/be-services": "workspace:*",
+    "@self-flow/common": "workspace:*",
     "hono": "^4.0.9",
     "zod": "^4.1.8"
   }
