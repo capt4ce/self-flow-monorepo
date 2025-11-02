@@ -3,7 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { StackProviderWrapper } from "@/components/providers/StackProviderWrapper";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SubtasksProvider } from "@/contexts/SubtasksContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import AppLayout from "@/components/layout/AppLayout";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +36,11 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <TooltipProvider>
             <StackProviderWrapper>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                <SubtasksProvider>
+                  <AppLayout>{children}</AppLayout>
+                </SubtasksProvider>
+              </AuthProvider>
             </StackProviderWrapper>
           </TooltipProvider>
         </Suspense>

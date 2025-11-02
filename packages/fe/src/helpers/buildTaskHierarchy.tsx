@@ -1,16 +1,8 @@
-interface Task {
-  id: string;
-  parent_id?: string | null;
-  order_index?: number;
-  completed?: boolean;
-  status?: string;
-  subtasks: Task[];
-  [key: string]: any;
-}
+import { TaskDTO } from "@self-flow/common/types";
 
-const buildTaskHierarchy = (tasks: Task[]): Task[] => {
+const buildTaskHierarchy = (tasks: TaskDTO[]): TaskDTO[] => {
   const taskMap = new Map();
-  const rootTasks: Task[] = [];
+  const rootTasks: TaskDTO[] = [];
 
   // First pass: create all tasks
   tasks.forEach((task) => {
@@ -23,8 +15,8 @@ const buildTaskHierarchy = (tasks: Task[]): Task[] => {
   // Second pass: build hierarchy
   tasks.forEach((task) => {
     const taskObj = taskMap.get(task.id);
-    if (task.parent_id) {
-      const parent = taskMap.get(task.parent_id);
+    if (task.parentId) {
+      const parent = taskMap.get(task.parentId);
       if (parent) {
         parent.subtasks.push(taskObj);
       }
@@ -34,20 +26,20 @@ const buildTaskHierarchy = (tasks: Task[]): Task[] => {
   });
 
   // Sort tasks: active tasks first, completed tasks, then "not done" tasks
-  const sortTasks = (taskList: Task[]): Task[] => {
+  const sortTasks = (taskList: TaskDTO[]): TaskDTO[] => {
     const active = taskList
       .filter((task) => !task.completed && task.status !== "not done")
-      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+      .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
     const completed = taskList
       .filter((task) => task.completed && task.status !== "not done")
-      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+      .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
     const notDone = taskList
       .filter((task) => task.status === "not done")
-      .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+      .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
 
     return [...active, ...completed, ...notDone].map((task) => ({
       ...task,
-      subtasks: sortTasks(task.subtasks),
+      subtasks: sortTasks(task.subtasks || []),
     }));
   };
 
@@ -55,5 +47,3 @@ const buildTaskHierarchy = (tasks: Task[]): Task[] => {
 };
 
 export default buildTaskHierarchy;
-
-

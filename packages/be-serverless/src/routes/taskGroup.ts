@@ -48,8 +48,7 @@ taskGroup.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await createTaskGroup(userId, body, c.env);
+    const data = await createTaskGroup(userId, body);
     return c.json({ data });
   }
 );
@@ -86,8 +85,7 @@ taskGroup.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await updateTaskGroup(userId, id, body, c.env);
+    const data = await updateTaskGroup(userId, id, body);
     return c.json({ data });
   }
 );
@@ -116,8 +114,7 @@ taskGroup.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    await deleteTaskGroup(userId, id, c.env);
+    await deleteTaskGroup(userId, id);
     return c.json({ message: "Task group deleted" });
   }
 );

@@ -4,12 +4,8 @@ import { eq, and, inArray } from "drizzle-orm";
 import { GoalDTO } from "@self-flow/common/types";
 import type { GoalStatus } from "@self-flow/common/types";
 
-type Env = {
-  DATABASE_URL?: string;
-};
-
-export async function listGoals(userId: string, status: GoalStatus | undefined, env?: Env) {
-  const db = getDb(env);
+export async function listGoals(userId: string, status: GoalStatus | undefined) {
+  const db = getDb();
   // Ensure status is valid, default to "active" if not provided or invalid
   const validStatus: "active" | "done" = status === "active" || status === "done" ? status : "active";
   

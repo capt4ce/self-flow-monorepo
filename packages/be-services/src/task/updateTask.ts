@@ -1,46 +1,74 @@
 import { getDb } from "@self-flow/db";
-import { tasks } from "@self-flow/db/src/drizzle/schema";
-import { eq, and } from "drizzle-orm";
 import { UpdateTaskDTO, TaskDTO } from "@self-flow/common/types";
+import { CreateTaskDTO } from "@self-flow/common/types";
+import { updateTaskRecord } from "./updateTaskRecord";
+import { insertSubtasksForTask } from "./insertSubtasksForTask";
+import { unlinkSubtasksFromTask } from "./unlinkSubtasksFromTask";
+import { linkExistingTasksAsSubtasks } from "./linkExistingTasksAsSubtasks";
 
-type Env = {
-  DATABASE_URL?: string;
-};
+interface UpdateTaskWithSubtasksDTO extends UpdateTaskDTO {
+  newSubtasks?: Array<Omit<CreateTaskDTO, "parentId">>;
+  selectedSubtaskIds?: string[];
+  currentSubtaskIds?: string[];
+}
 
 export async function updateTask(
   userId: string,
   taskId: string,
-  data: UpdateTaskDTO,
-  env?: Env
+  data: UpdateTaskWithSubtasksDTO
 ): Promise<TaskDTO> {
-  const db = getDb(env);
-  const updateData: any = {
-    updatedAt: new Date().toISOString(),
-  };
+  const db = getDb();
 
-  if (data.title !== undefined) updateData.title = data.title;
-  if (data.description !== undefined) updateData.description = data.description || null;
-  if (data.status !== undefined) updateData.status = data.status || null;
-  if (data.effort !== undefined) updateData.effort = data.effort || null;
-  if (data.priority !== undefined) updateData.priority = data.priority || null;
-  if (data.completed !== undefined) updateData.completed = data.completed;
-  if (data.parentId !== undefined) updateData.parentId = data.parentId || null;
-  if (data.groupId !== undefined) updateData.groupId = data.groupId || null;
-  if (data.isTemplate !== undefined) updateData.isTemplate = data.isTemplate;
-  if (data.templateId !== undefined) updateData.templateId = data.templateId || null;
-  if (data.orderIndex !== undefined) updateData.orderIndex = data.orderIndex;
+  // Check if we need to handle subtasks (batch operation)
+  const hasSubtasks =
+    (data.newSubtasks && data.newSubtasks.length > 0) ||
+    (data.selectedSubtaskIds && data.currentSubtaskIds) ||
+    (data.selectedSubtaskIds &&
+      data.selectedSubtaskIds.length > 0 &&
+      data.currentSubtaskIds &&
+      data.currentSubtaskIds.length > 0);
 
-  const [task] = await db
-    .update(tasks)
-    .set(updateData)
-    .where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
-    .returning();
+  if (hasSubtasks) {
+    // Use transaction for batch operation
+    return await db.transaction(async (tx) => {
+      // 1. Update the main task
+      const task = await updateTaskRecord(userId, taskId, data, tx);
 
-  if (!task) {
-    throw new Error("Task not found");
+      // 2. Handle subtask relationships
+      const currentSubtaskIds = data.currentSubtaskIds || [];
+      const selectedSubtaskIds = data.selectedSubtaskIds || [];
+
+      // Subtasks to remove (unselected)
+      const subtasksToRemove = currentSubtaskIds.filter(
+        (id) => !selectedSubtaskIds.includes(id)
+      );
+
+      // Subtasks to add (newly selected)
+      const subtasksToAdd = selectedSubtaskIds.filter(
+        (id) => !currentSubtaskIds.includes(id)
+      );
+
+      // 3. Remove subtask relationships (set parentId to null)
+      if (subtasksToRemove.length > 0) {
+        await unlinkSubtasksFromTask(userId, taskId, subtasksToRemove, tx);
+      }
+
+      // 4. Create new subtasks if any
+      if (data.newSubtasks && data.newSubtasks.length > 0) {
+        await insertSubtasksForTask(userId, taskId, data.newSubtasks, tx);
+      }
+
+      // 5. Add selected existing tasks as subtasks
+      if (subtasksToAdd.length > 0) {
+        await linkExistingTasksAsSubtasks(userId, taskId, subtasksToAdd, tx);
+      }
+
+      return task;
+    });
+  } else {
+    // Simple update without subtasks
+    return await updateTaskRecord(userId, taskId, data, undefined);
   }
-
-  return task as TaskDTO;
 }
 
 

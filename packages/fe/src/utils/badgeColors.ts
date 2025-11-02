@@ -53,5 +53,3 @@ export const getPriorityBadgeColor = (priority?: string) => {
       return "bg-gray-100 text-gray-800";
   }
 };
-
-

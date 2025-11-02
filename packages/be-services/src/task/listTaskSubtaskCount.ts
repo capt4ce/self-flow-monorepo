@@ -3,16 +3,12 @@ import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray, count } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
-type Env = {
-  DATABASE_URL?: string;
-};
-
-export async function listTaskSubtaskCount(parentIds: string[], env?: Env) {
+export async function listTaskSubtaskCount(parentIds: string[]) {
   if (parentIds.length === 0) {
     return [];
   }
 
-  const db = getDb(env);
+  const db = getDb();
   const counts = await db
     .select({
       parentId: tasks.parentId,

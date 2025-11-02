@@ -3,17 +3,12 @@ import { taskGroups } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { UpdateTaskGroupDTO, TaskGroupDTO } from "@self-flow/common/types";
 
-type Env = {
-  DATABASE_URL?: string;
-};
-
 export async function updateTaskGroup(
   userId: string,
   groupId: string,
-  data: UpdateTaskGroupDTO,
-  env?: Env
+  data: UpdateTaskGroupDTO
 ): Promise<TaskGroupDTO> {
-  const db = getDb(env);
+  const db = getDb();
   const updateData: any = {
     updatedAt: new Date().toISOString(),
   };

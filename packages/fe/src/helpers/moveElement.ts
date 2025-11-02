@@ -20,5 +20,3 @@ export default function moveElement<T>(
 
   return newArr;
 }
-
-

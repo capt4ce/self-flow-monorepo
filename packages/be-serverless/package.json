@@ -15,6 +15,7 @@
     "@self-flow/be-auth": "workspace:*",
     "@self-flow/be-services": "workspace:*",
     "@self-flow/common": "workspace:*",
+    "@self-flow/db": "workspace:*",
     "hono": "^4.0.9",
     "zod": "^4.1.8"
   }

@@ -99,11 +99,7 @@ export const goals = pgTable(
       "btree",
       table.userId.asc().nullsLast().op("uuid_ops")
     ),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [users.id],
-      name: "goals_user_id_fkey",
-    }).onDelete("cascade"),
+
     pgPolicy("Users can delete own goals", {
       as: "permissive",
       for: "delete",
@@ -248,11 +244,6 @@ export const tasks = pgTable(
       foreignColumns: [table.id],
       name: "tasks_templateId_fkey",
     }),
-    foreignKey({
-      columns: [table.userId],
-      foreignColumns: [users.id],
-      name: "tasks_user_id_fkey",
-    }).onDelete("cascade"),
     pgPolicy("Users can delete own tasks", {
       as: "permissive",
       for: "delete",

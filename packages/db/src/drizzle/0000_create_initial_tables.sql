@@ -169,12 +169,6 @@ ADD
 
 --> statement-breakpoint
 ALTER TABLE
-	"goals"
-ADD
-	CONSTRAINT "goals_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
 	"energy_readings"
 ADD
 	CONSTRAINT "energy_readings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
@@ -210,12 +204,6 @@ ALTER TABLE
 	"tasks"
 ADD
 	CONSTRAINT "tasks_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
-	"tasks"
-ADD
-	CONSTRAINT "tasks_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 
 --> statement-breakpoint
 ALTER TABLE

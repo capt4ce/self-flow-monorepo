@@ -1,48 +1,56 @@
-interface Task {
-  id: string;
-  subtasks: Task[];
-  [key: string]: any;
-}
+import { TaskDTO } from "@self-flow/common/types";
 
-export const findTaskById = (tasks: Task[], taskId: string): Task | null => {
+export const findTaskById = (
+  tasks: TaskDTO[],
+  taskId: string
+): TaskDTO | null => {
   for (const task of tasks) {
     if (task.id === taskId) return task;
-    const found = findTaskById(task.subtasks, taskId);
-    if (found) return found;
+    if (task.subtasks) {
+      const found = findTaskById(task.subtasks, taskId);
+      if (found) return found;
+    }
   }
   return null;
 };
 
 export const updateTaskInArray = (
-  tasks: Task[],
+  tasks: TaskDTO[],
   taskId: string,
-  updatedTask: Task,
-): Task[] => {
+  updatedTask: TaskDTO
+): TaskDTO[] => {
   return tasks.map((task) => {
     if (task.id === taskId) {
       return updatedTask;
     }
     return {
       ...task,
-      subtasks: updateTaskInArray(task.subtasks, taskId, updatedTask),
+      subtasks: task.subtasks
+        ? updateTaskInArray(task.subtasks, taskId, updatedTask)
+        : [],
     };
   });
 };
 
-export const deleteTaskFromArray = (tasks: Task[], taskId: string): Task[] => {
+export const deleteTaskFromArray = (
+  tasks: TaskDTO[],
+  taskId: string
+): TaskDTO[] => {
   return tasks
     .filter((task) => task.id !== taskId)
     .map((task) => ({
       ...task,
-      subtasks: deleteTaskFromArray(task.subtasks, taskId),
+      subtasks: task.subtasks
+        ? deleteTaskFromArray(task.subtasks, taskId)
+        : [],
     }));
 };
 
 export const addTaskToArray = (
-  tasks: Task[],
+  tasks: TaskDTO[],
   parentId: string | undefined,
-  newTask: Task,
-): Task[] => {
+  newTask: TaskDTO
+): TaskDTO[] => {
   if (!parentId) {
     return [...tasks, newTask];
   }
@@ -50,14 +58,14 @@ export const addTaskToArray = (
     if (task.id === parentId) {
       return {
         ...task,
-        subtasks: [...task.subtasks, newTask],
+        subtasks: [...(task.subtasks || []), newTask],
       };
     }
     return {
       ...task,
-      subtasks: addTaskToArray(task.subtasks, parentId, newTask),
+      subtasks: task.subtasks
+        ? addTaskToArray(task.subtasks, parentId, newTask)
+        : [],
     };
   });
 };
-
-

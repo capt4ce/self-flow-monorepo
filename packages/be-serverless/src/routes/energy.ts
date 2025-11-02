@@ -40,8 +40,7 @@ energy.openapi(
   },
   async (c) => {
     const userId = getUserId(c);
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await listEnergyReadings(userId, c.env);
+    const data = await listEnergyReadings(userId);
     return c.json({ data });
   }
 );
@@ -74,8 +73,7 @@ energy.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await createEnergyReading(userId, body, c.env);
+    const data = await createEnergyReading(userId, body);
     return c.json({ data });
   }
 );
@@ -112,8 +110,7 @@ energy.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await updateEnergyReading(userId, id, body, c.env);
+    const data = await updateEnergyReading(userId, id, body);
     return c.json({ data });
   }
 );
@@ -142,8 +139,7 @@ energy.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    await deleteEnergyReading(userId, id, c.env);
+    await deleteEnergyReading(userId, id);
     return c.json({ message: "Energy reading deleted" });
   }
 );

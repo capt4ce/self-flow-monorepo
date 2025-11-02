@@ -2,12 +2,8 @@ import { getDb } from "@self-flow/db";
 import { taskGroups, tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 
-type Env = {
-  DATABASE_URL?: string;
-};
-
-export async function deleteTaskGroup(userId: string, groupId: string, env?: Env): Promise<void> {
-  const db = getDb(env);
+export async function deleteTaskGroup(userId: string, groupId: string): Promise<void> {
+  const db = getDb();
   // First, move tasks out of the group
   await db
     .update(tasks)

@@ -1,6 +1,12 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { z } from "zod";
-import { GoalDTO, CreateGoalDTO, UpdateGoalDTO, GoalStatus } from "@self-flow/common/types";
+import {
+  GoalDTO,
+  CreateGoalDTO,
+  UpdateGoalDTO,
+  GoalStatus,
+} from "@self-flow/common/types";
+import { CreateTaskDTO } from "@self-flow/common/types";
 import { listGoals } from "@self-flow/be-services/src/goal/listGoals";
 import { createGoal } from "@self-flow/be-services/src/goal/createGoal";
 import { updateGoal } from "@self-flow/be-services/src/goal/updateGoal";
@@ -42,8 +48,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { status } = c.req.valid("query");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await listGoals(userId, status, c.env);
+    const data = await listGoals(userId, status);
     return c.json({ data });
   }
 );
@@ -57,7 +62,12 @@ goal.openapi(
       body: {
         content: {
           "application/json": {
-            schema: CreateGoalDTO,
+            schema: CreateGoalDTO.extend({
+              newTasks: z
+                .array(CreateTaskDTO.omit({ goalId: true }))
+                .optional(),
+              existingTaskIds: z.array(z.string().uuid()).optional(),
+            }),
           },
         },
       },
@@ -76,8 +86,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await createGoal(userId, body, c.env);
+    const data = await createGoal(userId, body);
     return c.json({ data });
   }
 );
@@ -94,7 +103,13 @@ goal.openapi(
       body: {
         content: {
           "application/json": {
-            schema: UpdateGoalDTO,
+            schema: UpdateGoalDTO.extend({
+              newTasks: z
+                .array(CreateTaskDTO.omit({ goalId: true }))
+                .optional(),
+              selectedTaskIds: z.array(z.string().uuid()).optional(),
+              currentTaskIds: z.array(z.string().uuid()).optional(),
+            }),
           },
         },
       },
@@ -114,8 +129,7 @@ goal.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await updateGoal(userId, id, body, c.env);
+    const data = await updateGoal(userId, id, body);
     return c.json({ data });
   }
 );
@@ -144,9 +158,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    await deleteGoal(userId, id, c.env);
+    await deleteGoal(userId, id);
     return c.json({ message: "Goal deleted" });
   }
 );
-

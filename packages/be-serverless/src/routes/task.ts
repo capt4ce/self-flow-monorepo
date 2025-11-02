@@ -45,8 +45,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { limit, offset } = c.req.valid("query");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await listTasks(userId, limit, offset, c.env);
+    const data = await listTasks(userId, limit, offset);
     return c.json({ data });
   }
 );
@@ -60,7 +59,10 @@ task.openapi(
       body: {
         content: {
           "application/json": {
-            schema: CreateTaskDTO,
+            schema: CreateTaskDTO.extend({
+              newSubtasks: z.array(CreateTaskDTO.omit({ parentId: true })).optional(),
+              existingSubtaskIds: z.array(z.string().uuid()).optional(),
+            }),
           },
         },
       },
@@ -79,8 +81,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await createTask(userId, body, c.env);
+    const data = await createTask(userId, body);
     return c.json({ data });
   }
 );
@@ -97,7 +98,11 @@ task.openapi(
       body: {
         content: {
           "application/json": {
-            schema: UpdateTaskDTO,
+            schema: UpdateTaskDTO.extend({
+              newSubtasks: z.array(CreateTaskDTO.omit({ parentId: true })).optional(),
+              selectedSubtaskIds: z.array(z.string().uuid()).optional(),
+              currentSubtaskIds: z.array(z.string().uuid()).optional(),
+            }),
           },
         },
       },
@@ -117,8 +122,7 @@ task.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await updateTask(userId, id, body, c.env);
+    const data = await updateTask(userId, id, body);
     return c.json({ data });
   }
 );
@@ -147,8 +151,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    await deleteTask(userId, id, c.env);
+    await deleteTask(userId, id);
     return c.json({ message: "Task deleted" });
   }
 );
@@ -188,8 +191,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { orders } = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    await updateTaskOrder(userId, orders, c.env);
+    await updateTaskOrder(userId, orders);
     return c.json({ message: "Task order updated" });
   }
 );
@@ -224,8 +226,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { parentIds } = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await listSubtasks(userId, parentIds, c.env);
+    const data = await listSubtasks(userId, parentIds);
     return c.json(data);
   }
 );
@@ -264,10 +265,10 @@ task.openapi(
   },
   async (c) => {
     const { parentIds } = c.req.valid("json");
-    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
-    const data = await listTaskSubtaskCount(parentIds, c.env);
+    const data = await listTaskSubtaskCount(parentIds);
     return c.json(data);
   }
 );
+
 
 

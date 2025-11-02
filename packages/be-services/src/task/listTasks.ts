@@ -3,12 +3,8 @@ import { tasks, taskGoals, goals } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { TaskDTO } from "@self-flow/common/types";
 
-type Env = {
-  DATABASE_URL?: string;
-};
-
-export async function listTasks(userId: string, limit: number = 20, offset: number = 0, env?: Env) {
-  const db = getDb(env);
+export async function listTasks(userId: string, limit: number = 20, offset: number = 0) {
+  const db = getDb();
   const tasksList = await db
     .select()
     .from(tasks)
