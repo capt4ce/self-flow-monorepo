@@ -1,13 +1,18 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { TaskDTO } from "@self-flow/common/types";
 
-export async function listSubtasks(userId: string, parentIds: string[]) {
+type Env = {
+  DATABASE_URL?: string;
+};
+
+export async function listSubtasks(userId: string, parentIds: string[], env?: Env) {
   if (parentIds.length === 0) {
     return {};
   }
 
+  const db = getDb(env);
   const subtasksList = await db
     .select()
     .from(tasks)

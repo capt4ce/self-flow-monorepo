@@ -25,7 +25,7 @@ goal.openapi(
     tags,
     request: {
       query: z.object({
-        status: GoalStatus,
+        status: GoalStatus.optional().default("active"),
       }),
     },
     responses: {
@@ -42,7 +42,8 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { status } = c.req.valid("query");
-    const data = await listGoals(userId, status);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await listGoals(userId, status, c.env);
     return c.json({ data });
   }
 );
@@ -75,7 +76,8 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    const data = await createGoal(userId, body);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await createGoal(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -112,7 +114,8 @@ goal.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateGoal(userId, id, body);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await updateGoal(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -141,7 +144,8 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    await deleteGoal(userId, id);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    await deleteGoal(userId, id, c.env);
     return c.json({ message: "Goal deleted" });
   }
 );

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { SignIn, SignUp } from "@clerk/nextjs";
 import { api } from "@/lib/api-client";
 import { GoalDTO, GoalStatus, GoalCategory } from "@self-flow/common/types";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ export default function Home() {
   const { user, loading } = useAuth();
   const [goals, setGoals] = useState<GoalDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [showSignIn, setShowSignIn] = useState(false);
 
   useEffect(() => {
     if (user && !loading) {
@@ -44,34 +43,21 @@ export default function Home() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          {showSignIn ? (
-            <div>
-              <SignIn />
-              <div className="mt-4 text-center">
-                <Button
-                  variant="link"
-                  onClick={() => setShowSignIn(false)}
-                  className="text-sm"
-                >
-                  Don't have an account? Sign up
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <SignUp />
-              <div className="mt-4 text-center">
-                <Button
-                  variant="link"
-                  onClick={() => setShowSignIn(true)}
-                  className="text-sm"
-                >
-                  Already have an account? Sign in
-                </Button>
-              </div>
-            </div>
-          )}
+        <div className="w-full max-w-md space-y-4">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-bold">Welcome to Self Flow</h1>
+            <p className="text-muted-foreground">
+              Sign in or create an account to get started
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link href="/auth/sign-in">
+              <Button className="w-full">Sign In</Button>
+            </Link>
+            <Link href="/auth/sign-up">
+              <Button variant="outline" className="w-full">Sign Up</Button>
+            </Link>
+          </div>
         </div>
       </div>
     );

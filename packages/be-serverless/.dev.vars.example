@@ -1,0 +1,15 @@
+# Copy this file to .dev.vars and fill in your actual values
+# .dev.vars is automatically loaded by wrangler for local development
+
+# Stack Auth (Neon Auth) Configuration
+STACK_PROJECT_ID=your_stack_project_id_here
+STACK_PROJECT_SECRET=your_stack_project_secret_here
+# Stack Auth JWKS endpoint format: https://api.stack-auth.com/api/v1/projects/{projectId}/.well-known/jwks.json
+STACK_JWKS_URL=https://api.stack-auth.com/api/v1/projects/your_stack_project_id_here/.well-known/jwks.json
+
+# Database Configuration
+DATABASE_URL=your_database_url_here
+
+# Frontend URL (optional)
+FRONTEND_URL=http://localhost:3000
+

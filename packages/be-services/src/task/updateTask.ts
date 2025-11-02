@@ -1,13 +1,19 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { UpdateTaskDTO, TaskDTO } from "@self-flow/common/types";
 
+type Env = {
+  DATABASE_URL?: string;
+};
+
 export async function updateTask(
   userId: string,
   taskId: string,
-  data: UpdateTaskDTO
+  data: UpdateTaskDTO,
+  env?: Env
 ): Promise<TaskDTO> {
+  const db = getDb(env);
   const updateData: any = {
     updatedAt: new Date().toISOString(),
   };

@@ -3,15 +3,15 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787/a
 // Set token globally (called from auth context)
 export function setAuthTokenGetter(getter: () => Promise<string | null>) {
   if (typeof window !== "undefined") {
-    (window as any).__clerkTokenGetter = getter;
+    (window as any).__stackAuthTokenGetter = getter;
   }
 }
 
-// Get auth token from Clerk - uses global getter set by AuthProvider
+// Get auth token from Stack Auth - uses global getter set by AuthProvider
 async function getAuthToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   
-  const getter = (window as any).__clerkTokenGetter;
+  const getter = (window as any).__stackAuthTokenGetter;
   if (getter) {
     return await getter();
   }
@@ -33,6 +33,8 @@ async function fetchAPI<T>(
 
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
+  } else {
+    console.warn("No auth token available for API request to:", endpoint);
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -42,7 +44,8 @@ async function fetchAPI<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: response.statusText }));
-    throw new Error(error.message || `API error: ${response.statusText}`);
+    console.error("API error:", response.status, error);
+    throw new Error(error.message || error.error || `API error: ${response.statusText}`);
   }
 
   return response.json();

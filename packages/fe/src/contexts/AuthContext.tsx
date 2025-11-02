@@ -1,8 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import * as Clerk from "@clerk/nextjs";
 import { setAuthTokenGetter } from "@/lib/api-client";
+
+// Import Stack Auth hooks - ensure @stackframe/react is properly installed
+import { useUser } from "@stackframe/react";
 
 interface AuthContextType {
   user: any;
@@ -24,27 +26,45 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { user, isLoaded: userLoaded } = Clerk.useUser();
-  const { signOut: clerkSignOut, getToken: clerkGetToken } =
-    Clerk.useAuth() as any;
+  // Hooks must be called unconditionally - they require StackProvider above this component
+  // StackProvider should be wrapped in StackProviderWrapper (client component) in layout.tsx
+  const user = useUser();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (userLoaded) {
-      setLoading(false);
-    }
-  }, [userLoaded]);
+    // Stack Auth loads synchronously, but we need to wait for initial check
+    setLoading(false);
+  }, []);
 
   const signOut = async () => {
-    await clerkSignOut();
+    if (!user) {
+      console.error("User is not available for sign out");
+      return;
+    }
+    await user.signOut();
   };
 
   const getToken = async () => {
     try {
-      const token = await clerkGetToken();
-      return token;
-    } catch (error) {
-      console.error("Error getting token:", error);
+      if (!user) {
+        console.error("User is not available");
+        return null;
+      }
+
+      // Get access token from Stack Auth
+      // Stack Auth tokens are JWTs that can be verified by the backend
+      const tokens = await user.currentSession.getTokens();
+
+      if (!tokens || !tokens.accessToken) {
+        console.warn(
+          "Stack Auth getTokens returned null/undefined accessToken"
+        );
+        return null;
+      }
+
+      return tokens.accessToken;
+    } catch (error: any) {
+      console.error("Error getting token from Stack Auth:", error);
       return null;
     }
   };
@@ -57,9 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [getToken]);
 
   const value = {
-    user: user
-      ? { id: user.id, email: user.primaryEmailAddress?.emailAddress }
-      : null,
+    user: user ? { id: user.id, email: user.primaryEmail } : null,
     loading,
     signOut,
     getToken,

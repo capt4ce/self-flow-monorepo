@@ -32,7 +32,7 @@ var __toESM = (mod2, isNodeMode, target) => (target = mod2 != null ? __create(__
   mod2
 ));
 
-// .wrangler/tmp/bundle-CGODiG/checked-fetch.js
+// .wrangler/tmp/bundle-7VJgmU/checked-fetch.js
 function checkURL(request, init) {
   const url2 = request instanceof URL ? request : new URL(
     (typeof request === "string" ? new Request(request, init) : request).url
@@ -50,7 +50,7 @@ function checkURL(request, init) {
 }
 var urls;
 var init_checked_fetch = __esm({
-  ".wrangler/tmp/bundle-CGODiG/checked-fetch.js"() {
+  ".wrangler/tmp/bundle-7VJgmU/checked-fetch.js"() {
     "use strict";
     urls = /* @__PURE__ */ new Set();
     __name(checkURL, "checkURL");
@@ -76,1046 +76,6 @@ var init_wrangler_modules_watch = __esm({
 var init_modules_watch_stub = __esm({
   "../../../../.nvm/versions/node/v22.18.0/lib/node_modules/wrangler/templates/modules-watch-stub.js"() {
     init_wrangler_modules_watch();
-  }
-});
-
-// ../../node_modules/.pnpm/deepmerge@4.2.2/node_modules/deepmerge/dist/cjs.js
-var require_cjs = __commonJS({
-  "../../node_modules/.pnpm/deepmerge@4.2.2/node_modules/deepmerge/dist/cjs.js"(exports, module) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    var isMergeableObject = /* @__PURE__ */ __name(function isMergeableObject2(value) {
-      return isNonNullObject(value) && !isSpecial(value);
-    }, "isMergeableObject");
-    function isNonNullObject(value) {
-      return !!value && typeof value === "object";
-    }
-    __name(isNonNullObject, "isNonNullObject");
-    function isSpecial(value) {
-      var stringValue = Object.prototype.toString.call(value);
-      return stringValue === "[object RegExp]" || stringValue === "[object Date]" || isReactElement(value);
-    }
-    __name(isSpecial, "isSpecial");
-    var canUseSymbol = typeof Symbol === "function" && Symbol.for;
-    var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol.for("react.element") : 60103;
-    function isReactElement(value) {
-      return value.$$typeof === REACT_ELEMENT_TYPE;
-    }
-    __name(isReactElement, "isReactElement");
-    function emptyTarget(val) {
-      return Array.isArray(val) ? [] : {};
-    }
-    __name(emptyTarget, "emptyTarget");
-    function cloneUnlessOtherwiseSpecified(value, options) {
-      return options.clone !== false && options.isMergeableObject(value) ? deepmerge2(emptyTarget(value), value, options) : value;
-    }
-    __name(cloneUnlessOtherwiseSpecified, "cloneUnlessOtherwiseSpecified");
-    function defaultArrayMerge(target, source, options) {
-      return target.concat(source).map(function(element) {
-        return cloneUnlessOtherwiseSpecified(element, options);
-      });
-    }
-    __name(defaultArrayMerge, "defaultArrayMerge");
-    function getMergeFunction(key, options) {
-      if (!options.customMerge) {
-        return deepmerge2;
-      }
-      var customMerge = options.customMerge(key);
-      return typeof customMerge === "function" ? customMerge : deepmerge2;
-    }
-    __name(getMergeFunction, "getMergeFunction");
-    function getEnumerableOwnPropertySymbols(target) {
-      return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function(symbol2) {
-        return target.propertyIsEnumerable(symbol2);
-      }) : [];
-    }
-    __name(getEnumerableOwnPropertySymbols, "getEnumerableOwnPropertySymbols");
-    function getKeys(target) {
-      return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
-    }
-    __name(getKeys, "getKeys");
-    function propertyIsOnObject(object2, property) {
-      try {
-        return property in object2;
-      } catch (_) {
-        return false;
-      }
-    }
-    __name(propertyIsOnObject, "propertyIsOnObject");
-    function propertyIsUnsafe(target, key) {
-      return propertyIsOnObject(target, key) && !(Object.hasOwnProperty.call(target, key) && Object.propertyIsEnumerable.call(target, key));
-    }
-    __name(propertyIsUnsafe, "propertyIsUnsafe");
-    function mergeObject(target, source, options) {
-      var destination = {};
-      if (options.isMergeableObject(target)) {
-        getKeys(target).forEach(function(key) {
-          destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-        });
-      }
-      getKeys(source).forEach(function(key) {
-        if (propertyIsUnsafe(target, key)) {
-          return;
-        }
-        if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
-          destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-        } else {
-          destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-        }
-      });
-      return destination;
-    }
-    __name(mergeObject, "mergeObject");
-    function deepmerge2(target, source, options) {
-      options = options || {};
-      options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-      options.isMergeableObject = options.isMergeableObject || isMergeableObject;
-      options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
-      var sourceIsArray = Array.isArray(source);
-      var targetIsArray = Array.isArray(target);
-      var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-      if (!sourceAndTargetTypesMatch) {
-        return cloneUnlessOtherwiseSpecified(source, options);
-      } else if (sourceIsArray) {
-        return options.arrayMerge(target, source, options);
-      } else {
-        return mergeObject(target, source, options);
-      }
-    }
-    __name(deepmerge2, "deepmerge");
-    deepmerge2.all = /* @__PURE__ */ __name(function deepmergeAll(array2, options) {
-      if (!Array.isArray(array2)) {
-        throw new Error("first argument should be an array");
-      }
-      return array2.reduce(function(prev, next) {
-        return deepmerge2(prev, next, options);
-      }, {});
-    }, "deepmergeAll");
-    var deepmerge_1 = deepmerge2;
-    module.exports = deepmerge_1;
-  }
-});
-
-// ../../node_modules/.pnpm/map-obj@4.3.0/node_modules/map-obj/index.js
-var require_map_obj = __commonJS({
-  "../../node_modules/.pnpm/map-obj@4.3.0/node_modules/map-obj/index.js"(exports, module) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    var isObject2 = /* @__PURE__ */ __name((value) => typeof value === "object" && value !== null, "isObject");
-    var mapObjectSkip = Symbol("skip");
-    var isObjectCustom = /* @__PURE__ */ __name((value) => isObject2(value) && !(value instanceof RegExp) && !(value instanceof Error) && !(value instanceof Date), "isObjectCustom");
-    var mapObject = /* @__PURE__ */ __name((object2, mapper, options, isSeen = /* @__PURE__ */ new WeakMap()) => {
-      options = {
-        deep: false,
-        target: {},
-        ...options
-      };
-      if (isSeen.has(object2)) {
-        return isSeen.get(object2);
-      }
-      isSeen.set(object2, options.target);
-      const { target } = options;
-      delete options.target;
-      const mapArray = /* @__PURE__ */ __name((array2) => array2.map((element) => isObjectCustom(element) ? mapObject(element, mapper, options, isSeen) : element), "mapArray");
-      if (Array.isArray(object2)) {
-        return mapArray(object2);
-      }
-      for (const [key, value] of Object.entries(object2)) {
-        const mapResult = mapper(key, value, object2);
-        if (mapResult === mapObjectSkip) {
-          continue;
-        }
-        let [newKey, newValue, { shouldRecurse = true } = {}] = mapResult;
-        if (newKey === "__proto__") {
-          continue;
-        }
-        if (options.deep && shouldRecurse && isObjectCustom(newValue)) {
-          newValue = Array.isArray(newValue) ? mapArray(newValue) : mapObject(newValue, mapper, options, isSeen);
-        }
-        target[newKey] = newValue;
-      }
-      return target;
-    }, "mapObject");
-    module.exports = (object2, mapper, options) => {
-      if (!isObject2(object2)) {
-        throw new TypeError(`Expected an object, got \`${object2}\` (${typeof object2})`);
-      }
-      return mapObject(object2, mapper, options);
-    };
-    module.exports.mapObjectSkip = mapObjectSkip;
-  }
-});
-
-// ../../node_modules/.pnpm/tslib@2.8.1/node_modules/tslib/tslib.js
-var require_tslib = __commonJS({
-  "../../node_modules/.pnpm/tslib@2.8.1/node_modules/tslib/tslib.js"(exports, module) {
-    init_checked_fetch();
-    init_modules_watch_stub();
-    var __extends;
-    var __assign;
-    var __rest2;
-    var __decorate;
-    var __param;
-    var __esDecorate;
-    var __runInitializers;
-    var __propKey;
-    var __setFunctionName;
-    var __metadata;
-    var __awaiter;
-    var __generator;
-    var __exportStar;
-    var __values;
-    var __read;
-    var __spread;
-    var __spreadArrays;
-    var __spreadArray;
-    var __await;
-    var __asyncGenerator;
-    var __asyncDelegator;
-    var __asyncValues;
-    var __makeTemplateObject;
-    var __importStar;
-    var __importDefault;
-    var __classPrivateFieldGet;
-    var __classPrivateFieldSet;
-    var __classPrivateFieldIn;
-    var __createBinding;
-    var __addDisposableResource;
-    var __disposeResources;
-    var __rewriteRelativeImportExtension;
-    (function(factory) {
-      var root = typeof global === "object" ? global : typeof self === "object" ? self : typeof this === "object" ? this : {};
-      if (typeof define === "function" && define.amd) {
-        define("tslib", ["exports"], function(exports2) {
-          factory(createExporter(root, createExporter(exports2)));
-        });
-      } else if (typeof module === "object" && typeof module.exports === "object") {
-        factory(createExporter(root, createExporter(module.exports)));
-      } else {
-        factory(createExporter(root));
-      }
-      function createExporter(exports2, previous) {
-        if (exports2 !== root) {
-          if (typeof Object.create === "function") {
-            Object.defineProperty(exports2, "__esModule", { value: true });
-          } else {
-            exports2.__esModule = true;
-          }
-        }
-        return function(id, v) {
-          return exports2[id] = previous ? previous(id, v) : v;
-        };
-      }
-      __name(createExporter, "createExporter");
-    })(function(exporter) {
-      var extendStatics = Object.setPrototypeOf || { __proto__: [] } instanceof Array && function(d, b) {
-        d.__proto__ = b;
-      } || function(d, b) {
-        for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
-      };
-      __extends = /* @__PURE__ */ __name(function(d, b) {
-        if (typeof b !== "function" && b !== null)
-          throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() {
-          this.constructor = d;
-        }
-        __name(__, "__");
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-      }, "__extends");
-      __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-      };
-      __rest2 = /* @__PURE__ */ __name(function(s, e) {
-        var t = {};
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-          t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-          for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-              t[p[i]] = s[p[i]];
-          }
-        return t;
-      }, "__rest");
-      __decorate = /* @__PURE__ */ __name(function(decorators, target, key, desc2) {
-        var c = arguments.length, r = c < 3 ? target : desc2 === null ? desc2 = Object.getOwnPropertyDescriptor(target, key) : desc2, d;
-        if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc2);
-        else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-        return c > 3 && r && Object.defineProperty(target, key, r), r;
-      }, "__decorate");
-      __param = /* @__PURE__ */ __name(function(paramIndex, decorator) {
-        return function(target, key) {
-          decorator(target, key, paramIndex);
-        };
-      }, "__param");
-      __esDecorate = /* @__PURE__ */ __name(function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-        function accept(f) {
-          if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-          return f;
-        }
-        __name(accept, "accept");
-        var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-        var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-        var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-        var _, done = false;
-        for (var i = decorators.length - 1; i >= 0; i--) {
-          var context = {};
-          for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-          for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-          context.addInitializer = function(f) {
-            if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-            extraInitializers.push(accept(f || null));
-          };
-          var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-          if (kind === "accessor") {
-            if (result === void 0) continue;
-            if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-            if (_ = accept(result.get)) descriptor.get = _;
-            if (_ = accept(result.set)) descriptor.set = _;
-            if (_ = accept(result.init)) initializers.unshift(_);
-          } else if (_ = accept(result)) {
-            if (kind === "field") initializers.unshift(_);
-            else descriptor[key] = _;
-          }
-        }
-        if (target) Object.defineProperty(target, contextIn.name, descriptor);
-        done = true;
-      }, "__esDecorate");
-      __runInitializers = /* @__PURE__ */ __name(function(thisArg, initializers, value) {
-        var useValue = arguments.length > 2;
-        for (var i = 0; i < initializers.length; i++) {
-          value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-        }
-        return useValue ? value : void 0;
-      }, "__runInitializers");
-      __propKey = /* @__PURE__ */ __name(function(x) {
-        return typeof x === "symbol" ? x : "".concat(x);
-      }, "__propKey");
-      __setFunctionName = /* @__PURE__ */ __name(function(f, name, prefix) {
-        if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-        return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-      }, "__setFunctionName");
-      __metadata = /* @__PURE__ */ __name(function(metadataKey, metadataValue) {
-        if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-      }, "__metadata");
-      __awaiter = /* @__PURE__ */ __name(function(thisArg, _arguments, P, generator) {
-        function adopt(value) {
-          return value instanceof P ? value : new P(function(resolve) {
-            resolve(value);
-          });
-        }
-        __name(adopt, "adopt");
-        return new (P || (P = Promise))(function(resolve, reject) {
-          function fulfilled(value) {
-            try {
-              step(generator.next(value));
-            } catch (e) {
-              reject(e);
-            }
-          }
-          __name(fulfilled, "fulfilled");
-          function rejected(value) {
-            try {
-              step(generator["throw"](value));
-            } catch (e) {
-              reject(e);
-            }
-          }
-          __name(rejected, "rejected");
-          function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-          }
-          __name(step, "step");
-          step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-      }, "__awaiter");
-      __generator = /* @__PURE__ */ __name(function(thisArg, body) {
-        var _ = { label: 0, sent: /* @__PURE__ */ __name(function() {
-          if (t[0] & 1) throw t[1];
-          return t[1];
-        }, "sent"), trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-        return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() {
-          return this;
-        }), g;
-        function verb(n) {
-          return function(v) {
-            return step([n, v]);
-          };
-        }
-        __name(verb, "verb");
-        function step(op) {
-          if (f) throw new TypeError("Generator is already executing.");
-          while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-              case 0:
-              case 1:
-                t = op;
-                break;
-              case 4:
-                _.label++;
-                return { value: op[1], done: false };
-              case 5:
-                _.label++;
-                y = op[1];
-                op = [0];
-                continue;
-              case 7:
-                op = _.ops.pop();
-                _.trys.pop();
-                continue;
-              default:
-                if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                  _ = 0;
-                  continue;
-                }
-                if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                  _.label = op[1];
-                  break;
-                }
-                if (op[0] === 6 && _.label < t[1]) {
-                  _.label = t[1];
-                  t = op;
-                  break;
-                }
-                if (t && _.label < t[2]) {
-                  _.label = t[2];
-                  _.ops.push(op);
-                  break;
-                }
-                if (t[2]) _.ops.pop();
-                _.trys.pop();
-                continue;
-            }
-            op = body.call(thisArg, _);
-          } catch (e) {
-            op = [6, e];
-            y = 0;
-          } finally {
-            f = t = 0;
-          }
-          if (op[0] & 5) throw op[1];
-          return { value: op[0] ? op[1] : void 0, done: true };
-        }
-        __name(step, "step");
-      }, "__generator");
-      __exportStar = /* @__PURE__ */ __name(function(m, o) {
-        for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(o, p)) __createBinding(o, m, p);
-      }, "__exportStar");
-      __createBinding = Object.create ? function(o, m, k, k2) {
-        if (k2 === void 0) k2 = k;
-        var desc2 = Object.getOwnPropertyDescriptor(m, k);
-        if (!desc2 || ("get" in desc2 ? !m.__esModule : desc2.writable || desc2.configurable)) {
-          desc2 = { enumerable: true, get: /* @__PURE__ */ __name(function() {
-            return m[k];
-          }, "get") };
-        }
-        Object.defineProperty(o, k2, desc2);
-      } : function(o, m, k, k2) {
-        if (k2 === void 0) k2 = k;
-        o[k2] = m[k];
-      };
-      __values = /* @__PURE__ */ __name(function(o) {
-        var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
-        if (m) return m.call(o);
-        if (o && typeof o.length === "number") return {
-          next: /* @__PURE__ */ __name(function() {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-          }, "next")
-        };
-        throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
-      }, "__values");
-      __read = /* @__PURE__ */ __name(function(o, n) {
-        var m = typeof Symbol === "function" && o[Symbol.iterator];
-        if (!m) return o;
-        var i = m.call(o), r, ar = [], e;
-        try {
-          while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-        } catch (error45) {
-          e = { error: error45 };
-        } finally {
-          try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-          } finally {
-            if (e) throw e.error;
-          }
-        }
-        return ar;
-      }, "__read");
-      __spread = /* @__PURE__ */ __name(function() {
-        for (var ar = [], i = 0; i < arguments.length; i++)
-          ar = ar.concat(__read(arguments[i]));
-        return ar;
-      }, "__spread");
-      __spreadArrays = /* @__PURE__ */ __name(function() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-          for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-        return r;
-      }, "__spreadArrays");
-      __spreadArray = /* @__PURE__ */ __name(function(to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-          if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-          }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-      }, "__spreadArray");
-      __await = /* @__PURE__ */ __name(function(v) {
-        return this instanceof __await ? (this.v = v, this) : new __await(v);
-      }, "__await");
-      __asyncGenerator = /* @__PURE__ */ __name(function(thisArg, _arguments, generator) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var g = generator.apply(thisArg, _arguments || []), i, q = [];
-        return i = Object.create((typeof AsyncIterator === "function" ? AsyncIterator : Object).prototype), verb("next"), verb("throw"), verb("return", awaitReturn), i[Symbol.asyncIterator] = function() {
-          return this;
-        }, i;
-        function awaitReturn(f) {
-          return function(v) {
-            return Promise.resolve(v).then(f, reject);
-          };
-        }
-        __name(awaitReturn, "awaitReturn");
-        function verb(n, f) {
-          if (g[n]) {
-            i[n] = function(v) {
-              return new Promise(function(a, b) {
-                q.push([n, v, a, b]) > 1 || resume(n, v);
-              });
-            };
-            if (f) i[n] = f(i[n]);
-          }
-        }
-        __name(verb, "verb");
-        function resume(n, v) {
-          try {
-            step(g[n](v));
-          } catch (e) {
-            settle(q[0][3], e);
-          }
-        }
-        __name(resume, "resume");
-        function step(r) {
-          r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);
-        }
-        __name(step, "step");
-        function fulfill(value) {
-          resume("next", value);
-        }
-        __name(fulfill, "fulfill");
-        function reject(value) {
-          resume("throw", value);
-        }
-        __name(reject, "reject");
-        function settle(f, v) {
-          if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]);
-        }
-        __name(settle, "settle");
-      }, "__asyncGenerator");
-      __asyncDelegator = /* @__PURE__ */ __name(function(o) {
-        var i, p;
-        return i = {}, verb("next"), verb("throw", function(e) {
-          throw e;
-        }), verb("return"), i[Symbol.iterator] = function() {
-          return this;
-        }, i;
-        function verb(n, f) {
-          i[n] = o[n] ? function(v) {
-            return (p = !p) ? { value: __await(o[n](v)), done: false } : f ? f(v) : v;
-          } : f;
-        }
-        __name(verb, "verb");
-      }, "__asyncDelegator");
-      __asyncValues = /* @__PURE__ */ __name(function(o) {
-        if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-        var m = o[Symbol.asyncIterator], i;
-        return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function() {
-          return this;
-        }, i);
-        function verb(n) {
-          i[n] = o[n] && function(v) {
-            return new Promise(function(resolve, reject) {
-              v = o[n](v), settle(resolve, reject, v.done, v.value);
-            });
-          };
-        }
-        __name(verb, "verb");
-        function settle(resolve, reject, d, v) {
-          Promise.resolve(v).then(function(v2) {
-            resolve({ value: v2, done: d });
-          }, reject);
-        }
-        __name(settle, "settle");
-      }, "__asyncValues");
-      __makeTemplateObject = /* @__PURE__ */ __name(function(cooked, raw2) {
-        if (Object.defineProperty) {
-          Object.defineProperty(cooked, "raw", { value: raw2 });
-        } else {
-          cooked.raw = raw2;
-        }
-        return cooked;
-      }, "__makeTemplateObject");
-      var __setModuleDefault = Object.create ? function(o, v) {
-        Object.defineProperty(o, "default", { enumerable: true, value: v });
-      } : function(o, v) {
-        o["default"] = v;
-      };
-      var ownKeys = /* @__PURE__ */ __name(function(o) {
-        ownKeys = Object.getOwnPropertyNames || function(o2) {
-          var ar = [];
-          for (var k in o2) if (Object.prototype.hasOwnProperty.call(o2, k)) ar[ar.length] = k;
-          return ar;
-        };
-        return ownKeys(o);
-      }, "ownKeys");
-      __importStar = /* @__PURE__ */ __name(function(mod2) {
-        if (mod2 && mod2.__esModule) return mod2;
-        var result = {};
-        if (mod2 != null) {
-          for (var k = ownKeys(mod2), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod2, k[i]);
-        }
-        __setModuleDefault(result, mod2);
-        return result;
-      }, "__importStar");
-      __importDefault = /* @__PURE__ */ __name(function(mod2) {
-        return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
-      }, "__importDefault");
-      __classPrivateFieldGet = /* @__PURE__ */ __name(function(receiver, state, kind, f) {
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-        return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-      }, "__classPrivateFieldGet");
-      __classPrivateFieldSet = /* @__PURE__ */ __name(function(receiver, state, value, kind, f) {
-        if (kind === "m") throw new TypeError("Private method is not writable");
-        if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-        if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-        return kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value), value;
-      }, "__classPrivateFieldSet");
-      __classPrivateFieldIn = /* @__PURE__ */ __name(function(state, receiver) {
-        if (receiver === null || typeof receiver !== "object" && typeof receiver !== "function") throw new TypeError("Cannot use 'in' operator on non-object");
-        return typeof state === "function" ? receiver === state : state.has(receiver);
-      }, "__classPrivateFieldIn");
-      __addDisposableResource = /* @__PURE__ */ __name(function(env, value, async) {
-        if (value !== null && value !== void 0) {
-          if (typeof value !== "object" && typeof value !== "function") throw new TypeError("Object expected.");
-          var dispose, inner;
-          if (async) {
-            if (!Symbol.asyncDispose) throw new TypeError("Symbol.asyncDispose is not defined.");
-            dispose = value[Symbol.asyncDispose];
-          }
-          if (dispose === void 0) {
-            if (!Symbol.dispose) throw new TypeError("Symbol.dispose is not defined.");
-            dispose = value[Symbol.dispose];
-            if (async) inner = dispose;
-          }
-          if (typeof dispose !== "function") throw new TypeError("Object not disposable.");
-          if (inner) dispose = /* @__PURE__ */ __name(function() {
-            try {
-              inner.call(this);
-            } catch (e) {
-              return Promise.reject(e);
-            }
-          }, "dispose");
-          env.stack.push({ value, dispose, async });
-        } else if (async) {
-          env.stack.push({ async: true });
-        }
-        return value;
-      }, "__addDisposableResource");
-      var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function(error45, suppressed, message) {
-        var e = new Error(message);
-        return e.name = "SuppressedError", e.error = error45, e.suppressed = suppressed, e;
-      };
-      __disposeResources = /* @__PURE__ */ __name(function(env) {
-        function fail(e) {
-          env.error = env.hasError ? new _SuppressedError(e, env.error, "An error was suppressed during disposal.") : e;
-          env.hasError = true;
-        }
-        __name(fail, "fail");
-        var r, s = 0;
-        function next() {
-          while (r = env.stack.pop()) {
-            try {
-              if (!r.async && s === 1) return s = 0, env.stack.push(r), Promise.resolve().then(next);
-              if (r.dispose) {
-                var result = r.dispose.call(r.value);
-                if (r.async) return s |= 2, Promise.resolve(result).then(next, function(e) {
-                  fail(e);
-                  return next();
-                });
-              } else s |= 1;
-            } catch (e) {
-              fail(e);
-            }
-          }
-          if (s === 1) return env.hasError ? Promise.reject(env.error) : Promise.resolve();
-          if (env.hasError) throw env.error;
-        }
-        __name(next, "next");
-        return next();
-      }, "__disposeResources");
-      __rewriteRelativeImportExtension = /* @__PURE__ */ __name(function(path, preserveJsx) {
-        if (typeof path === "string" && /^\.\.?\//.test(path)) {
-          return path.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
-            return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
-          });
-        }
-        return path;
-      }, "__rewriteRelativeImportExtension");
-      exporter("__extends", __extends);
-      exporter("__assign", __assign);
-      exporter("__rest", __rest2);
-      exporter("__decorate", __decorate);
-      exporter("__param", __param);
-      exporter("__esDecorate", __esDecorate);
-      exporter("__runInitializers", __runInitializers);
-      exporter("__propKey", __propKey);
-      exporter("__setFunctionName", __setFunctionName);
-      exporter("__metadata", __metadata);
-      exporter("__awaiter", __awaiter);
-      exporter("__generator", __generator);
-      exporter("__exportStar", __exportStar);
-      exporter("__createBinding", __createBinding);
-      exporter("__values", __values);
-      exporter("__read", __read);
-      exporter("__spread", __spread);
-      exporter("__spreadArrays", __spreadArrays);
-      exporter("__spreadArray", __spreadArray);
-      exporter("__await", __await);
-      exporter("__asyncGenerator", __asyncGenerator);
-      exporter("__asyncDelegator", __asyncDelegator);
-      exporter("__asyncValues", __asyncValues);
-      exporter("__makeTemplateObject", __makeTemplateObject);
-      exporter("__importStar", __importStar);
-      exporter("__importDefault", __importDefault);
-      exporter("__classPrivateFieldGet", __classPrivateFieldGet);
-      exporter("__classPrivateFieldSet", __classPrivateFieldSet);
-      exporter("__classPrivateFieldIn", __classPrivateFieldIn);
-      exporter("__addDisposableResource", __addDisposableResource);
-      exporter("__disposeResources", __disposeResources);
-      exporter("__rewriteRelativeImportExtension", __rewriteRelativeImportExtension);
-    });
-  }
-});
-
-// ../../node_modules/.pnpm/lower-case@2.0.2/node_modules/lower-case/dist/index.js
-var require_dist = __commonJS({
-  "../../node_modules/.pnpm/lower-case@2.0.2/node_modules/lower-case/dist/index.js"(exports) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.lowerCase = exports.localeLowerCase = void 0;
-    var SUPPORTED_LOCALE = {
-      tr: {
-        regexp: /\u0130|\u0049|\u0049\u0307/g,
-        map: {
-          \u0130: "i",
-          I: "\u0131",
-          I\u0307: "i"
-        }
-      },
-      az: {
-        regexp: /\u0130/g,
-        map: {
-          \u0130: "i",
-          I: "\u0131",
-          I\u0307: "i"
-        }
-      },
-      lt: {
-        regexp: /\u0049|\u004A|\u012E|\u00CC|\u00CD|\u0128/g,
-        map: {
-          I: "i\u0307",
-          J: "j\u0307",
-          \u012E: "\u012F\u0307",
-          \u00CC: "i\u0307\u0300",
-          \u00CD: "i\u0307\u0301",
-          \u0128: "i\u0307\u0303"
-        }
-      }
-    };
-    function localeLowerCase(str, locale) {
-      var lang = SUPPORTED_LOCALE[locale.toLowerCase()];
-      if (lang)
-        return lowerCase(str.replace(lang.regexp, function(m) {
-          return lang.map[m];
-        }));
-      return lowerCase(str);
-    }
-    __name(localeLowerCase, "localeLowerCase");
-    exports.localeLowerCase = localeLowerCase;
-    function lowerCase(str) {
-      return str.toLowerCase();
-    }
-    __name(lowerCase, "lowerCase");
-    exports.lowerCase = lowerCase;
-  }
-});
-
-// ../../node_modules/.pnpm/no-case@3.0.4/node_modules/no-case/dist/index.js
-var require_dist2 = __commonJS({
-  "../../node_modules/.pnpm/no-case@3.0.4/node_modules/no-case/dist/index.js"(exports) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.noCase = void 0;
-    var lower_case_1 = require_dist();
-    var DEFAULT_SPLIT_REGEXP = [/([a-z0-9])([A-Z])/g, /([A-Z])([A-Z][a-z])/g];
-    var DEFAULT_STRIP_REGEXP = /[^A-Z0-9]+/gi;
-    function noCase(input, options) {
-      if (options === void 0) {
-        options = {};
-      }
-      var _a = options.splitRegexp, splitRegexp = _a === void 0 ? DEFAULT_SPLIT_REGEXP : _a, _b = options.stripRegexp, stripRegexp = _b === void 0 ? DEFAULT_STRIP_REGEXP : _b, _c = options.transform, transform2 = _c === void 0 ? lower_case_1.lowerCase : _c, _d = options.delimiter, delimiter = _d === void 0 ? " " : _d;
-      var result = replace(replace(input, splitRegexp, "$1\0$2"), stripRegexp, "\0");
-      var start = 0;
-      var end = result.length;
-      while (result.charAt(start) === "\0")
-        start++;
-      while (result.charAt(end - 1) === "\0")
-        end--;
-      return result.slice(start, end).split("\0").map(transform2).join(delimiter);
-    }
-    __name(noCase, "noCase");
-    exports.noCase = noCase;
-    function replace(input, re, value) {
-      if (re instanceof RegExp)
-        return input.replace(re, value);
-      return re.reduce(function(input2, re2) {
-        return input2.replace(re2, value);
-      }, input);
-    }
-    __name(replace, "replace");
-  }
-});
-
-// ../../node_modules/.pnpm/dot-case@3.0.4/node_modules/dot-case/dist/index.js
-var require_dist3 = __commonJS({
-  "../../node_modules/.pnpm/dot-case@3.0.4/node_modules/dot-case/dist/index.js"(exports) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.dotCase = void 0;
-    var tslib_1 = require_tslib();
-    var no_case_1 = require_dist2();
-    function dotCase(input, options) {
-      if (options === void 0) {
-        options = {};
-      }
-      return no_case_1.noCase(input, tslib_1.__assign({ delimiter: "." }, options));
-    }
-    __name(dotCase, "dotCase");
-    exports.dotCase = dotCase;
-  }
-});
-
-// ../../node_modules/.pnpm/snake-case@3.0.4/node_modules/snake-case/dist/index.js
-var require_dist4 = __commonJS({
-  "../../node_modules/.pnpm/snake-case@3.0.4/node_modules/snake-case/dist/index.js"(exports) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.snakeCase = void 0;
-    var tslib_1 = require_tslib();
-    var dot_case_1 = require_dist3();
-    function snakeCase(input, options) {
-      if (options === void 0) {
-        options = {};
-      }
-      return dot_case_1.dotCase(input, tslib_1.__assign({ delimiter: "_" }, options));
-    }
-    __name(snakeCase, "snakeCase");
-    exports.snakeCase = snakeCase;
-  }
-});
-
-// ../../node_modules/.pnpm/snakecase-keys@5.4.4/node_modules/snakecase-keys/index.js
-var require_snakecase_keys = __commonJS({
-  "../../node_modules/.pnpm/snakecase-keys@5.4.4/node_modules/snakecase-keys/index.js"(exports, module) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    var map2 = require_map_obj();
-    var { snakeCase } = require_dist4();
-    module.exports = function(obj, options) {
-      options = Object.assign({ deep: true, exclude: [], parsingOptions: {} }, options);
-      return map2(obj, function(key, val) {
-        return [
-          matches(options.exclude, key) ? key : snakeCase(key, options.parsingOptions),
-          val
-        ];
-      }, options);
-    };
-    function matches(patterns, value) {
-      return patterns.some(function(pattern) {
-        return typeof pattern === "string" ? pattern === value : pattern.test(value);
-      });
-    }
-    __name(matches, "matches");
-  }
-});
-
-// ../../node_modules/.pnpm/cookie@0.5.0/node_modules/cookie/index.js
-var require_cookie = __commonJS({
-  "../../node_modules/.pnpm/cookie@0.5.0/node_modules/cookie/index.js"(exports) {
-    "use strict";
-    init_checked_fetch();
-    init_modules_watch_stub();
-    exports.parse = parse6;
-    exports.serialize = serialize2;
-    var __toString = Object.prototype.toString;
-    var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
-    function parse6(str, options) {
-      if (typeof str !== "string") {
-        throw new TypeError("argument str must be a string");
-      }
-      var obj = {};
-      var opt = options || {};
-      var dec = opt.decode || decode4;
-      var index2 = 0;
-      while (index2 < str.length) {
-        var eqIdx = str.indexOf("=", index2);
-        if (eqIdx === -1) {
-          break;
-        }
-        var endIdx = str.indexOf(";", index2);
-        if (endIdx === -1) {
-          endIdx = str.length;
-        } else if (endIdx < eqIdx) {
-          index2 = str.lastIndexOf(";", eqIdx - 1) + 1;
-          continue;
-        }
-        var key = str.slice(index2, eqIdx).trim();
-        if (void 0 === obj[key]) {
-          var val = str.slice(eqIdx + 1, endIdx).trim();
-          if (val.charCodeAt(0) === 34) {
-            val = val.slice(1, -1);
-          }
-          obj[key] = tryDecode2(val, dec);
-        }
-        index2 = endIdx + 1;
-      }
-      return obj;
-    }
-    __name(parse6, "parse");
-    function serialize2(name, val, options) {
-      var opt = options || {};
-      var enc = opt.encode || encode3;
-      if (typeof enc !== "function") {
-        throw new TypeError("option encode is invalid");
-      }
-      if (!fieldContentRegExp.test(name)) {
-        throw new TypeError("argument name is invalid");
-      }
-      var value = enc(val);
-      if (value && !fieldContentRegExp.test(value)) {
-        throw new TypeError("argument val is invalid");
-      }
-      var str = name + "=" + value;
-      if (null != opt.maxAge) {
-        var maxAge = opt.maxAge - 0;
-        if (isNaN(maxAge) || !isFinite(maxAge)) {
-          throw new TypeError("option maxAge is invalid");
-        }
-        str += "; Max-Age=" + Math.floor(maxAge);
-      }
-      if (opt.domain) {
-        if (!fieldContentRegExp.test(opt.domain)) {
-          throw new TypeError("option domain is invalid");
-        }
-        str += "; Domain=" + opt.domain;
-      }
-      if (opt.path) {
-        if (!fieldContentRegExp.test(opt.path)) {
-          throw new TypeError("option path is invalid");
-        }
-        str += "; Path=" + opt.path;
-      }
-      if (opt.expires) {
-        var expires = opt.expires;
-        if (!isDate(expires) || isNaN(expires.valueOf())) {
-          throw new TypeError("option expires is invalid");
-        }
-        str += "; Expires=" + expires.toUTCString();
-      }
-      if (opt.httpOnly) {
-        str += "; HttpOnly";
-      }
-      if (opt.secure) {
-        str += "; Secure";
-      }
-      if (opt.priority) {
-        var priority = typeof opt.priority === "string" ? opt.priority.toLowerCase() : opt.priority;
-        switch (priority) {
-          case "low":
-            str += "; Priority=Low";
-            break;
-          case "medium":
-            str += "; Priority=Medium";
-            break;
-          case "high":
-            str += "; Priority=High";
-            break;
-          default:
-            throw new TypeError("option priority is invalid");
-        }
-      }
-      if (opt.sameSite) {
-        var sameSite = typeof opt.sameSite === "string" ? opt.sameSite.toLowerCase() : opt.sameSite;
-        switch (sameSite) {
-          case true:
-            str += "; SameSite=Strict";
-            break;
-          case "lax":
-            str += "; SameSite=Lax";
-            break;
-          case "strict":
-            str += "; SameSite=Strict";
-            break;
-          case "none":
-            str += "; SameSite=None";
-            break;
-          default:
-            throw new TypeError("option sameSite is invalid");
-        }
-      }
-      return str;
-    }
-    __name(serialize2, "serialize");
-    function decode4(str) {
-      return str.indexOf("%") !== -1 ? decodeURIComponent(str) : str;
-    }
-    __name(decode4, "decode");
-    function encode3(val) {
-      return encodeURIComponent(val);
-    }
-    __name(encode3, "encode");
-    function isDate(val) {
-      return __toString.call(val) === "[object Date]" || val instanceof Date;
-    }
-    __name(isDate, "isDate");
-    function tryDecode2(str, decode5) {
-      try {
-        return decode5(str);
-      } catch (e) {
-        return str;
-      }
-    }
-    __name(tryDecode2, "tryDecode");
   }
 });
 
@@ -6717,11 +5677,11 @@ var require_serverless = __commonJS({
   }
 });
 
-// .wrangler/tmp/bundle-CGODiG/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-7VJgmU/middleware-loader.entry.ts
 init_checked_fetch();
 init_modules_watch_stub();
 
-// .wrangler/tmp/bundle-CGODiG/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-7VJgmU/middleware-insertion-facade.js
 init_checked_fetch();
 init_modules_watch_stub();
 
@@ -6929,13 +5889,13 @@ var getPattern = /* @__PURE__ */ __name((label, next) => {
   }
   return null;
 }, "getPattern");
-var tryDecode = /* @__PURE__ */ __name((str, decoder) => {
+var tryDecode = /* @__PURE__ */ __name((str, decoder2) => {
   try {
-    return decoder(str);
+    return decoder2(str);
   } catch {
     return str.replace(/(?:%[0-9A-Fa-f]{2})+/g, (match) => {
       try {
-        return decoder(match);
+        return decoder2(match);
       } catch {
         return match;
       }
@@ -6975,22 +5935,22 @@ var checkOptionalParameter = /* @__PURE__ */ __name((path) => {
   }
   const segments = path.split("/");
   const results = [];
-  let basePath14 = "";
+  let basePath = "";
   segments.forEach((segment) => {
     if (segment !== "" && !/\:/.test(segment)) {
-      basePath14 += "/" + segment;
+      basePath += "/" + segment;
     } else if (/\:/.test(segment)) {
       if (/\?/.test(segment)) {
-        if (results.length === 0 && basePath14 === "") {
+        if (results.length === 0 && basePath === "") {
           results.push("/");
         } else {
-          results.push(basePath14);
+          results.push(basePath);
         }
         const optionalSegment = segment.replace("?", "");
-        basePath14 += "/" + optionalSegment;
-        results.push(basePath14);
+        basePath += "/" + optionalSegment;
+        results.push(basePath);
       } else {
-        basePath14 += "/" + segment;
+        basePath += "/" + segment;
       }
     }
   });
@@ -7504,14 +6464,14 @@ var Hono = class {
     this.getPath = strict ?? true ? options.getPath ?? getPath : getPathNoStrict;
   }
   #clone() {
-    const clone2 = new Hono({
+    const clone3 = new Hono({
       router: this.router,
       getPath: this.getPath
     });
-    clone2.errorHandler = this.errorHandler;
-    clone2.#notFoundHandler = this.#notFoundHandler;
-    clone2.routes = this.routes;
-    return clone2;
+    clone3.errorHandler = this.errorHandler;
+    clone3.#notFoundHandler = this.#notFoundHandler;
+    clone3.routes = this.routes;
+    return clone3;
   }
   #notFoundHandler = notFoundHandler;
   errorHandler = errorHandler;
@@ -8422,3365 +7382,1628 @@ init_modules_watch_stub();
 init_checked_fetch();
 init_modules_watch_stub();
 
-// ../be-auth/src/adapters/clerk.ts
+// ../be-auth/src/adapters/neon-auth.ts
 init_checked_fetch();
 init_modules_watch_stub();
 
-// ../../node_modules/.pnpm/@clerk+backend@0.38.15_react@18.3.1/node_modules/@clerk/backend/dist/esm/index.js
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/index.js
 init_checked_fetch();
 init_modules_watch_stub();
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/deprecated.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/base64url.js
 init_checked_fetch();
 init_modules_watch_stub();
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-IC4FGZI3.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/buffer_utils.js
 init_checked_fetch();
 init_modules_watch_stub();
-var isTestEnvironment = /* @__PURE__ */ __name(() => {
-  try {
-    return false;
-  } catch (err) {
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/webcrypto.js
+init_checked_fetch();
+init_modules_watch_stub();
+var webcrypto_default = crypto;
+var isCryptoKey = /* @__PURE__ */ __name((key) => key instanceof CryptoKey, "isCryptoKey");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/buffer_utils.js
+var encoder = new TextEncoder();
+var decoder = new TextDecoder();
+var MAX_INT32 = 2 ** 32;
+function concat(...buffers) {
+  const size = buffers.reduce((acc, { length }) => acc + length, 0);
+  const buf = new Uint8Array(size);
+  let i = 0;
+  for (const buffer of buffers) {
+    buf.set(buffer, i);
+    i += buffer.length;
   }
-  return false;
-}, "isTestEnvironment");
-var isProductionEnvironment = /* @__PURE__ */ __name(() => {
-  try {
-    return false;
-  } catch (err) {
-  }
-  return false;
-}, "isProductionEnvironment");
-var displayedWarnings = /* @__PURE__ */ new Set();
-var deprecated = /* @__PURE__ */ __name((fnName, warning, key) => {
-  const hideWarning = isTestEnvironment() || isProductionEnvironment();
-  const messageId = key != null ? key : fnName;
-  if (displayedWarnings.has(messageId) || hideWarning) {
-    return;
-  }
-  displayedWarnings.add(messageId);
-  console.warn(
-    `Clerk - DEPRECATION WARNING: "${fnName}" is deprecated and will be removed in the next major release.
-${warning}`
-  );
-}, "deprecated");
-var deprecatedProperty = /* @__PURE__ */ __name((cls, propName, warning, isStatic = false) => {
-  const target = isStatic ? cls : cls.prototype;
-  let value = target[propName];
-  Object.defineProperty(target, propName, {
-    get() {
-      deprecated(propName, warning, `${cls.name}:${propName}`);
-      return value;
-    },
-    set(v) {
-      value = v;
-    }
-  });
-}, "deprecatedProperty");
-var deprecatedObjectProperty = /* @__PURE__ */ __name((obj, propName, warning, key) => {
-  let value = obj[propName];
-  Object.defineProperty(obj, propName, {
-    get() {
-      deprecated(propName, warning, key);
-      return value;
-    },
-    set(v) {
-      value = v;
-    }
-  });
-}, "deprecatedObjectProperty");
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-NDCDZYN6.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/url.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-BX6URPWV.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-function isStaging(frontendApi) {
-  return frontendApi.endsWith(".lclstage.dev") || frontendApi.endsWith(".stgstage.dev") || frontendApi.endsWith(".clerkstage.dev") || frontendApi.endsWith(".accountsstage.dev");
+  return buf;
 }
-__name(isStaging, "isStaging");
-function addClerkPrefix(str) {
-  if (!str) {
-    return "";
+__name(concat, "concat");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/base64url.js
+var decodeBase64 = /* @__PURE__ */ __name((encoded) => {
+  const binary = atob(encoded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
   }
-  let regex;
-  if (str.match(/^(clerk\.)+\w*$/)) {
-    regex = /(clerk\.)*(?=clerk\.)/;
-  } else if (str.match(/\.clerk.accounts/)) {
-    return str;
+  return bytes;
+}, "decodeBase64");
+var decode = /* @__PURE__ */ __name((input) => {
+  let encoded = input;
+  if (encoded instanceof Uint8Array) {
+    encoded = decoder.decode(encoded);
+  }
+  encoded = encoded.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "");
+  try {
+    return decodeBase64(encoded);
+  } catch {
+    throw new TypeError("The input to be decoded is not correctly encoded.");
+  }
+}, "decode");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/util/errors.js
+init_checked_fetch();
+init_modules_watch_stub();
+var JOSEError = class extends Error {
+  static {
+    __name(this, "JOSEError");
+  }
+  constructor(message2, options) {
+    super(message2, options);
+    this.code = "ERR_JOSE_GENERIC";
+    this.name = this.constructor.name;
+    Error.captureStackTrace?.(this, this.constructor);
+  }
+};
+JOSEError.code = "ERR_JOSE_GENERIC";
+var JWTClaimValidationFailed = class extends JOSEError {
+  static {
+    __name(this, "JWTClaimValidationFailed");
+  }
+  constructor(message2, payload, claim = "unspecified", reason = "unspecified") {
+    super(message2, { cause: { claim, reason, payload } });
+    this.code = "ERR_JWT_CLAIM_VALIDATION_FAILED";
+    this.claim = claim;
+    this.reason = reason;
+    this.payload = payload;
+  }
+};
+JWTClaimValidationFailed.code = "ERR_JWT_CLAIM_VALIDATION_FAILED";
+var JWTExpired = class extends JOSEError {
+  static {
+    __name(this, "JWTExpired");
+  }
+  constructor(message2, payload, claim = "unspecified", reason = "unspecified") {
+    super(message2, { cause: { claim, reason, payload } });
+    this.code = "ERR_JWT_EXPIRED";
+    this.claim = claim;
+    this.reason = reason;
+    this.payload = payload;
+  }
+};
+JWTExpired.code = "ERR_JWT_EXPIRED";
+var JOSEAlgNotAllowed = class extends JOSEError {
+  static {
+    __name(this, "JOSEAlgNotAllowed");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JOSE_ALG_NOT_ALLOWED";
+  }
+};
+JOSEAlgNotAllowed.code = "ERR_JOSE_ALG_NOT_ALLOWED";
+var JOSENotSupported = class extends JOSEError {
+  static {
+    __name(this, "JOSENotSupported");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JOSE_NOT_SUPPORTED";
+  }
+};
+JOSENotSupported.code = "ERR_JOSE_NOT_SUPPORTED";
+var JWEDecryptionFailed = class extends JOSEError {
+  static {
+    __name(this, "JWEDecryptionFailed");
+  }
+  constructor(message2 = "decryption operation failed", options) {
+    super(message2, options);
+    this.code = "ERR_JWE_DECRYPTION_FAILED";
+  }
+};
+JWEDecryptionFailed.code = "ERR_JWE_DECRYPTION_FAILED";
+var JWEInvalid = class extends JOSEError {
+  static {
+    __name(this, "JWEInvalid");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JWE_INVALID";
+  }
+};
+JWEInvalid.code = "ERR_JWE_INVALID";
+var JWSInvalid = class extends JOSEError {
+  static {
+    __name(this, "JWSInvalid");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JWS_INVALID";
+  }
+};
+JWSInvalid.code = "ERR_JWS_INVALID";
+var JWTInvalid = class extends JOSEError {
+  static {
+    __name(this, "JWTInvalid");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JWT_INVALID";
+  }
+};
+JWTInvalid.code = "ERR_JWT_INVALID";
+var JWKInvalid = class extends JOSEError {
+  static {
+    __name(this, "JWKInvalid");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JWK_INVALID";
+  }
+};
+JWKInvalid.code = "ERR_JWK_INVALID";
+var JWKSInvalid = class extends JOSEError {
+  static {
+    __name(this, "JWKSInvalid");
+  }
+  constructor() {
+    super(...arguments);
+    this.code = "ERR_JWKS_INVALID";
+  }
+};
+JWKSInvalid.code = "ERR_JWKS_INVALID";
+var JWKSNoMatchingKey = class extends JOSEError {
+  static {
+    __name(this, "JWKSNoMatchingKey");
+  }
+  constructor(message2 = "no applicable key found in the JSON Web Key Set", options) {
+    super(message2, options);
+    this.code = "ERR_JWKS_NO_MATCHING_KEY";
+  }
+};
+JWKSNoMatchingKey.code = "ERR_JWKS_NO_MATCHING_KEY";
+var JWKSMultipleMatchingKeys = class extends JOSEError {
+  static {
+    __name(this, "JWKSMultipleMatchingKeys");
+  }
+  constructor(message2 = "multiple matching keys found in the JSON Web Key Set", options) {
+    super(message2, options);
+    this.code = "ERR_JWKS_MULTIPLE_MATCHING_KEYS";
+  }
+};
+JWKSMultipleMatchingKeys.code = "ERR_JWKS_MULTIPLE_MATCHING_KEYS";
+var JWKSTimeout = class extends JOSEError {
+  static {
+    __name(this, "JWKSTimeout");
+  }
+  constructor(message2 = "request timed out", options) {
+    super(message2, options);
+    this.code = "ERR_JWKS_TIMEOUT";
+  }
+};
+JWKSTimeout.code = "ERR_JWKS_TIMEOUT";
+var JWSSignatureVerificationFailed = class extends JOSEError {
+  static {
+    __name(this, "JWSSignatureVerificationFailed");
+  }
+  constructor(message2 = "signature verification failed", options) {
+    super(message2, options);
+    this.code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
+  }
+};
+JWSSignatureVerificationFailed.code = "ERR_JWS_SIGNATURE_VERIFICATION_FAILED";
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/crypto_key.js
+init_checked_fetch();
+init_modules_watch_stub();
+function unusable(name, prop = "algorithm.name") {
+  return new TypeError(`CryptoKey does not support this operation, its ${prop} must be ${name}`);
+}
+__name(unusable, "unusable");
+function isAlgorithm(algorithm, name) {
+  return algorithm.name === name;
+}
+__name(isAlgorithm, "isAlgorithm");
+function getHashLength(hash2) {
+  return parseInt(hash2.name.slice(4), 10);
+}
+__name(getHashLength, "getHashLength");
+function getNamedCurve(alg) {
+  switch (alg) {
+    case "ES256":
+      return "P-256";
+    case "ES384":
+      return "P-384";
+    case "ES512":
+      return "P-521";
+    default:
+      throw new Error("unreachable");
+  }
+}
+__name(getNamedCurve, "getNamedCurve");
+function checkUsage(key, usages) {
+  if (usages.length && !usages.some((expected) => key.usages.includes(expected))) {
+    let msg = "CryptoKey does not support this operation, its usages must include ";
+    if (usages.length > 2) {
+      const last = usages.pop();
+      msg += `one of ${usages.join(", ")}, or ${last}.`;
+    } else if (usages.length === 2) {
+      msg += `one of ${usages[0]} or ${usages[1]}.`;
+    } else {
+      msg += `${usages[0]}.`;
+    }
+    throw new TypeError(msg);
+  }
+}
+__name(checkUsage, "checkUsage");
+function checkSigCryptoKey(key, alg, ...usages) {
+  switch (alg) {
+    case "HS256":
+    case "HS384":
+    case "HS512": {
+      if (!isAlgorithm(key.algorithm, "HMAC"))
+        throw unusable("HMAC");
+      const expected = parseInt(alg.slice(2), 10);
+      const actual = getHashLength(key.algorithm.hash);
+      if (actual !== expected)
+        throw unusable(`SHA-${expected}`, "algorithm.hash");
+      break;
+    }
+    case "RS256":
+    case "RS384":
+    case "RS512": {
+      if (!isAlgorithm(key.algorithm, "RSASSA-PKCS1-v1_5"))
+        throw unusable("RSASSA-PKCS1-v1_5");
+      const expected = parseInt(alg.slice(2), 10);
+      const actual = getHashLength(key.algorithm.hash);
+      if (actual !== expected)
+        throw unusable(`SHA-${expected}`, "algorithm.hash");
+      break;
+    }
+    case "PS256":
+    case "PS384":
+    case "PS512": {
+      if (!isAlgorithm(key.algorithm, "RSA-PSS"))
+        throw unusable("RSA-PSS");
+      const expected = parseInt(alg.slice(2), 10);
+      const actual = getHashLength(key.algorithm.hash);
+      if (actual !== expected)
+        throw unusable(`SHA-${expected}`, "algorithm.hash");
+      break;
+    }
+    case "EdDSA": {
+      if (key.algorithm.name !== "Ed25519" && key.algorithm.name !== "Ed448") {
+        throw unusable("Ed25519 or Ed448");
+      }
+      break;
+    }
+    case "Ed25519": {
+      if (!isAlgorithm(key.algorithm, "Ed25519"))
+        throw unusable("Ed25519");
+      break;
+    }
+    case "ES256":
+    case "ES384":
+    case "ES512": {
+      if (!isAlgorithm(key.algorithm, "ECDSA"))
+        throw unusable("ECDSA");
+      const expected = getNamedCurve(alg);
+      const actual = key.algorithm.namedCurve;
+      if (actual !== expected)
+        throw unusable(expected, "algorithm.namedCurve");
+      break;
+    }
+    default:
+      throw new TypeError("CryptoKey does not support this operation");
+  }
+  checkUsage(key, usages);
+}
+__name(checkSigCryptoKey, "checkSigCryptoKey");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/invalid_key_input.js
+init_checked_fetch();
+init_modules_watch_stub();
+function message(msg, actual, ...types3) {
+  types3 = types3.filter(Boolean);
+  if (types3.length > 2) {
+    const last = types3.pop();
+    msg += `one of type ${types3.join(", ")}, or ${last}.`;
+  } else if (types3.length === 2) {
+    msg += `one of type ${types3[0]} or ${types3[1]}.`;
   } else {
-    regex = /^(clerk\.)*/gi;
+    msg += `of type ${types3[0]}.`;
   }
-  const stripped = str.replace(regex, "");
-  return `clerk.${stripped}`;
-}
-__name(addClerkPrefix, "addClerkPrefix");
-var getClerkJsMajorVersionOrTag = /* @__PURE__ */ __name((frontendApi, pkgVersion) => {
-  if (!pkgVersion && isStaging(frontendApi)) {
-    return "canary";
-  }
-  if (!pkgVersion) {
-    return "latest";
-  }
-  return pkgVersion.split(".")[0] || "latest";
-}, "getClerkJsMajorVersionOrTag");
-var getScriptUrl = /* @__PURE__ */ __name((frontendApi, { pkgVersion = "4.73.9", clerkJSVersion }) => {
-  const noSchemeFrontendApi = frontendApi.replace(/http(s)?:\/\//, "");
-  const major = getClerkJsMajorVersionOrTag(frontendApi, pkgVersion);
-  return `https://${noSchemeFrontendApi}/npm/@clerk/clerk-js@${clerkJSVersion || major}/dist/clerk.browser.js`;
-}, "getScriptUrl");
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/callWithRetry.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-4PW5MDZA.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-function wait(ms) {
-  return new Promise((res) => setTimeout(res, ms));
-}
-__name(wait, "wait");
-var MAX_NUMBER_OF_RETRIES = 5;
-async function callWithRetry(fn, attempt = 1, maxAttempts = MAX_NUMBER_OF_RETRIES) {
-  try {
-    return await fn();
-  } catch (e) {
-    if (attempt >= maxAttempts) {
-      throw e;
+  if (actual == null) {
+    msg += ` Received ${actual}`;
+  } else if (typeof actual === "function" && actual.name) {
+    msg += ` Received function ${actual.name}`;
+  } else if (typeof actual === "object" && actual != null) {
+    if (actual.constructor?.name) {
+      msg += ` Received an instance of ${actual.constructor.name}`;
     }
-    await wait(2 ** attempt * 100);
-    return callWithRetry(fn, attempt + 1, maxAttempts);
   }
+  return msg;
 }
-__name(callWithRetry, "callWithRetry");
+__name(message, "message");
+var invalid_key_input_default = /* @__PURE__ */ __name((actual, ...types3) => {
+  return message("Key must be ", actual, ...types3);
+}, "default");
+function withAlg(alg, actual, ...types3) {
+  return message(`Key for the ${alg} algorithm must be `, actual, ...types3);
+}
+__name(withAlg, "withAlg");
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/keys.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/is_key_like.js
 init_checked_fetch();
 init_modules_watch_stub();
+var is_key_like_default = /* @__PURE__ */ __name((key) => {
+  if (isCryptoKey(key)) {
+    return true;
+  }
+  return key?.[Symbol.toStringTag] === "KeyObject";
+}, "default");
+var types = ["CryptoKey"];
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-IAZRYRAH.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/is_disjoint.js
 init_checked_fetch();
 init_modules_watch_stub();
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-TETGTEI2.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-var isomorphicAtob = /* @__PURE__ */ __name((data) => {
-  if (typeof atob !== "undefined" && typeof atob === "function") {
-    return atob(data);
-  } else if (typeof global !== "undefined" && global.Buffer) {
-    return new global.Buffer(data, "base64").toString();
+var isDisjoint = /* @__PURE__ */ __name((...headers) => {
+  const sources = headers.filter(Boolean);
+  if (sources.length === 0 || sources.length === 1) {
+    return true;
   }
-  return data;
-}, "isomorphicAtob");
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-IAZRYRAH.mjs
-var PUBLISHABLE_KEY_LIVE_PREFIX = "pk_live_";
-var PUBLISHABLE_KEY_TEST_PREFIX = "pk_test_";
-function parsePublishableKey(key) {
-  key = key || "";
-  if (!isPublishableKey(key)) {
-    return null;
-  }
-  const instanceType = key.startsWith(PUBLISHABLE_KEY_LIVE_PREFIX) ? "production" : "development";
-  let frontendApi = isomorphicAtob(key.split("_")[2]);
-  if (!frontendApi.endsWith("$")) {
-    return null;
-  }
-  frontendApi = frontendApi.slice(0, -1);
-  return {
-    instanceType,
-    frontendApi
-  };
-}
-__name(parsePublishableKey, "parsePublishableKey");
-function isPublishableKey(key) {
-  key = key || "";
-  const hasValidPrefix = key.startsWith(PUBLISHABLE_KEY_LIVE_PREFIX) || key.startsWith(PUBLISHABLE_KEY_TEST_PREFIX);
-  const hasValidFrontendApiPostfix = isomorphicAtob(key.split("_")[2] || "").endsWith("$");
-  return hasValidPrefix && hasValidFrontendApiPostfix;
-}
-__name(isPublishableKey, "isPublishableKey");
-function createDevOrStagingUrlCache() {
-  const DEV_OR_STAGING_SUFFIXES = [
-    ".lcl.dev",
-    ".stg.dev",
-    ".lclstage.dev",
-    ".stgstage.dev",
-    ".dev.lclclerk.com",
-    ".stg.lclclerk.com",
-    ".accounts.lclclerk.com",
-    "accountsstage.dev",
-    "accounts.dev"
-  ];
-  const devOrStagingUrlCache = /* @__PURE__ */ new Map();
-  return {
-    isDevOrStagingUrl: /* @__PURE__ */ __name((url2) => {
-      if (!url2) {
+  let acc;
+  for (const header of sources) {
+    const parameters = Object.keys(header);
+    if (!acc || acc.size === 0) {
+      acc = new Set(parameters);
+      continue;
+    }
+    for (const parameter of parameters) {
+      if (acc.has(parameter)) {
         return false;
       }
-      const hostname3 = typeof url2 === "string" ? url2 : url2.hostname;
-      let res = devOrStagingUrlCache.get(hostname3);
-      if (res === void 0) {
-        res = DEV_OR_STAGING_SUFFIXES.some((s) => hostname3.endsWith(s));
-        devOrStagingUrlCache.set(hostname3, res);
-      }
-      return res;
-    }, "isDevOrStagingUrl")
-  };
-}
-__name(createDevOrStagingUrlCache, "createDevOrStagingUrlCache");
-function isDevelopmentFromApiKey(apiKey) {
-  return apiKey.startsWith("test_") || apiKey.startsWith("sk_test_");
-}
-__name(isDevelopmentFromApiKey, "isDevelopmentFromApiKey");
-function isProductionFromApiKey(apiKey) {
-  return apiKey.startsWith("live_") || apiKey.startsWith("sk_live_");
-}
-__name(isProductionFromApiKey, "isProductionFromApiKey");
+      acc.add(parameter);
+    }
+  }
+  return true;
+}, "isDisjoint");
+var is_disjoint_default = isDisjoint;
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/error.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/is_object.js
+init_checked_fetch();
+init_modules_watch_stub();
+function isObjectLike(value) {
+  return typeof value === "object" && value !== null;
+}
+__name(isObjectLike, "isObjectLike");
+function isObject(input) {
+  if (!isObjectLike(input) || Object.prototype.toString.call(input) !== "[object Object]") {
+    return false;
+  }
+  if (Object.getPrototypeOf(input) === null) {
+    return true;
+  }
+  let proto = input;
+  while (Object.getPrototypeOf(proto) !== null) {
+    proto = Object.getPrototypeOf(proto);
+  }
+  return Object.getPrototypeOf(input) === proto;
+}
+__name(isObject, "isObject");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/check_key_length.js
+init_checked_fetch();
+init_modules_watch_stub();
+var check_key_length_default = /* @__PURE__ */ __name((alg, key) => {
+  if (alg.startsWith("RS") || alg.startsWith("PS")) {
+    const { modulusLength } = key.algorithm;
+    if (typeof modulusLength !== "number" || modulusLength < 2048) {
+      throw new TypeError(`${alg} requires key modulusLength to be 2048 bits or larger`);
+    }
+  }
+}, "default");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/normalize_key.js
 init_checked_fetch();
 init_modules_watch_stub();
 
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/chunk-VN4YMSVR.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/is_jwk.js
 init_checked_fetch();
 init_modules_watch_stub();
-function parseErrors(data = []) {
-  return data.length > 0 ? data.map(parseError) : [];
+function isJWK(key) {
+  return isObject(key) && typeof key.kty === "string";
 }
-__name(parseErrors, "parseErrors");
-function parseError(error45) {
-  var _a, _b, _c, _d, _e;
-  return {
-    code: error45.code,
-    message: error45.message,
-    longMessage: error45.long_message,
-    meta: {
-      paramName: (_a = error45 == null ? void 0 : error45.meta) == null ? void 0 : _a.param_name,
-      sessionId: (_b = error45 == null ? void 0 : error45.meta) == null ? void 0 : _b.session_id,
-      emailAddresses: (_c = error45 == null ? void 0 : error45.meta) == null ? void 0 : _c.email_addresses,
-      identifiers: (_d = error45 == null ? void 0 : error45.meta) == null ? void 0 : _d.identifiers,
-      zxcvbn: (_e = error45 == null ? void 0 : error45.meta) == null ? void 0 : _e.zxcvbn
-    }
-  };
+__name(isJWK, "isJWK");
+function isPrivateJWK(key) {
+  return key.kty !== "oct" && typeof key.d === "string";
 }
-__name(parseError, "parseError");
-var ClerkAPIResponseError = class _ClerkAPIResponseError extends Error {
-  static {
-    __name(this, "_ClerkAPIResponseError");
-  }
-  constructor(message, { data, status, clerkTraceId }) {
-    super(message);
-    this.toString = () => {
-      let message2 = `[${this.name}]
-Message:${this.message}
-Status:${this.status}
-Serialized errors: ${this.errors.map(
-        (e) => JSON.stringify(e)
-      )}`;
-      if (this.clerkTraceId) {
-        message2 += `
-Clerk Trace ID: ${this.clerkTraceId}`;
-      }
-      return message2;
-    };
-    Object.setPrototypeOf(this, _ClerkAPIResponseError.prototype);
-    this.status = status;
-    this.message = message;
-    this.clerkTraceId = clerkTraceId;
-    this.clerkError = true;
-    this.errors = parseErrors(data);
-  }
-};
-var _MagicLinkErrorCode = {
-  Expired: "expired",
-  Failed: "failed"
-};
-var MagicLinkErrorCode = new Proxy(_MagicLinkErrorCode, {
-  get(target, prop, receiver) {
-    deprecated("MagicLinkErrorCode", "Use `EmailLinkErrorCode` instead.");
-    return Reflect.get(target, prop, receiver);
-  }
-});
-var DefaultMessages = Object.freeze({
-  InvalidFrontendApiErrorMessage: `The frontendApi passed to Clerk is invalid. You can get your Frontend API key at https://dashboard.clerk.com/last-active?path=api-keys. (key={{key}})`,
-  InvalidProxyUrlErrorMessage: `The proxyUrl passed to Clerk is invalid. The expected value for proxyUrl is an absolute URL or a relative path with a leading '/'. (key={{url}})`,
-  InvalidPublishableKeyErrorMessage: `The publishableKey passed to Clerk is invalid. You can get your Publishable key at https://dashboard.clerk.com/last-active?path=api-keys. (key={{key}})`,
-  MissingPublishableKeyErrorMessage: `Missing publishableKey. You can get your key at https://dashboard.clerk.com/last-active?path=api-keys.`
-});
-function buildErrorThrower({ packageName, customMessages }) {
-  let pkg = packageName;
-  const messages = {
-    ...DefaultMessages,
-    ...customMessages
-  };
-  function buildMessage(rawMessage, replacements) {
-    if (!replacements) {
-      return `${pkg}: ${rawMessage}`;
-    }
-    let msg = rawMessage;
-    const matches = rawMessage.matchAll(/{{([a-zA-Z0-9-_]+)}}/g);
-    for (const match of matches) {
-      const replacement = (replacements[match[1]] || "").toString();
-      msg = msg.replace(`{{${match[1]}}}`, replacement);
-    }
-    return `${pkg}: ${msg}`;
-  }
-  __name(buildMessage, "buildMessage");
-  return {
-    setPackageName({ packageName: packageName2 }) {
-      if (typeof packageName2 === "string") {
-        pkg = packageName2;
-      }
-      return this;
-    },
-    setMessages({ customMessages: customMessages2 }) {
-      Object.assign(messages, customMessages2 || {});
-      return this;
-    },
-    throwInvalidPublishableKeyError(params) {
-      throw new Error(buildMessage(messages.InvalidPublishableKeyErrorMessage, params));
-    },
-    throwInvalidFrontendApiError(params) {
-      throw new Error(buildMessage(messages.InvalidFrontendApiErrorMessage, params));
-    },
-    throwInvalidProxyUrl(params) {
-      throw new Error(buildMessage(messages.InvalidProxyUrlErrorMessage, params));
-    },
-    throwMissingPublishableKeyError() {
-      throw new Error(buildMessage(messages.MissingPublishableKeyErrorMessage));
-    }
-  };
+__name(isPrivateJWK, "isPrivateJWK");
+function isPublicJWK(key) {
+  return key.kty !== "oct" && typeof key.d === "undefined";
 }
-__name(buildErrorThrower, "buildErrorThrower");
+__name(isPublicJWK, "isPublicJWK");
+function isSecretJWK(key) {
+  return isJWK(key) && key.kty === "oct" && typeof key.k === "string";
+}
+__name(isSecretJWK, "isSecretJWK");
 
-// ../../node_modules/.pnpm/@clerk+backend@0.38.15_react@18.3.1/node_modules/@clerk/backend/dist/runtime/browser/crypto.mjs
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/jwk_to_key.js
 init_checked_fetch();
 init_modules_watch_stub();
-var crypto_default = crypto;
-
-// ../../node_modules/.pnpm/@clerk+backend@0.38.15_react@18.3.1/node_modules/@clerk/backend/dist/runtime/browser/fetch.mjs
-var fetch_exports = {};
-__export(fetch_exports, {
-  RuntimeAbortController: () => RuntimeAbortController,
-  RuntimeBlob: () => RuntimeBlob,
-  RuntimeFetch: () => RuntimeFetch,
-  RuntimeFormData: () => RuntimeFormData,
-  RuntimeHeaders: () => RuntimeHeaders,
-  RuntimeRequest: () => RuntimeRequest,
-  RuntimeResponse: () => RuntimeResponse,
-  default: () => fetch_default
-});
-init_checked_fetch();
-init_modules_watch_stub();
-var fetch_default = fetch;
-var RuntimeBlob = Blob;
-var RuntimeFormData = FormData;
-var RuntimeHeaders = Headers;
-var RuntimeRequest = Request;
-var RuntimeResponse = Response;
-var RuntimeAbortController = AbortController;
-var RuntimeFetch = fetch;
-
-// ../../node_modules/.pnpm/@clerk+backend@0.38.15_react@18.3.1/node_modules/@clerk/backend/dist/esm/index.js
-var import_deepmerge = __toESM(require_cjs());
-var import_snakecase_keys = __toESM(require_snakecase_keys());
-var import_cookie = __toESM(require_cookie());
-
-// ../../node_modules/.pnpm/@clerk+shared@1.4.2_react@18.3.1/node_modules/@clerk/shared/dist/isomorphicAtob.mjs
-init_checked_fetch();
-init_modules_watch_stub();
-
-// ../../node_modules/.pnpm/@clerk+backend@0.38.15_react@18.3.1/node_modules/@clerk/backend/dist/esm/index.js
-var AbstractAPI = class {
-  static {
-    __name(this, "AbstractAPI");
-  }
-  constructor(request) {
-    this.request = request;
-  }
-  requireId(id) {
-    if (!id) {
-      throw new Error("A valid resource ID is required.");
+function subtleMapping(jwk) {
+  let algorithm;
+  let keyUsages;
+  switch (jwk.kty) {
+    case "RSA": {
+      switch (jwk.alg) {
+        case "PS256":
+        case "PS384":
+        case "PS512":
+          algorithm = { name: "RSA-PSS", hash: `SHA-${jwk.alg.slice(-3)}` };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "RS256":
+        case "RS384":
+        case "RS512":
+          algorithm = { name: "RSASSA-PKCS1-v1_5", hash: `SHA-${jwk.alg.slice(-3)}` };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "RSA-OAEP":
+        case "RSA-OAEP-256":
+        case "RSA-OAEP-384":
+        case "RSA-OAEP-512":
+          algorithm = {
+            name: "RSA-OAEP",
+            hash: `SHA-${parseInt(jwk.alg.slice(-3), 10) || 1}`
+          };
+          keyUsages = jwk.d ? ["decrypt", "unwrapKey"] : ["encrypt", "wrapKey"];
+          break;
+        default:
+          throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
+      }
+      break;
     }
-  }
-};
-var SEPARATOR = "/";
-var MULTIPLE_SEPARATOR_REGEX = new RegExp("(?<!:)" + SEPARATOR + "{1,}", "g");
-function joinPaths(...args) {
-  return args.filter((p) => p).join(SEPARATOR).replace(MULTIPLE_SEPARATOR_REGEX, SEPARATOR);
-}
-__name(joinPaths, "joinPaths");
-var basePath = "/allowlist_identifiers";
-var AllowlistIdentifierAPI = class extends AbstractAPI {
-  static {
-    __name(this, "AllowlistIdentifierAPI");
-  }
-  async getAllowlistIdentifierList() {
-    return this.request({
-      method: "GET",
-      path: basePath
-    });
-  }
-  async createAllowlistIdentifier(params) {
-    return this.request({
-      method: "POST",
-      path: basePath,
-      bodyParams: params
-    });
-  }
-  async deleteAllowlistIdentifier(allowlistIdentifierId) {
-    this.requireId(allowlistIdentifierId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath, allowlistIdentifierId)
-    });
-  }
-};
-var basePath2 = "/clients";
-var ClientAPI = class extends AbstractAPI {
-  static {
-    __name(this, "ClientAPI");
-  }
-  async getClientList() {
-    return this.request({
-      method: "GET",
-      path: basePath2
-    });
-  }
-  async getClient(clientId) {
-    this.requireId(clientId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath2, clientId)
-    });
-  }
-  verifyClient(token) {
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath2, "verify"),
-      bodyParams: { token }
-    });
-  }
-};
-var basePath3 = "/domains";
-var DomainAPI = class extends AbstractAPI {
-  static {
-    __name(this, "DomainAPI");
-  }
-  async deleteDomain(id) {
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath3, id)
-    });
-  }
-};
-var basePath4 = "/email_addresses";
-var EmailAddressAPI = class extends AbstractAPI {
-  static {
-    __name(this, "EmailAddressAPI");
-  }
-  async getEmailAddress(emailAddressId) {
-    this.requireId(emailAddressId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath4, emailAddressId)
-    });
-  }
-  async createEmailAddress(params) {
-    return this.request({
-      method: "POST",
-      path: basePath4,
-      bodyParams: params
-    });
-  }
-  async updateEmailAddress(emailAddressId, params = {}) {
-    this.requireId(emailAddressId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath4, emailAddressId),
-      bodyParams: params
-    });
-  }
-  async deleteEmailAddress(emailAddressId) {
-    this.requireId(emailAddressId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath4, emailAddressId)
-    });
-  }
-};
-var basePath5 = "/emails";
-var EmailAPI = class extends AbstractAPI {
-  static {
-    __name(this, "EmailAPI");
-  }
-  /**
-   * @deprecated This endpoint is no longer available and the function will be removed in the next major version.
-   */
-  async createEmail(params) {
-    deprecated(
-      "EmailAPI.createEmail",
-      "This endpoint is no longer available and the function will be removed in the next major version."
-    );
-    return this.request({
-      method: "POST",
-      path: basePath5,
-      bodyParams: params
-    });
-  }
-};
-var errorThrower = buildErrorThrower({ packageName: "@clerk/backend" });
-var { isDevOrStagingUrl } = createDevOrStagingUrlCache();
-var InterstitialAPI = class extends AbstractAPI {
-  static {
-    __name(this, "InterstitialAPI");
-  }
-  async getInterstitial() {
-    deprecated(
-      "getInterstitial()",
-      'Switch to `Clerk(...).localInterstitial(...)` from `import { Clerk } from "@clerk/backend"`.'
-    );
-    return this.request({
-      path: "internal/interstitial",
-      method: "GET",
-      headerParams: {
-        "Content-Type": "text/html"
+    case "EC": {
+      switch (jwk.alg) {
+        case "ES256":
+          algorithm = { name: "ECDSA", namedCurve: "P-256" };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "ES384":
+          algorithm = { name: "ECDSA", namedCurve: "P-384" };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "ES512":
+          algorithm = { name: "ECDSA", namedCurve: "P-521" };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "ECDH-ES":
+        case "ECDH-ES+A128KW":
+        case "ECDH-ES+A192KW":
+        case "ECDH-ES+A256KW":
+          algorithm = { name: "ECDH", namedCurve: jwk.crv };
+          keyUsages = jwk.d ? ["deriveBits"] : [];
+          break;
+        default:
+          throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
       }
-    });
-  }
-};
-var basePath6 = "/invitations";
-var InvitationAPI = class extends AbstractAPI {
-  static {
-    __name(this, "InvitationAPI");
-  }
-  async getInvitationList(params = {}) {
-    return this.request({
-      method: "GET",
-      path: basePath6,
-      queryParams: params
-    });
-  }
-  async createInvitation(params) {
-    return this.request({
-      method: "POST",
-      path: basePath6,
-      bodyParams: params
-    });
-  }
-  async revokeInvitation(invitationId) {
-    this.requireId(invitationId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath6, invitationId, "revoke")
-    });
-  }
-};
-var {
-  RuntimeFetch: RuntimeFetch2,
-  RuntimeAbortController: RuntimeAbortController2,
-  RuntimeBlob: RuntimeBlob2,
-  RuntimeFormData: RuntimeFormData2,
-  RuntimeHeaders: RuntimeHeaders2,
-  RuntimeRequest: RuntimeRequest2,
-  RuntimeResponse: RuntimeResponse2
-} = fetch_exports;
-var globalFetch = RuntimeFetch2.bind(globalThis);
-var runtime = {
-  crypto: crypto_default,
-  fetch: globalFetch,
-  AbortController: RuntimeAbortController2,
-  Blob: RuntimeBlob2,
-  FormData: RuntimeFormData2,
-  Headers: RuntimeHeaders2,
-  Request: RuntimeRequest2,
-  Response: RuntimeResponse2
-};
-var runtime_default = runtime;
-var basePath7 = "/organizations";
-var OrganizationAPI = class extends AbstractAPI {
-  static {
-    __name(this, "OrganizationAPI");
-  }
-  async getOrganizationList(params) {
-    return this.request({
-      method: "GET",
-      path: basePath7,
-      queryParams: params
-    });
-  }
-  async createOrganization(params) {
-    return this.request({
-      method: "POST",
-      path: basePath7,
-      bodyParams: params
-    });
-  }
-  async getOrganization(params) {
-    const organizationIdOrSlug = "organizationId" in params ? params.organizationId : params.slug;
-    this.requireId(organizationIdOrSlug);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath7, organizationIdOrSlug)
-    });
-  }
-  async updateOrganization(organizationId, params) {
-    this.requireId(organizationId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath7, organizationId),
-      bodyParams: params
-    });
-  }
-  async updateOrganizationLogo(organizationId, params) {
-    this.requireId(organizationId);
-    const formData = new runtime_default.FormData();
-    formData.append("file", params?.file);
-    formData.append("uploader_user_id", params?.uploaderUserId);
-    return this.request({
-      method: "PUT",
-      path: joinPaths(basePath7, organizationId, "logo"),
-      formData
-    });
-  }
-  async deleteOrganizationLogo(organizationId) {
-    this.requireId(organizationId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath7, organizationId, "logo")
-    });
-  }
-  async updateOrganizationMetadata(organizationId, params) {
-    this.requireId(organizationId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath7, organizationId, "metadata"),
-      bodyParams: params
-    });
-  }
-  async deleteOrganization(organizationId) {
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath7, organizationId)
-    });
-  }
-  async getOrganizationMembershipList(params) {
-    const { organizationId, limit, offset } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath7, organizationId, "memberships"),
-      queryParams: { limit, offset }
-    });
-  }
-  async createOrganizationMembership(params) {
-    const { organizationId, userId, role } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath7, organizationId, "memberships"),
-      bodyParams: {
-        userId,
-        role
+      break;
+    }
+    case "OKP": {
+      switch (jwk.alg) {
+        case "Ed25519":
+          algorithm = { name: "Ed25519" };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "EdDSA":
+          algorithm = { name: jwk.crv };
+          keyUsages = jwk.d ? ["sign"] : ["verify"];
+          break;
+        case "ECDH-ES":
+        case "ECDH-ES+A128KW":
+        case "ECDH-ES+A192KW":
+        case "ECDH-ES+A256KW":
+          algorithm = { name: jwk.crv };
+          keyUsages = jwk.d ? ["deriveBits"] : [];
+          break;
+        default:
+          throw new JOSENotSupported('Invalid or unsupported JWK "alg" (Algorithm) Parameter value');
       }
-    });
-  }
-  async updateOrganizationMembership(params) {
-    const { organizationId, userId, role } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath7, organizationId, "memberships", userId),
-      bodyParams: {
-        role
-      }
-    });
-  }
-  async updateOrganizationMembershipMetadata(params) {
-    const { organizationId, userId, publicMetadata, privateMetadata } = params;
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath7, organizationId, "memberships", userId, "metadata"),
-      bodyParams: {
-        publicMetadata,
-        privateMetadata
-      }
-    });
-  }
-  async deleteOrganizationMembership(params) {
-    const { organizationId, userId } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath7, organizationId, "memberships", userId)
-    });
-  }
-  async getOrganizationInvitationList(params) {
-    const { organizationId, status, limit, offset } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath7, organizationId, "invitations"),
-      queryParams: { status, limit, offset }
-    });
-  }
-  /**
-   * @deprecated  Use `getOrganizationInvitationList` instead along with the status parameter.
-   */
-  async getPendingOrganizationInvitationList(params) {
-    deprecated("getPendingOrganizationInvitationList", "Use `getOrganizationInvitationList` instead.");
-    const { organizationId, limit, offset } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath7, organizationId, "invitations", "pending"),
-      queryParams: { limit, offset }
-    });
-  }
-  async createOrganizationInvitation(params) {
-    const { organizationId, ...bodyParams } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath7, organizationId, "invitations"),
-      bodyParams: { ...bodyParams }
-    });
-  }
-  async getOrganizationInvitation(params) {
-    const { organizationId, invitationId } = params;
-    this.requireId(organizationId);
-    this.requireId(invitationId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath7, organizationId, "invitations", invitationId)
-    });
-  }
-  async revokeOrganizationInvitation(params) {
-    const { organizationId, invitationId, requestingUserId } = params;
-    this.requireId(organizationId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath7, organizationId, "invitations", invitationId, "revoke"),
-      bodyParams: {
-        requestingUserId
-      }
-    });
-  }
-};
-var basePath8 = "/phone_numbers";
-var PhoneNumberAPI = class extends AbstractAPI {
-  static {
-    __name(this, "PhoneNumberAPI");
-  }
-  async getPhoneNumber(phoneNumberId) {
-    this.requireId(phoneNumberId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath8, phoneNumberId)
-    });
-  }
-  async createPhoneNumber(params) {
-    return this.request({
-      method: "POST",
-      path: basePath8,
-      bodyParams: params
-    });
-  }
-  async updatePhoneNumber(phoneNumberId, params = {}) {
-    this.requireId(phoneNumberId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath8, phoneNumberId),
-      bodyParams: params
-    });
-  }
-  async deletePhoneNumber(phoneNumberId) {
-    this.requireId(phoneNumberId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath8, phoneNumberId)
-    });
-  }
-};
-var basePath9 = "/redirect_urls";
-var RedirectUrlAPI = class extends AbstractAPI {
-  static {
-    __name(this, "RedirectUrlAPI");
-  }
-  async getRedirectUrlList() {
-    return this.request({
-      method: "GET",
-      path: basePath9
-    });
-  }
-  async getRedirectUrl(redirectUrlId) {
-    this.requireId(redirectUrlId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath9, redirectUrlId)
-    });
-  }
-  async createRedirectUrl(params) {
-    return this.request({
-      method: "POST",
-      path: basePath9,
-      bodyParams: params
-    });
-  }
-  async deleteRedirectUrl(redirectUrlId) {
-    this.requireId(redirectUrlId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath9, redirectUrlId)
-    });
-  }
-};
-var basePath10 = "/sessions";
-var SessionAPI = class extends AbstractAPI {
-  static {
-    __name(this, "SessionAPI");
-  }
-  async getSessionList(queryParams) {
-    return this.request({
-      method: "GET",
-      path: basePath10,
-      queryParams
-    });
-  }
-  async getSession(sessionId) {
-    this.requireId(sessionId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath10, sessionId)
-    });
-  }
-  async revokeSession(sessionId) {
-    this.requireId(sessionId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath10, sessionId, "revoke")
-    });
-  }
-  async verifySession(sessionId, token) {
-    this.requireId(sessionId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath10, sessionId, "verify"),
-      bodyParams: { token }
-    });
-  }
-  async getToken(sessionId, template) {
-    this.requireId(sessionId);
-    return (await this.request({
-      method: "POST",
-      path: joinPaths(basePath10, sessionId, "tokens", template || "")
-    })).jwt;
-  }
-};
-var basePath11 = "/sign_in_tokens";
-var SignInTokenAPI = class extends AbstractAPI {
-  static {
-    __name(this, "SignInTokenAPI");
-  }
-  async createSignInToken(params) {
-    return this.request({
-      method: "POST",
-      path: basePath11,
-      bodyParams: params
-    });
-  }
-  async revokeSignInToken(signInTokenId) {
-    this.requireId(signInTokenId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath11, signInTokenId, "revoke")
-    });
-  }
-};
-var basePath12 = "/sms_messages";
-var SMSMessageAPI = class extends AbstractAPI {
-  static {
-    __name(this, "SMSMessageAPI");
-  }
-  /**
-   * @deprecated This endpoint is no longer available and the function will be removed in the next major version.
-   */
-  async createSMSMessage(params) {
-    deprecated(
-      "SMSMessageAPI.createSMSMessage",
-      "This endpoint is no longer available and the function will be removed in the next major version."
-    );
-    return this.request({
-      method: "POST",
-      path: basePath12,
-      bodyParams: params
-    });
-  }
-};
-var basePath13 = "/users";
-var UserAPI = class extends AbstractAPI {
-  static {
-    __name(this, "UserAPI");
-  }
-  async getUserList(params = {}) {
-    return this.request({
-      method: "GET",
-      path: basePath13,
-      queryParams: params
-    });
-  }
-  async getUser(userId) {
-    this.requireId(userId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath13, userId)
-    });
-  }
-  async createUser(params) {
-    return this.request({
-      method: "POST",
-      path: basePath13,
-      bodyParams: params
-    });
-  }
-  async updateUser(userId, params = {}) {
-    this.requireId(userId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath13, userId),
-      bodyParams: params
-    });
-  }
-  async updateUserProfileImage(userId, params) {
-    this.requireId(userId);
-    const formData = new runtime_default.FormData();
-    formData.append("file", params?.file);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath13, userId, "profile_image"),
-      formData
-    });
-  }
-  async updateUserMetadata(userId, params) {
-    this.requireId(userId);
-    return this.request({
-      method: "PATCH",
-      path: joinPaths(basePath13, userId, "metadata"),
-      bodyParams: params
-    });
-  }
-  async deleteUser(userId) {
-    this.requireId(userId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath13, userId)
-    });
-  }
-  async getCount(params = {}) {
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath13, "count"),
-      queryParams: params
-    });
-  }
-  async getUserOauthAccessToken(userId, provider) {
-    this.requireId(userId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath13, userId, "oauth_access_tokens", provider)
-    });
-  }
-  async disableUserMFA(userId) {
-    this.requireId(userId);
-    return this.request({
-      method: "DELETE",
-      path: joinPaths(basePath13, userId, "mfa")
-    });
-  }
-  async getOrganizationMembershipList(params) {
-    const { userId, limit, offset } = params;
-    this.requireId(userId);
-    return this.request({
-      method: "GET",
-      path: joinPaths(basePath13, userId, "organization_memberships"),
-      queryParams: { limit, offset }
-    });
-  }
-  async verifyPassword(params) {
-    const { userId, password } = params;
-    this.requireId(userId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath13, userId, "verify_password"),
-      bodyParams: { password }
-    });
-  }
-  async verifyTOTP(params) {
-    const { userId, code } = params;
-    this.requireId(userId);
-    return this.request({
-      method: "POST",
-      path: joinPaths(basePath13, userId, "verify_totp"),
-      bodyParams: { code }
-    });
-  }
-};
-var API_URL = "https://api.clerk.dev";
-var API_VERSION = "v1";
-var USER_AGENT = `${"@clerk/backend"}@${"0.38.15"}`;
-var MAX_CACHE_LAST_UPDATED_AT_SECONDS = 5 * 60;
-var Attributes = {
-  AuthToken: "__clerkAuthToken",
-  AuthStatus: "__clerkAuthStatus",
-  AuthReason: "__clerkAuthReason",
-  AuthMessage: "__clerkAuthMessage"
-};
-var Cookies = {
-  Session: "__session",
-  ClientUat: "__client_uat"
-};
-var Headers2 = {
-  AuthToken: "x-clerk-auth-token",
-  AuthStatus: "x-clerk-auth-status",
-  AuthReason: "x-clerk-auth-reason",
-  AuthMessage: "x-clerk-auth-message",
-  EnableDebug: "x-clerk-debug",
-  ClerkRedirectTo: "x-clerk-redirect-to",
-  CloudFrontForwardedProto: "cloudfront-forwarded-proto",
-  Authorization: "authorization",
-  ForwardedPort: "x-forwarded-port",
-  ForwardedProto: "x-forwarded-proto",
-  ForwardedHost: "x-forwarded-host",
-  Referrer: "referer",
-  UserAgent: "user-agent",
-  Origin: "origin",
-  Host: "host",
-  ContentType: "content-type"
-};
-var SearchParams = {
-  AuthStatus: Headers2.AuthStatus,
-  AuthToken: Headers2.AuthToken
-};
-var ContentTypes = {
-  Json: "application/json"
-};
-var constants = {
-  Attributes,
-  Cookies,
-  Headers: Headers2,
-  SearchParams,
-  ContentTypes
-};
-function assertValidSecretKey(val) {
-  if (!val || typeof val !== "string") {
-    throw Error(
-      "Missing Clerk Secret Key or API Key. Go to https://dashboard.clerk.com and get your key for your instance."
-    );
-  }
-}
-__name(assertValidSecretKey, "assertValidSecretKey");
-var AllowlistIdentifier = class _AllowlistIdentifier {
-  static {
-    __name(this, "_AllowlistIdentifier");
-  }
-  constructor(id, identifier, createdAt, updatedAt, invitationId) {
-    this.id = id;
-    this.identifier = identifier;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.invitationId = invitationId;
-  }
-  static fromJSON(data) {
-    return new _AllowlistIdentifier(data.id, data.identifier, data.created_at, data.updated_at, data.invitation_id);
-  }
-};
-var Session = class _Session {
-  static {
-    __name(this, "_Session");
-  }
-  constructor(id, clientId, userId, status, lastActiveAt, expireAt, abandonAt, createdAt, updatedAt) {
-    this.id = id;
-    this.clientId = clientId;
-    this.userId = userId;
-    this.status = status;
-    this.lastActiveAt = lastActiveAt;
-    this.expireAt = expireAt;
-    this.abandonAt = abandonAt;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-  static fromJSON(data) {
-    return new _Session(
-      data.id,
-      data.client_id,
-      data.user_id,
-      data.status,
-      data.last_active_at,
-      data.expire_at,
-      data.abandon_at,
-      data.created_at,
-      data.updated_at
-    );
-  }
-};
-var Client = class _Client {
-  static {
-    __name(this, "_Client");
-  }
-  constructor(id, sessionIds, sessions, signInId, signUpId, lastActiveSessionId, createdAt, updatedAt) {
-    this.id = id;
-    this.sessionIds = sessionIds;
-    this.sessions = sessions;
-    this.signInId = signInId;
-    this.signUpId = signUpId;
-    this.lastActiveSessionId = lastActiveSessionId;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-  static fromJSON(data) {
-    return new _Client(
-      data.id,
-      data.session_ids,
-      data.sessions.map((x) => Session.fromJSON(x)),
-      data.sign_in_id,
-      data.sign_up_id,
-      data.last_active_session_id,
-      data.created_at,
-      data.updated_at
-    );
-  }
-};
-var DeletedObject = class _DeletedObject {
-  static {
-    __name(this, "_DeletedObject");
-  }
-  constructor(object2, id, slug, deleted) {
-    this.object = object2;
-    this.id = id;
-    this.slug = slug;
-    this.deleted = deleted;
-  }
-  static fromJSON(data) {
-    return new _DeletedObject(data.object, data.id || null, data.slug || null, data.deleted);
-  }
-};
-var Email = class _Email {
-  static {
-    __name(this, "_Email");
-  }
-  constructor(id, fromEmailName, emailAddressId, toEmailAddress, subject, body, bodyPlain, status, slug, data, deliveredByClerk) {
-    this.id = id;
-    this.fromEmailName = fromEmailName;
-    this.emailAddressId = emailAddressId;
-    this.toEmailAddress = toEmailAddress;
-    this.subject = subject;
-    this.body = body;
-    this.bodyPlain = bodyPlain;
-    this.status = status;
-    this.slug = slug;
-    this.data = data;
-    this.deliveredByClerk = deliveredByClerk;
-  }
-  static fromJSON(data) {
-    return new _Email(
-      data.id,
-      data.from_email_name,
-      data.email_address_id,
-      data.to_email_address,
-      data.subject,
-      data.body,
-      data.body_plain,
-      data.status,
-      data.slug,
-      data.data,
-      data.delivered_by_clerk
-    );
-  }
-};
-var IdentificationLink = class _IdentificationLink {
-  static {
-    __name(this, "_IdentificationLink");
-  }
-  constructor(id, type) {
-    this.id = id;
-    this.type = type;
-  }
-  static fromJSON(data) {
-    return new _IdentificationLink(data.id, data.type);
-  }
-};
-var Verification = class _Verification {
-  static {
-    __name(this, "_Verification");
-  }
-  constructor(status, strategy, externalVerificationRedirectURL = null, attempts = null, expireAt = null, nonce = null) {
-    this.status = status;
-    this.strategy = strategy;
-    this.externalVerificationRedirectURL = externalVerificationRedirectURL;
-    this.attempts = attempts;
-    this.expireAt = expireAt;
-    this.nonce = nonce;
-  }
-  static fromJSON(data) {
-    return new _Verification(
-      data.status,
-      data.strategy,
-      data.external_verification_redirect_url ? new URL(data.external_verification_redirect_url) : null,
-      data.attempts,
-      data.expire_at,
-      data.nonce
-    );
-  }
-};
-var EmailAddress = class _EmailAddress {
-  static {
-    __name(this, "_EmailAddress");
-  }
-  constructor(id, emailAddress, verification, linkedTo) {
-    this.id = id;
-    this.emailAddress = emailAddress;
-    this.verification = verification;
-    this.linkedTo = linkedTo;
-  }
-  static fromJSON(data) {
-    return new _EmailAddress(
-      data.id,
-      data.email_address,
-      data.verification && Verification.fromJSON(data.verification),
-      data.linked_to.map((link) => IdentificationLink.fromJSON(link))
-    );
-  }
-};
-var ExternalAccount = class _ExternalAccount {
-  static {
-    __name(this, "_ExternalAccount");
-  }
-  constructor(id, provider, identificationId, externalId, approvedScopes, emailAddress, firstName, lastName, picture, imageUrl, username, publicMetadata = {}, label, verification) {
-    this.id = id;
-    this.provider = provider;
-    this.identificationId = identificationId;
-    this.externalId = externalId;
-    this.approvedScopes = approvedScopes;
-    this.emailAddress = emailAddress;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.picture = picture;
-    this.imageUrl = imageUrl;
-    this.username = username;
-    this.publicMetadata = publicMetadata;
-    this.label = label;
-    this.verification = verification;
-  }
-  static fromJSON(data) {
-    return new _ExternalAccount(
-      data.id,
-      data.provider,
-      data.identification_id,
-      data.provider_user_id,
-      data.approved_scopes,
-      data.email_address,
-      data.first_name,
-      data.last_name,
-      data.avatar_url,
-      data.image_url,
-      data.username,
-      data.public_metadata,
-      data.label,
-      data.verification && Verification.fromJSON(data.verification)
-    );
-  }
-};
-deprecatedProperty(ExternalAccount, "picture", "Use `imageUrl` instead.");
-var Invitation = class _Invitation {
-  static {
-    __name(this, "_Invitation");
-  }
-  constructor(id, emailAddress, publicMetadata, createdAt, updatedAt, status, revoked) {
-    this.id = id;
-    this.emailAddress = emailAddress;
-    this.publicMetadata = publicMetadata;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.status = status;
-    this.revoked = revoked;
-  }
-  static fromJSON(data) {
-    return new _Invitation(
-      data.id,
-      data.email_address,
-      data.public_metadata,
-      data.created_at,
-      data.updated_at,
-      data.status,
-      data.revoked
-    );
-  }
-};
-var OauthAccessToken = class _OauthAccessToken {
-  static {
-    __name(this, "_OauthAccessToken");
-  }
-  constructor(provider, token, publicMetadata = {}, label, scopes, tokenSecret) {
-    this.provider = provider;
-    this.token = token;
-    this.publicMetadata = publicMetadata;
-    this.label = label;
-    this.scopes = scopes;
-    this.tokenSecret = tokenSecret;
-  }
-  static fromJSON(data) {
-    return new _OauthAccessToken(
-      data.provider,
-      data.token,
-      data.public_metadata,
-      data.label,
-      data.scopes,
-      data.token_secret
-    );
-  }
-};
-var Organization = class _Organization {
-  static {
-    __name(this, "_Organization");
-  }
-  constructor(id, name, slug, logoUrl, imageUrl, hasImage, createdBy, createdAt, updatedAt, publicMetadata = {}, privateMetadata = {}, maxAllowedMemberships, adminDeleteEnabled, members_count, membersCount) {
-    this.id = id;
-    this.name = name;
-    this.slug = slug;
-    this.logoUrl = logoUrl;
-    this.imageUrl = imageUrl;
-    this.hasImage = hasImage;
-    this.createdBy = createdBy;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.publicMetadata = publicMetadata;
-    this.privateMetadata = privateMetadata;
-    this.maxAllowedMemberships = maxAllowedMemberships;
-    this.adminDeleteEnabled = adminDeleteEnabled;
-    this.members_count = members_count;
-    this.membersCount = membersCount;
-  }
-  static fromJSON(data) {
-    return new _Organization(
-      data.id,
-      data.name,
-      data.slug,
-      data.logo_url,
-      data.image_url,
-      data.has_image,
-      data.created_by,
-      data.created_at,
-      data.updated_at,
-      data.public_metadata,
-      data.private_metadata,
-      data.max_allowed_memberships,
-      data.admin_delete_enabled,
-      data.members_count,
-      data.members_count
-    );
-  }
-};
-deprecatedProperty(Organization, "logoUrl", "Use `imageUrl` instead.");
-deprecatedProperty(Organization, "members_count", "Use `membersCount` instead.");
-var OrganizationInvitation = class _OrganizationInvitation {
-  static {
-    __name(this, "_OrganizationInvitation");
-  }
-  constructor(id, emailAddress, role, organizationId, createdAt, updatedAt, status, publicMetadata = {}, privateMetadata = {}) {
-    this.id = id;
-    this.emailAddress = emailAddress;
-    this.role = role;
-    this.organizationId = organizationId;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.status = status;
-    this.publicMetadata = publicMetadata;
-    this.privateMetadata = privateMetadata;
-  }
-  static fromJSON(data) {
-    return new _OrganizationInvitation(
-      data.id,
-      data.email_address,
-      data.role,
-      data.organization_id,
-      data.created_at,
-      data.updated_at,
-      data.status,
-      data.public_metadata,
-      data.private_metadata
-    );
-  }
-};
-var OrganizationMembership = class _OrganizationMembership {
-  static {
-    __name(this, "_OrganizationMembership");
-  }
-  constructor(id, role, publicMetadata = {}, privateMetadata = {}, createdAt, updatedAt, organization, publicUserData) {
-    this.id = id;
-    this.role = role;
-    this.publicMetadata = publicMetadata;
-    this.privateMetadata = privateMetadata;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.organization = organization;
-    this.publicUserData = publicUserData;
-  }
-  static fromJSON(data) {
-    return new _OrganizationMembership(
-      data.id,
-      data.role,
-      data.public_metadata,
-      data.private_metadata,
-      data.created_at,
-      data.updated_at,
-      Organization.fromJSON(data.organization),
-      OrganizationMembershipPublicUserData.fromJSON(data.public_user_data)
-    );
-  }
-};
-var OrganizationMembershipPublicUserData = class _OrganizationMembershipPublicUserData {
-  static {
-    __name(this, "_OrganizationMembershipPublicUserData");
-  }
-  constructor(identifier, firstName, lastName, profileImageUrl, imageUrl, hasImage, userId) {
-    this.identifier = identifier;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.profileImageUrl = profileImageUrl;
-    this.imageUrl = imageUrl;
-    this.hasImage = hasImage;
-    this.userId = userId;
-  }
-  static fromJSON(data) {
-    return new _OrganizationMembershipPublicUserData(
-      data.identifier,
-      data.first_name,
-      data.last_name,
-      data.profile_image_url,
-      data.image_url,
-      data.has_image,
-      data.user_id
-    );
-  }
-};
-deprecatedProperty(OrganizationMembershipPublicUserData, "profileImageUrl", "Use `imageUrl` instead.");
-var PhoneNumber = class _PhoneNumber {
-  static {
-    __name(this, "_PhoneNumber");
-  }
-  constructor(id, phoneNumber, reservedForSecondFactor, defaultSecondFactor, verification, linkedTo) {
-    this.id = id;
-    this.phoneNumber = phoneNumber;
-    this.reservedForSecondFactor = reservedForSecondFactor;
-    this.defaultSecondFactor = defaultSecondFactor;
-    this.verification = verification;
-    this.linkedTo = linkedTo;
-  }
-  static fromJSON(data) {
-    return new _PhoneNumber(
-      data.id,
-      data.phone_number,
-      data.reserved_for_second_factor,
-      data.default_second_factor,
-      data.verification && Verification.fromJSON(data.verification),
-      data.linked_to.map((link) => IdentificationLink.fromJSON(link))
-    );
-  }
-};
-var RedirectUrl = class _RedirectUrl {
-  static {
-    __name(this, "_RedirectUrl");
-  }
-  constructor(id, url2, createdAt, updatedAt) {
-    this.id = id;
-    this.url = url2;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-  static fromJSON(data) {
-    return new _RedirectUrl(data.id, data.url, data.created_at, data.updated_at);
-  }
-};
-var SignInToken = class _SignInToken {
-  static {
-    __name(this, "_SignInToken");
-  }
-  constructor(id, userId, token, status, url2, createdAt, updatedAt) {
-    this.id = id;
-    this.userId = userId;
-    this.token = token;
-    this.status = status;
-    this.url = url2;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
-  static fromJSON(data) {
-    return new _SignInToken(data.id, data.user_id, data.token, data.status, data.url, data.created_at, data.updated_at);
-  }
-};
-var SMSMessage = class _SMSMessage {
-  static {
-    __name(this, "_SMSMessage");
-  }
-  constructor(id, fromPhoneNumber, toPhoneNumber, message, status, phoneNumberId, data) {
-    this.id = id;
-    this.fromPhoneNumber = fromPhoneNumber;
-    this.toPhoneNumber = toPhoneNumber;
-    this.message = message;
-    this.status = status;
-    this.phoneNumberId = phoneNumberId;
-    this.data = data;
-  }
-  static fromJSON(data) {
-    return new _SMSMessage(
-      data.id,
-      data.from_phone_number,
-      data.to_phone_number,
-      data.message,
-      data.status,
-      data.phone_number_id,
-      data.data
-    );
-  }
-};
-var Token = class _Token {
-  static {
-    __name(this, "_Token");
-  }
-  constructor(jwt2) {
-    this.jwt = jwt2;
-  }
-  static fromJSON(data) {
-    return new _Token(data.jwt);
-  }
-};
-var Web3Wallet = class _Web3Wallet {
-  static {
-    __name(this, "_Web3Wallet");
-  }
-  constructor(id, web3Wallet, verification) {
-    this.id = id;
-    this.web3Wallet = web3Wallet;
-    this.verification = verification;
-  }
-  static fromJSON(data) {
-    return new _Web3Wallet(data.id, data.web3_wallet, data.verification && Verification.fromJSON(data.verification));
-  }
-};
-var User = class _User {
-  static {
-    __name(this, "_User");
-  }
-  constructor(id, passwordEnabled, totpEnabled, backupCodeEnabled, twoFactorEnabled, banned, createdAt, updatedAt, profileImageUrl, imageUrl, hasImage, gender, birthday, primaryEmailAddressId, primaryPhoneNumberId, primaryWeb3WalletId, lastSignInAt, externalId, username, firstName, lastName, publicMetadata = {}, privateMetadata = {}, unsafeMetadata = {}, emailAddresses = [], phoneNumbers = [], web3Wallets = [], externalAccounts = [], createOrganizationEnabled) {
-    this.id = id;
-    this.passwordEnabled = passwordEnabled;
-    this.totpEnabled = totpEnabled;
-    this.backupCodeEnabled = backupCodeEnabled;
-    this.twoFactorEnabled = twoFactorEnabled;
-    this.banned = banned;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.profileImageUrl = profileImageUrl;
-    this.imageUrl = imageUrl;
-    this.hasImage = hasImage;
-    this.gender = gender;
-    this.birthday = birthday;
-    this.primaryEmailAddressId = primaryEmailAddressId;
-    this.primaryPhoneNumberId = primaryPhoneNumberId;
-    this.primaryWeb3WalletId = primaryWeb3WalletId;
-    this.lastSignInAt = lastSignInAt;
-    this.externalId = externalId;
-    this.username = username;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.publicMetadata = publicMetadata;
-    this.privateMetadata = privateMetadata;
-    this.unsafeMetadata = unsafeMetadata;
-    this.emailAddresses = emailAddresses;
-    this.phoneNumbers = phoneNumbers;
-    this.web3Wallets = web3Wallets;
-    this.externalAccounts = externalAccounts;
-    this.createOrganizationEnabled = createOrganizationEnabled;
-  }
-  static fromJSON(data) {
-    return new _User(
-      data.id,
-      data.password_enabled,
-      data.totp_enabled,
-      data.backup_code_enabled,
-      data.two_factor_enabled,
-      data.banned,
-      data.created_at,
-      data.updated_at,
-      data.profile_image_url,
-      data.image_url,
-      data.has_image,
-      data.gender,
-      data.birthday,
-      data.primary_email_address_id,
-      data.primary_phone_number_id,
-      data.primary_web3_wallet_id,
-      data.last_sign_in_at,
-      data.external_id,
-      data.username,
-      data.first_name,
-      data.last_name,
-      data.public_metadata,
-      data.private_metadata,
-      data.unsafe_metadata,
-      (data.email_addresses || []).map((x) => EmailAddress.fromJSON(x)),
-      (data.phone_numbers || []).map((x) => PhoneNumber.fromJSON(x)),
-      (data.web3_wallets || []).map((x) => Web3Wallet.fromJSON(x)),
-      (data.external_accounts || []).map((x) => ExternalAccount.fromJSON(x)),
-      data.create_organization_enabled
-    );
-  }
-};
-deprecatedProperty(User, "profileImageUrl", "Use `imageUrl` instead.");
-function deserialize(payload) {
-  if (Array.isArray(payload)) {
-    return payload.map((item) => jsonToObject(item));
-  } else if (isPaginated(payload)) {
-    return payload.data.map((item) => jsonToObject(item));
-  } else {
-    return jsonToObject(payload);
-  }
-}
-__name(deserialize, "deserialize");
-function isPaginated(payload) {
-  return Array.isArray(payload.data) && payload.data !== void 0;
-}
-__name(isPaginated, "isPaginated");
-function getCount(item) {
-  return item.total_count;
-}
-__name(getCount, "getCount");
-function jsonToObject(item) {
-  if (typeof item !== "string" && "object" in item && "deleted" in item) {
-    return DeletedObject.fromJSON(item);
-  }
-  switch (item.object) {
-    case "allowlist_identifier":
-      return AllowlistIdentifier.fromJSON(item);
-    case "client":
-      return Client.fromJSON(item);
-    case "email_address":
-      return EmailAddress.fromJSON(item);
-    case "email":
-      return Email.fromJSON(item);
-    case "invitation":
-      return Invitation.fromJSON(item);
-    case "oauth_access_token":
-      return OauthAccessToken.fromJSON(item);
-    case "organization":
-      return Organization.fromJSON(item);
-    case "organization_invitation":
-      return OrganizationInvitation.fromJSON(item);
-    case "organization_membership":
-      return OrganizationMembership.fromJSON(item);
-    case "phone_number":
-      return PhoneNumber.fromJSON(item);
-    case "redirect_url":
-      return RedirectUrl.fromJSON(item);
-    case "sign_in_token":
-      return SignInToken.fromJSON(item);
-    case "session":
-      return Session.fromJSON(item);
-    case "sms_message":
-      return SMSMessage.fromJSON(item);
-    case "token":
-      return Token.fromJSON(item);
-    case "total_count":
-      return getCount(item);
-    case "user":
-      return User.fromJSON(item);
+      break;
+    }
     default:
-      return item;
+      throw new JOSENotSupported('Invalid or unsupported JWK "kty" (Key Type) Parameter value');
   }
+  return { algorithm, keyUsages };
 }
-__name(jsonToObject, "jsonToObject");
-var withLegacyReturn = /* @__PURE__ */ __name((cb) => async (...args) => {
-  const response = await cb(...args);
-  if (response.errors === null) {
-    return response.data;
+__name(subtleMapping, "subtleMapping");
+var parse = /* @__PURE__ */ __name(async (jwk) => {
+  if (!jwk.alg) {
+    throw new TypeError('"alg" argument is required when "jwk.alg" is not present');
+  }
+  const { algorithm, keyUsages } = subtleMapping(jwk);
+  const rest = [
+    algorithm,
+    jwk.ext ?? false,
+    jwk.key_ops ?? keyUsages
+  ];
+  const keyData = { ...jwk };
+  delete keyData.alg;
+  delete keyData.use;
+  return webcrypto_default.subtle.importKey("jwk", keyData, ...rest);
+}, "parse");
+var jwk_to_key_default = parse;
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/normalize_key.js
+var exportKeyValue = /* @__PURE__ */ __name((k) => decode(k), "exportKeyValue");
+var privCache;
+var pubCache;
+var isKeyObject = /* @__PURE__ */ __name((key) => {
+  return key?.[Symbol.toStringTag] === "KeyObject";
+}, "isKeyObject");
+var importAndCache = /* @__PURE__ */ __name(async (cache, key, jwk, alg, freeze = false) => {
+  let cached2 = cache.get(key);
+  if (cached2?.[alg]) {
+    return cached2[alg];
+  }
+  const cryptoKey = await jwk_to_key_default({ ...jwk, alg });
+  if (freeze)
+    Object.freeze(key);
+  if (!cached2) {
+    cache.set(key, { [alg]: cryptoKey });
   } else {
-    const { errors, clerkTraceId } = response;
-    const { status, statusText } = response;
-    const error45 = new ClerkAPIResponseError(statusText || "", {
-      data: [],
-      status: status || "",
-      clerkTraceId
-    });
-    error45.errors = errors;
-    throw error45;
+    cached2[alg] = cryptoKey;
   }
-}, "withLegacyReturn");
-function buildRequest(options) {
-  const request = /* @__PURE__ */ __name(async (requestOptions) => {
-    const {
-      apiKey,
-      secretKey,
-      httpOptions,
-      apiUrl = API_URL,
-      apiVersion = API_VERSION,
-      userAgent = USER_AGENT
-    } = options;
-    if (apiKey) {
-      deprecated("apiKey", "Use `secretKey` instead.");
+  return cryptoKey;
+}, "importAndCache");
+var normalizePublicKey = /* @__PURE__ */ __name((key, alg) => {
+  if (isKeyObject(key)) {
+    let jwk = key.export({ format: "jwk" });
+    delete jwk.d;
+    delete jwk.dp;
+    delete jwk.dq;
+    delete jwk.p;
+    delete jwk.q;
+    delete jwk.qi;
+    if (jwk.k) {
+      return exportKeyValue(jwk.k);
     }
-    if (httpOptions) {
-      deprecated(
-        "httpOptions",
-        "This option has been deprecated and will be removed with the next major release.\nA RequestInit init object used by the `request` method."
-      );
-    }
-    const { path, method, queryParams, headerParams, bodyParams, formData } = requestOptions;
-    const key = secretKey || apiKey;
-    assertValidSecretKey(key);
-    const url2 = joinPaths(apiUrl, apiVersion, path);
-    const finalUrl = new URL(url2);
-    if (queryParams) {
-      const snakecasedQueryParams = (0, import_snakecase_keys.default)({ ...queryParams });
-      for (const [key2, val] of Object.entries(snakecasedQueryParams)) {
-        if (val) {
-          [val].flat().forEach((v) => finalUrl.searchParams.append(key2, v));
-        }
-      }
-    }
-    const headers = {
-      Authorization: `Bearer ${key}`,
-      "User-Agent": userAgent,
-      ...headerParams
-    };
-    let res = void 0;
-    try {
-      if (formData) {
-        res = await runtime_default.fetch(finalUrl.href, {
-          ...httpOptions,
-          method,
-          headers,
-          body: formData
-        });
-      } else {
-        headers["Content-Type"] = "application/json";
-        const hasBody = method !== "GET" && bodyParams && Object.keys(bodyParams).length > 0;
-        const body = hasBody ? { body: JSON.stringify((0, import_snakecase_keys.default)(bodyParams, { deep: false })) } : null;
-        res = await runtime_default.fetch(
-          finalUrl.href,
-          (0, import_deepmerge.default)(httpOptions || {}, {
-            method,
-            headers,
-            ...body
-          })
-        );
-      }
-      const isJSONResponse = res?.headers && res.headers?.get(constants.Headers.ContentType) === constants.ContentTypes.Json;
-      const data = await (isJSONResponse ? res.json() : res.text());
-      if (!res.ok) {
-        throw data;
-      }
-      return {
-        data: deserialize(data),
-        errors: null
-      };
-    } catch (err) {
-      if (err instanceof Error) {
-        return {
-          data: null,
-          errors: [
-            {
-              code: "unexpected_error",
-              message: err.message || "Unexpected error"
-            }
-          ],
-          clerkTraceId: getTraceId(err, res?.headers)
-        };
-      }
-      return {
-        data: null,
-        errors: parseErrors2(err),
-        // TODO: To be removed with withLegacyReturn
-        // @ts-expect-error
-        status: res?.status,
-        statusText: res?.statusText,
-        clerkTraceId: getTraceId(err, res?.headers)
-      };
-    }
-  }, "request");
-  return withLegacyReturn(request);
-}
-__name(buildRequest, "buildRequest");
-function getTraceId(data, headers) {
-  if (data && typeof data === "object" && "clerk_trace_id" in data && typeof data.clerk_trace_id === "string") {
-    return data.clerk_trace_id;
-  }
-  const cfRay = headers?.get("cf-ray");
-  return cfRay || "";
-}
-__name(getTraceId, "getTraceId");
-function parseErrors2(data) {
-  if (!!data && typeof data === "object" && "errors" in data) {
-    const errors = data.errors;
-    return errors.length > 0 ? errors.map(parseError2) : [];
-  }
-  return [];
-}
-__name(parseErrors2, "parseErrors");
-function parseError2(error45) {
-  return {
-    code: error45.code,
-    message: error45.message,
-    longMessage: error45.long_message,
-    meta: {
-      paramName: error45?.meta?.param_name,
-      sessionId: error45?.meta?.session_id
-    }
-  };
-}
-__name(parseError2, "parseError");
-function createBackendApiClient(options) {
-  const request = buildRequest(options);
-  return {
-    allowlistIdentifiers: new AllowlistIdentifierAPI(request),
-    clients: new ClientAPI(request),
-    emailAddresses: new EmailAddressAPI(request),
-    emails: new EmailAPI(request),
-    interstitial: new InterstitialAPI(request),
-    invitations: new InvitationAPI(request),
-    organizations: new OrganizationAPI(request),
-    phoneNumbers: new PhoneNumberAPI(request),
-    redirectUrls: new RedirectUrlAPI(request),
-    sessions: new SessionAPI(request),
-    signInTokens: new SignInTokenAPI(request),
-    smsMessages: new SMSMessageAPI(request),
-    users: new UserAPI(request),
-    domains: new DomainAPI(request)
-  };
-}
-__name(createBackendApiClient, "createBackendApiClient");
-var createDebug = /* @__PURE__ */ __name((data) => {
-  return () => {
-    const res = { ...data };
-    res.apiKey = (res.apiKey || "").substring(0, 7);
-    res.secretKey = (res.secretKey || "").substring(0, 7);
-    res.jwtKey = (res.jwtKey || "").substring(0, 7);
-    return { ...res };
-  };
-}, "createDebug");
-function signedInAuthObject(sessionClaims, options, debugData) {
-  const {
-    act: actor,
-    sid: sessionId,
-    org_id: orgId,
-    org_role: orgRole,
-    org_slug: orgSlug,
-    org_permissions: orgPermissions,
-    sub: userId
-  } = sessionClaims;
-  const { apiKey, secretKey, apiUrl, apiVersion, token, session, user: user2, organization } = options;
-  if (apiKey) {
-    deprecated("apiKey", "Use `secretKey` instead.");
-  }
-  const { sessions } = createBackendApiClient({
-    apiKey,
-    secretKey,
-    apiUrl,
-    apiVersion
-  });
-  const getToken = createGetToken({
-    sessionId,
-    sessionToken: token,
-    fetcher: /* @__PURE__ */ __name((...args) => sessions.getToken(...args), "fetcher")
-  });
-  return {
-    actor,
-    sessionClaims,
-    sessionId,
-    session,
-    userId,
-    user: user2,
-    orgId,
-    orgRole,
-    orgSlug,
-    orgPermissions,
-    organization,
-    getToken,
-    has: createHasAuthorization({ orgId, orgRole, orgPermissions, userId }),
-    debug: createDebug({ ...options, ...debugData })
-  };
-}
-__name(signedInAuthObject, "signedInAuthObject");
-function signedOutAuthObject(debugData) {
-  if (debugData?.apiKey) {
-    deprecated("apiKey", "Use `secretKey` instead.");
-  }
-  return {
-    sessionClaims: null,
-    sessionId: null,
-    session: null,
-    userId: null,
-    user: null,
-    actor: null,
-    orgId: null,
-    orgRole: null,
-    orgSlug: null,
-    orgPermissions: null,
-    organization: null,
-    getToken: /* @__PURE__ */ __name(() => Promise.resolve(null), "getToken"),
-    has: /* @__PURE__ */ __name(() => false, "has"),
-    debug: createDebug(debugData)
-  };
-}
-__name(signedOutAuthObject, "signedOutAuthObject");
-var createGetToken = /* @__PURE__ */ __name((params) => {
-  const { fetcher, sessionToken, sessionId } = params || {};
-  return async (options = {}) => {
-    if (!sessionId) {
-      return null;
-    }
-    if (options.template) {
-      return fetcher(sessionId, options.template);
-    }
-    return sessionToken;
-  };
-}, "createGetToken");
-var createHasAuthorization = /* @__PURE__ */ __name(({
-  orgId,
-  orgRole,
-  userId,
-  orgPermissions
-}) => (params) => {
-  if (!params?.permission && !params?.role) {
-    throw new Error(
-      'Missing parameters. `has` from `auth` or `getAuth` requires a permission or role key to be passed. Example usage: `has({permission: "org:posts:edit"`'
-    );
-  }
-  if (!orgId || !userId || !orgRole || !orgPermissions) {
-    return false;
-  }
-  if (params.permission) {
-    return orgPermissions.includes(params.permission);
-  }
-  if (params.role) {
-    return orgRole === params.role;
-  }
-  return false;
-}, "createHasAuthorization");
-var TokenVerificationError = class _TokenVerificationError extends Error {
-  static {
-    __name(this, "_TokenVerificationError");
-  }
-  constructor({
-    action,
-    message,
-    reason
-  }) {
-    super(message);
-    Object.setPrototypeOf(this, _TokenVerificationError.prototype);
-    this.reason = reason;
-    this.message = message;
-    this.action = action;
-  }
-  getFullMessage() {
-    return `${[this.message, this.action].filter((m) => m).join(" ")} (reason=${this.reason}, token-carrier=${this.tokenCarrier})`;
-  }
-};
-function loadInterstitialFromLocal(options) {
-  if (options.frontendApi) {
-    deprecated("frontendApi", "Use `publishableKey` instead.");
-  }
-  if (options.pkgVersion) {
-    deprecated("pkgVersion", "Use `clerkJSVersion` instead.");
-  }
-  options.frontendApi = parsePublishableKey(options.publishableKey)?.frontendApi || options.frontendApi || "";
-  const domainOnlyInProd = !isDevOrStagingUrl(options.frontendApi) ? addClerkPrefix(options.domain) : "";
-  const {
-    debugData,
-    frontendApi,
-    pkgVersion,
-    clerkJSUrl,
-    clerkJSVersion,
-    publishableKey,
-    proxyUrl,
-    isSatellite = false,
-    domain: domain2,
-    signInUrl
-  } = options;
-  return `
-    <head>
-        <meta charset="UTF-8" />
-        <style>
-          @media (prefers-color-scheme: dark) {
-            body {
-              background-color: black;
-            }
-          }
-        </style>
-    </head>
-    <body>
-        <script>
-            window.__clerk_frontend_api = '${frontendApi}';
-            window.__clerk_debug = ${JSON.stringify(debugData || {})};
-            ${proxyUrl ? `window.__clerk_proxy_url = '${proxyUrl}'` : ""}
-            ${domain2 ? `window.__clerk_domain = '${domain2}'` : ""}
-            window.startClerk = async () => {
-                function formRedirect(){
-                    const form = '<form method="get" action="" name="redirect"></form>';
-                    document.body.innerHTML = document.body.innerHTML + form;
-
-                    const searchParams = new URLSearchParams(window.location.search);
-                    for (let paramTuple of searchParams) {
-                        const input = document.createElement("input");
-                        input.type = "hidden";
-                        input.name = paramTuple[0];
-                        input.value = paramTuple[1];
-                        document.forms.redirect.appendChild(input);
-                    }
-                    const url = new URL(window.location.origin + window.location.pathname + window.location.hash);
-                    window.history.pushState({}, '', url);
-
-                    document.forms.redirect.action = window.location.pathname + window.location.hash;
-                    document.forms.redirect.submit();
-                }
-
-                const Clerk = window.Clerk;
-                try {
-                    await Clerk.load({
-                        isSatellite: ${isSatellite},
-                        isInterstitial: ${true},
-                        signInUrl: ${signInUrl ? `'${signInUrl}'` : void 0}
-                    });
-                    if(Clerk.loaded){
-                      if(window.location.href.indexOf("#") === -1){
-                        window.location.href = window.location.href;
-                      } else if (window.navigator.userAgent.toLowerCase().includes("firefox/")){
-                          formRedirect();
-                      } else {
-                          window.location.reload();
-                      }
-                    }
-                } catch (err) {
-                    console.error('Clerk: ', err);
-                }
-            };
-            (() => {
-                const script = document.createElement('script');
-                ${publishableKey ? `script.setAttribute('data-clerk-publishable-key', '${publishableKey}');` : `script.setAttribute('data-clerk-frontend-api', '${frontendApi}');`}
-
-                ${domain2 ? `script.setAttribute('data-clerk-domain', '${domain2}');` : ""}
-                ${proxyUrl ? `script.setAttribute('data-clerk-proxy-url', '${proxyUrl}')` : ""};
-                script.async = true;
-                script.src = '${clerkJSUrl || getScriptUrl(proxyUrl || domainOnlyInProd || frontendApi, {
-    pkgVersion,
-    clerkJSVersion
-  })}';
-                script.crossOrigin = 'anonymous';
-                script.addEventListener('load', startClerk);
-                document.body.appendChild(script);
-            })();
-        <\/script>
-    </body>
-`;
-}
-__name(loadInterstitialFromLocal, "loadInterstitialFromLocal");
-async function loadInterstitialFromBAPI(options) {
-  if (options.frontendApi) {
-    deprecated("frontendApi", "Use `publishableKey` instead.");
-  }
-  if (options.pkgVersion) {
-    deprecated("pkgVersion", "Use `clerkJSVersion` instead.");
-  }
-  options.frontendApi = parsePublishableKey(options.publishableKey)?.frontendApi || options.frontendApi || "";
-  const url2 = buildPublicInterstitialUrl(options);
-  const response = await callWithRetry(
-    () => runtime_default.fetch(buildPublicInterstitialUrl(options), {
-      method: "GET",
-      headers: {
-        "Clerk-Backend-SDK": options.userAgent || USER_AGENT
-      }
-    })
-  );
-  if (!response.ok) {
-    throw new TokenVerificationError({
-      action: "Contact support@clerk.com",
-      message: `Error loading Clerk Interstitial from ${url2} with code=${response.status}`,
-      reason: "interstitial-remote-failed-to-load"
-      /* RemoteInterstitialFailedToLoad */
-    });
-  }
-  return response.text();
-}
-__name(loadInterstitialFromBAPI, "loadInterstitialFromBAPI");
-function buildPublicInterstitialUrl(options) {
-  if (options.frontendApi) {
-    deprecated("frontendApi", "Use `publishableKey` instead.");
-  }
-  options.frontendApi = parsePublishableKey(options.publishableKey)?.frontendApi || options.frontendApi || "";
-  const { apiUrl, frontendApi, pkgVersion, clerkJSVersion, publishableKey, proxyUrl, isSatellite, domain: domain2, signInUrl } = options;
-  const url2 = new URL(apiUrl);
-  url2.pathname = joinPaths(url2.pathname, API_VERSION, "/public/interstitial");
-  url2.searchParams.append("clerk_js_version", clerkJSVersion || getClerkJsMajorVersionOrTag(frontendApi, pkgVersion));
-  if (publishableKey) {
-    url2.searchParams.append("publishable_key", publishableKey);
-  } else {
-    url2.searchParams.append("frontend_api", frontendApi);
-  }
-  if (proxyUrl) {
-    url2.searchParams.append("proxy_url", proxyUrl);
-  }
-  if (isSatellite) {
-    url2.searchParams.append("is_satellite", "true");
-  }
-  url2.searchParams.append("sign_in_url", signInUrl || "");
-  if (!isDevOrStagingUrl(options.frontendApi)) {
-    url2.searchParams.append("use_domain_for_script", "true");
-  }
-  if (domain2) {
-    url2.searchParams.append("domain", domain2);
-  }
-  return url2.href;
-}
-__name(buildPublicInterstitialUrl, "buildPublicInterstitialUrl");
-var getFirstValueFromHeader = /* @__PURE__ */ __name((value) => value?.split(",")[0], "getFirstValueFromHeader");
-var buildOrigin = /* @__PURE__ */ __name(({ protocol, forwardedProto, forwardedHost, host }) => {
-  const resolvedHost = getFirstValueFromHeader(forwardedHost) ?? host;
-  const resolvedProtocol = getFirstValueFromHeader(forwardedProto) ?? protocol?.replace(/[:/]/, "");
-  if (!resolvedHost || !resolvedProtocol) {
-    return "";
-  }
-  return `${resolvedProtocol}://${resolvedHost}`;
-}, "buildOrigin");
-var buildRequest2 = /* @__PURE__ */ __name((req) => {
-  if (!req) {
-    return {};
-  }
-  const cookies = parseIsomorphicRequestCookies(req);
-  const headers = getHeaderFromIsomorphicRequest(req);
-  const searchParams = getSearchParamsFromIsomorphicRequest(req);
-  return {
-    cookies,
-    headers,
-    searchParams
-  };
-}, "buildRequest2");
-var decode = /* @__PURE__ */ __name((str) => {
-  if (!str) {
-    return str;
-  }
-  return str.replace(/(%[0-9A-Z]{2})+/g, decodeURIComponent);
-}, "decode");
-var parseIsomorphicRequestCookies = /* @__PURE__ */ __name((req) => {
-  const cookies = req.headers && req.headers?.get("cookie") ? (0, import_cookie.parse)(req.headers.get("cookie")) : {};
-  return (key) => {
-    const value = cookies?.[key];
-    if (value === void 0) {
-      return void 0;
-    }
-    return decode(value);
-  };
-}, "parseIsomorphicRequestCookies");
-var getHeaderFromIsomorphicRequest = /* @__PURE__ */ __name((req) => (key) => req?.headers?.get(key) || void 0, "getHeaderFromIsomorphicRequest");
-var getSearchParamsFromIsomorphicRequest = /* @__PURE__ */ __name((req) => req?.url ? new URL(req.url)?.searchParams : void 0, "getSearchParamsFromIsomorphicRequest");
-var stripAuthorizationHeader = /* @__PURE__ */ __name((authValue) => {
-  return authValue?.replace("Bearer ", "");
-}, "stripAuthorizationHeader");
-async function signedIn(options, sessionClaims) {
-  const {
-    apiKey,
-    secretKey,
-    apiUrl,
-    apiVersion,
-    cookieToken,
-    frontendApi,
-    proxyUrl,
-    publishableKey,
-    domain: domain2,
-    isSatellite,
-    headerToken,
-    loadSession,
-    loadUser,
-    loadOrganization,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl,
-    token
-  } = options;
-  const { sid: sessionId, org_id: orgId, sub: userId } = sessionClaims;
-  const { sessions, users: users2, organizations } = createBackendApiClient({
-    apiKey,
-    secretKey,
-    apiUrl,
-    apiVersion
-  });
-  const [sessionResp, userResp, organizationResp] = await Promise.all([
-    loadSession ? sessions.getSession(sessionId) : Promise.resolve(void 0),
-    loadUser ? users2.getUser(userId) : Promise.resolve(void 0),
-    loadOrganization && orgId ? organizations.getOrganization({ organizationId: orgId }) : Promise.resolve(void 0)
-  ]);
-  const session = sessionResp;
-  const user2 = userResp;
-  const organization = organizationResp;
-  const authObject = signedInAuthObject(
-    sessionClaims,
-    {
-      secretKey,
-      apiKey,
-      apiUrl,
-      apiVersion,
-      token: cookieToken || headerToken || "",
-      session,
-      user: user2,
-      organization
-    },
-    {
-      ...options,
-      status: "signed-in"
-      /* SignedIn */
-    }
-  );
-  return {
-    status: "signed-in",
-    reason: null,
-    message: null,
-    frontendApi,
-    proxyUrl,
-    publishableKey,
-    domain: domain2,
-    isSatellite,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl,
-    isSignedIn: true,
-    isInterstitial: false,
-    isUnknown: false,
-    toAuth: /* @__PURE__ */ __name(() => authObject, "toAuth"),
-    token
-  };
-}
-__name(signedIn, "signedIn");
-function signedOut(options, reason, message = "") {
-  const {
-    frontendApi,
-    publishableKey,
-    proxyUrl,
-    isSatellite,
-    domain: domain2,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl
-  } = options;
-  return {
-    status: "signed-out",
-    reason,
-    message,
-    frontendApi,
-    proxyUrl,
-    publishableKey,
-    isSatellite,
-    domain: domain2,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl,
-    isSignedIn: false,
-    isInterstitial: false,
-    isUnknown: false,
-    toAuth: /* @__PURE__ */ __name(() => signedOutAuthObject({ ...options, status: "signed-out", reason, message }), "toAuth"),
-    token: null
-  };
-}
-__name(signedOut, "signedOut");
-function interstitial(options, reason, message = "") {
-  const {
-    frontendApi,
-    publishableKey,
-    proxyUrl,
-    isSatellite,
-    domain: domain2,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl
-  } = options;
-  return {
-    status: "interstitial",
-    reason,
-    message,
-    frontendApi,
-    publishableKey,
-    isSatellite,
-    domain: domain2,
-    proxyUrl,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl,
-    isSignedIn: false,
-    isInterstitial: true,
-    isUnknown: false,
-    toAuth: /* @__PURE__ */ __name(() => null, "toAuth"),
-    token: null
-  };
-}
-__name(interstitial, "interstitial");
-function unknownState(options, reason, message = "") {
-  const { frontendApi, publishableKey, isSatellite, domain: domain2, signInUrl, signUpUrl, afterSignInUrl, afterSignUpUrl } = options;
-  return {
-    status: "unknown",
-    reason,
-    message,
-    frontendApi,
-    publishableKey,
-    isSatellite,
-    domain: domain2,
-    signInUrl,
-    signUpUrl,
-    afterSignInUrl,
-    afterSignUpUrl,
-    isSignedIn: false,
-    isInterstitial: false,
-    isUnknown: true,
-    toAuth: /* @__PURE__ */ __name(() => null, "toAuth"),
-    token: null
-  };
-}
-__name(unknownState, "unknownState");
-function checkCrossOrigin({
-  originURL,
-  host,
-  forwardedHost,
-  forwardedProto
-}) {
-  const finalURL = buildOrigin({ forwardedProto, forwardedHost, protocol: originURL.protocol, host });
-  return finalURL && new URL(finalURL).origin !== originURL.origin;
-}
-__name(checkCrossOrigin, "checkCrossOrigin");
-var getErrorObjectByCode = /* @__PURE__ */ __name((errors, code) => {
-  if (!errors) {
-    return null;
-  }
-  return errors.find((err) => err.code === code);
-}, "getErrorObjectByCode");
-var base64url = {
-  parse(string4, opts) {
-    return parse2(string4, base64UrlEncoding, opts);
-  },
-  stringify(data, opts) {
-    return stringify(data, base64UrlEncoding, opts);
-  }
-};
-var base64UrlEncoding = {
-  chars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
-  bits: 6
-};
-function parse2(string4, encoding, opts = {}) {
-  if (!encoding.codes) {
-    encoding.codes = {};
-    for (let i = 0; i < encoding.chars.length; ++i) {
-      encoding.codes[encoding.chars[i]] = i;
-    }
-  }
-  if (!opts.loose && string4.length * encoding.bits & 7) {
-    throw new SyntaxError("Invalid padding");
-  }
-  let end = string4.length;
-  while (string4[end - 1] === "=") {
-    --end;
-    if (!opts.loose && !((string4.length - end) * encoding.bits & 7)) {
-      throw new SyntaxError("Invalid padding");
-    }
-  }
-  const out = new (opts.out ?? Uint8Array)(end * encoding.bits / 8 | 0);
-  let bits = 0;
-  let buffer = 0;
-  let written = 0;
-  for (let i = 0; i < end; ++i) {
-    const value = encoding.codes[string4[i]];
-    if (value === void 0) {
-      throw new SyntaxError("Invalid character " + string4[i]);
-    }
-    buffer = buffer << encoding.bits | value;
-    bits += encoding.bits;
-    if (bits >= 8) {
-      bits -= 8;
-      out[written++] = 255 & buffer >> bits;
-    }
-  }
-  if (bits >= encoding.bits || 255 & buffer << 8 - bits) {
-    throw new SyntaxError("Unexpected end of data");
-  }
-  return out;
-}
-__name(parse2, "parse2");
-function stringify(data, encoding, opts = {}) {
-  const { pad = true } = opts;
-  const mask = (1 << encoding.bits) - 1;
-  let out = "";
-  let bits = 0;
-  let buffer = 0;
-  for (let i = 0; i < data.length; ++i) {
-    buffer = buffer << 8 | 255 & data[i];
-    bits += 8;
-    while (bits > encoding.bits) {
-      bits -= encoding.bits;
-      out += encoding.chars[mask & buffer >> bits];
-    }
-  }
-  if (bits) {
-    out += encoding.chars[mask & buffer << encoding.bits - bits];
-  }
-  if (pad) {
-    while (out.length * encoding.bits & 7) {
-      out += "=";
-    }
-  }
-  return out;
-}
-__name(stringify, "stringify");
-var algToHash = {
-  RS256: "SHA-256",
-  RS384: "SHA-384",
-  RS512: "SHA-512"
-};
-var RSA_ALGORITHM_NAME = "RSASSA-PKCS1-v1_5";
-var jwksAlgToCryptoAlg = {
-  RS256: RSA_ALGORITHM_NAME,
-  RS384: RSA_ALGORITHM_NAME,
-  RS512: RSA_ALGORITHM_NAME
-};
-var algs = Object.keys(algToHash);
-function getCryptoAlgorithm(algorithmName) {
-  const hash2 = algToHash[algorithmName];
-  const name = jwksAlgToCryptoAlg[algorithmName];
-  if (!hash2 || !name) {
-    throw new Error(`Unsupported algorithm ${algorithmName}, expected one of ${algs.join(",")}.`);
-  }
-  return {
-    hash: { name: algToHash[algorithmName] },
-    name: jwksAlgToCryptoAlg[algorithmName]
-  };
-}
-__name(getCryptoAlgorithm, "getCryptoAlgorithm");
-var isArrayString = /* @__PURE__ */ __name((s) => {
-  return Array.isArray(s) && s.length > 0 && s.every((a) => typeof a === "string");
-}, "isArrayString");
-var assertAudienceClaim = /* @__PURE__ */ __name((aud, audience) => {
-  const audienceList = [audience].flat().filter((a) => !!a);
-  const audList = [aud].flat().filter((a) => !!a);
-  const shouldVerifyAudience = audienceList.length > 0 && audList.length > 0;
-  if (!shouldVerifyAudience) {
-    return;
-  }
-  if (typeof aud === "string") {
-    if (!audienceList.includes(aud)) {
-      throw new TokenVerificationError({
-        action: "Make sure that this is a valid Clerk generate JWT.",
-        reason: "token-verification-failed",
-        message: `Invalid JWT audience claim (aud) ${JSON.stringify(aud)}. Is not included in "${JSON.stringify(
-          audienceList
-        )}".`
-      });
-    }
-  } else if (isArrayString(aud)) {
-    if (!aud.some((a) => audienceList.includes(a))) {
-      throw new TokenVerificationError({
-        action: "Make sure that this is a valid Clerk generate JWT.",
-        reason: "token-verification-failed",
-        message: `Invalid JWT audience claim array (aud) ${JSON.stringify(aud)}. Is not included in "${JSON.stringify(
-          audienceList
-        )}".`
-      });
-    }
-  }
-}, "assertAudienceClaim");
-var assertHeaderType = /* @__PURE__ */ __name((typ) => {
-  if (typeof typ === "undefined") {
-    return;
-  }
-  if (typ !== "JWT") {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-invalid",
-      message: `Invalid JWT type ${JSON.stringify(typ)}. Expected "JWT".`
-    });
-  }
-}, "assertHeaderType");
-var assertHeaderAlgorithm = /* @__PURE__ */ __name((alg) => {
-  if (!algs.includes(alg)) {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-invalid-algorithm",
-      message: `Invalid JWT algorithm ${JSON.stringify(alg)}. Supported: ${algs}.`
-    });
-  }
-}, "assertHeaderAlgorithm");
-var assertSubClaim = /* @__PURE__ */ __name((sub) => {
-  if (typeof sub !== "string") {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-verification-failed",
-      message: `Subject claim (sub) is required and must be a string. Received ${JSON.stringify(sub)}.`
-    });
-  }
-}, "assertSubClaim");
-var assertAuthorizedPartiesClaim = /* @__PURE__ */ __name((azp, authorizedParties) => {
-  if (!azp || !authorizedParties || authorizedParties.length === 0) {
-    return;
-  }
-  if (!authorizedParties.includes(azp)) {
-    throw new TokenVerificationError({
-      reason: "token-invalid-authorized-parties",
-      message: `Invalid JWT Authorized party claim (azp) ${JSON.stringify(azp)}. Expected "${authorizedParties}".`
-    });
-  }
-}, "assertAuthorizedPartiesClaim");
-var assertIssuerClaim = /* @__PURE__ */ __name((iss, issuer) => {
-  if (typeof issuer === "function" && !issuer(iss)) {
-    throw new TokenVerificationError({
-      reason: "token-invalid-issuer",
-      message: "Failed JWT issuer resolver. Make sure that the resolver returns a truthy value."
-    });
-  } else if (typeof issuer === "string" && iss && iss !== issuer) {
-    throw new TokenVerificationError({
-      reason: "token-invalid-issuer",
-      message: `Invalid JWT issuer claim (iss) ${JSON.stringify(iss)}. Expected "${issuer}".`
-    });
-  }
-}, "assertIssuerClaim");
-var assertExpirationClaim = /* @__PURE__ */ __name((exp, clockSkewInMs) => {
-  if (typeof exp !== "number") {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-verification-failed",
-      message: `Invalid JWT expiry date claim (exp) ${JSON.stringify(exp)}. Expected number.`
-    });
-  }
-  const currentDate = new Date(Date.now());
-  const expiryDate = /* @__PURE__ */ new Date(0);
-  expiryDate.setUTCSeconds(exp);
-  const expired = expiryDate.getTime() <= currentDate.getTime() - clockSkewInMs;
-  if (expired) {
-    throw new TokenVerificationError({
-      reason: "token-expired",
-      message: `JWT is expired. Expiry date: ${expiryDate.toUTCString()}, Current date: ${currentDate.toUTCString()}.`
-    });
-  }
-}, "assertExpirationClaim");
-var assertActivationClaim = /* @__PURE__ */ __name((nbf, clockSkewInMs) => {
-  if (typeof nbf === "undefined") {
-    return;
-  }
-  if (typeof nbf !== "number") {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-verification-failed",
-      message: `Invalid JWT not before date claim (nbf) ${JSON.stringify(nbf)}. Expected number.`
-    });
-  }
-  const currentDate = new Date(Date.now());
-  const notBeforeDate = /* @__PURE__ */ new Date(0);
-  notBeforeDate.setUTCSeconds(nbf);
-  const early = notBeforeDate.getTime() > currentDate.getTime() + clockSkewInMs;
-  if (early) {
-    throw new TokenVerificationError({
-      reason: "token-not-active-yet",
-      message: `JWT cannot be used prior to not before date claim (nbf). Not before date: ${notBeforeDate.toUTCString()}; Current date: ${currentDate.toUTCString()};`
-    });
-  }
-}, "assertActivationClaim");
-var assertIssuedAtClaim = /* @__PURE__ */ __name((iat, clockSkewInMs) => {
-  if (typeof iat === "undefined") {
-    return;
-  }
-  if (typeof iat !== "number") {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-verification-failed",
-      message: `Invalid JWT issued at date claim (iat) ${JSON.stringify(iat)}. Expected number.`
-    });
-  }
-  const currentDate = new Date(Date.now());
-  const issuedAtDate = /* @__PURE__ */ new Date(0);
-  issuedAtDate.setUTCSeconds(iat);
-  const postIssued = issuedAtDate.getTime() > currentDate.getTime() + clockSkewInMs;
-  if (postIssued) {
-    throw new TokenVerificationError({
-      reason: "token-not-active-yet",
-      message: `JWT issued at date claim (iat) is in the future. Issued at date: ${issuedAtDate.toUTCString()}; Current date: ${currentDate.toUTCString()};`
-    });
-  }
-}, "assertIssuedAtClaim");
-function pemToBuffer(secret) {
-  const trimmed = secret.replace(/-----BEGIN.*?-----/g, "").replace(/-----END.*?-----/g, "").replace(/\s/g, "");
-  const decoded = isomorphicAtob(trimmed);
-  const buffer = new ArrayBuffer(decoded.length);
-  const bufView = new Uint8Array(buffer);
-  for (let i = 0, strLen = decoded.length; i < strLen; i++) {
-    bufView[i] = decoded.charCodeAt(i);
-  }
-  return bufView;
-}
-__name(pemToBuffer, "pemToBuffer");
-function importKey(key, algorithm, keyUsage) {
-  if (typeof key === "object") {
-    return runtime_default.crypto.subtle.importKey("jwk", key, algorithm, false, [keyUsage]);
-  }
-  const keyData = pemToBuffer(key);
-  const format = keyUsage === "sign" ? "pkcs8" : "spki";
-  return runtime_default.crypto.subtle.importKey(format, keyData, algorithm, false, [keyUsage]);
-}
-__name(importKey, "importKey");
-var DEFAULT_CLOCK_SKEW_IN_SECONDS = 5 * 1e3;
-async function hasValidSignature(jwt2, key) {
-  const { header, signature, raw: raw2 } = jwt2;
-  const encoder = new TextEncoder();
-  const data = encoder.encode([raw2.header, raw2.payload].join("."));
-  const algorithm = getCryptoAlgorithm(header.alg);
-  const cryptoKey = await importKey(key, algorithm, "verify");
-  return runtime_default.crypto.subtle.verify(algorithm.name, cryptoKey, signature, data);
-}
-__name(hasValidSignature, "hasValidSignature");
-function decodeJwt(token) {
-  const tokenParts = (token || "").toString().split(".");
-  if (tokenParts.length !== 3) {
-    throw new TokenVerificationError({
-      reason: "token-invalid",
-      message: `Invalid JWT form. A JWT consists of three parts separated by dots.`
-    });
-  }
-  const [rawHeader, rawPayload, rawSignature] = tokenParts;
-  const decoder = new TextDecoder();
-  const header = JSON.parse(decoder.decode(base64url.parse(rawHeader, { loose: true })));
-  const payload = JSON.parse(decoder.decode(base64url.parse(rawPayload, { loose: true })));
-  const signature = base64url.parse(rawSignature, { loose: true });
-  deprecatedObjectProperty(
-    payload,
-    "orgs",
-    'Add orgs to your session token using the "user.organizations" shortcode in JWT Templates instead.',
-    "decodeJwt:orgs"
-  );
-  return {
-    header,
-    payload,
-    signature,
-    raw: {
-      header: rawHeader,
-      payload: rawPayload,
-      signature: rawSignature,
-      text: token
-    }
-  };
-}
-__name(decodeJwt, "decodeJwt");
-async function verifyJwt(token, { audience, authorizedParties, clockSkewInSeconds, clockSkewInMs, issuer, key }) {
-  if (clockSkewInSeconds) {
-    deprecated("clockSkewInSeconds", "Use `clockSkewInMs` instead.");
-  }
-  const clockSkew = clockSkewInMs || clockSkewInSeconds || DEFAULT_CLOCK_SKEW_IN_SECONDS;
-  const decoded = decodeJwt(token);
-  const { header, payload } = decoded;
-  const { typ, alg } = header;
-  assertHeaderType(typ);
-  assertHeaderAlgorithm(alg);
-  const { azp, sub, aud, iss, iat, exp, nbf } = payload;
-  assertSubClaim(sub);
-  assertAudienceClaim([aud], [audience]);
-  assertAuthorizedPartiesClaim(azp, authorizedParties);
-  assertIssuerClaim(iss, issuer);
-  assertExpirationClaim(exp, clockSkew);
-  assertActivationClaim(nbf, clockSkew);
-  assertIssuedAtClaim(iat, clockSkew);
-  let signatureValid;
-  try {
-    signatureValid = await hasValidSignature(decoded, key);
-  } catch (err) {
-    throw new TokenVerificationError({
-      action: "Make sure that this is a valid Clerk generate JWT.",
-      reason: "token-verification-failed",
-      message: `Error verifying JWT signature. ${err}`
-    });
-  }
-  if (!signatureValid) {
-    throw new TokenVerificationError({
-      reason: "token-invalid-signature",
-      message: "JWT signature is invalid."
-    });
-  }
-  return payload;
-}
-__name(verifyJwt, "verifyJwt");
-var cache = {};
-var lastUpdatedAt = 0;
-function getFromCache(kid) {
-  return cache[kid];
-}
-__name(getFromCache, "getFromCache");
-function getCacheValues() {
-  return Object.values(cache);
-}
-__name(getCacheValues, "getCacheValues");
-function setInCache(jwk, shouldExpire = true) {
-  cache[jwk.kid] = jwk;
-  lastUpdatedAt = shouldExpire ? Date.now() : -1;
-}
-__name(setInCache, "setInCache");
-var LocalJwkKid = "local";
-var PEM_HEADER = "-----BEGIN PUBLIC KEY-----";
-var PEM_TRAILER = "-----END PUBLIC KEY-----";
-var RSA_PREFIX = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA";
-var RSA_SUFFIX = "IDAQAB";
-function loadClerkJWKFromLocal(localKey) {
-  if (!getFromCache(LocalJwkKid)) {
-    if (!localKey) {
-      throw new TokenVerificationError({
-        action: "Set the CLERK_JWT_KEY environment variable.",
-        message: "Missing local JWK.",
-        reason: "jwk-local-missing"
-        /* LocalJWKMissing */
-      });
-    }
-    const modulus = localKey.replace(/(\r\n|\n|\r)/gm, "").replace(PEM_HEADER, "").replace(PEM_TRAILER, "").replace(RSA_PREFIX, "").replace(RSA_SUFFIX, "").replace(/\+/g, "-").replace(/\//g, "_");
-    setInCache(
-      {
-        kid: "local",
-        kty: "RSA",
-        alg: "RS256",
-        n: modulus,
-        e: "AQAB"
-      },
-      false
-      // local key never expires in cache
-    );
-  }
-  return getFromCache(LocalJwkKid);
-}
-__name(loadClerkJWKFromLocal, "loadClerkJWKFromLocal");
-async function loadClerkJWKFromRemote({
-  apiKey,
-  secretKey,
-  apiUrl = API_URL,
-  apiVersion = API_VERSION,
-  issuer,
-  kid,
-  skipJwksCache
-}) {
-  if (cacheHasExpired()) {
-    cache = {};
-  }
-  const shouldRefreshCache = !getFromCache(kid);
-  if (skipJwksCache || shouldRefreshCache) {
-    let fetcher;
-    const key = secretKey || apiKey;
-    if (key) {
-      fetcher = /* @__PURE__ */ __name(() => fetchJWKSFromBAPI(apiUrl, key, apiVersion), "fetcher");
-    } else if (issuer) {
-      fetcher = /* @__PURE__ */ __name(() => fetchJWKSFromFAPI(issuer), "fetcher");
-    } else {
-      throw new TokenVerificationError({
-        action: "Contact support@clerk.com",
-        message: "Failed to load JWKS from Clerk Backend or Frontend API.",
-        reason: "jwk-remote-failed-to-load"
-        /* RemoteJWKFailedToLoad */
-      });
-    }
-    const { keys } = await callWithRetry(fetcher);
-    if (!keys || !keys.length) {
-      throw new TokenVerificationError({
-        action: "Contact support@clerk.com",
-        message: "The JWKS endpoint did not contain any signing keys. Contact support@clerk.com.",
-        reason: "jwk-remote-failed-to-load"
-        /* RemoteJWKFailedToLoad */
-      });
-    }
-    keys.forEach((key2) => setInCache(key2));
-  }
-  const jwk = getFromCache(kid);
-  if (!jwk) {
-    const cacheValues = getCacheValues();
-    const jwkKeys = cacheValues.map((jwk2) => jwk2.kid).join(", ");
-    throw new TokenVerificationError({
-      action: "Contact support@clerk.com",
-      message: `Unable to find a signing key in JWKS that matches the kid='${kid}' of the provided session token. Please make sure that the __session cookie or the HTTP authorization header contain a Clerk-generated session JWT.${jwkKeys ? ` The following kid are available: ${jwkKeys}` : ""}`,
-      reason: "jwk-remote-missing"
-      /* RemoteJWKMissing */
-    });
-  }
-  return jwk;
-}
-__name(loadClerkJWKFromRemote, "loadClerkJWKFromRemote");
-async function fetchJWKSFromFAPI(issuer) {
-  const url2 = new URL(issuer);
-  url2.pathname = joinPaths(url2.pathname, ".well-known/jwks.json");
-  const response = await runtime_default.fetch(url2.href);
-  if (!response.ok) {
-    throw new TokenVerificationError({
-      action: "Contact support@clerk.com",
-      message: `Error loading Clerk JWKS from ${url2.href} with code=${response.status}`,
-      reason: "jwk-remote-failed-to-load"
-      /* RemoteJWKFailedToLoad */
-    });
-  }
-  return response.json();
-}
-__name(fetchJWKSFromFAPI, "fetchJWKSFromFAPI");
-async function fetchJWKSFromBAPI(apiUrl, key, apiVersion) {
-  if (!key) {
-    throw new TokenVerificationError({
-      action: "Set the CLERK_SECRET_KEY or CLERK_API_KEY environment variable.",
-      message: "Missing Clerk Secret Key or API Key. Go to https://dashboard.clerk.com and get your key for your instance.",
-      reason: "jwk-remote-failed-to-load"
-      /* RemoteJWKFailedToLoad */
-    });
-  }
-  const url2 = new URL(apiUrl);
-  url2.pathname = joinPaths(url2.pathname, apiVersion, "/jwks");
-  const response = await runtime_default.fetch(url2.href, {
-    headers: {
-      Authorization: `Bearer ${key}`,
-      "Content-Type": "application/json"
-    }
-  });
-  if (!response.ok) {
-    const json3 = await response.json();
-    const invalidSecretKeyError = getErrorObjectByCode(
-      json3?.errors,
-      "clerk_key_invalid"
-      /* InvalidSecretKey */
-    );
-    if (invalidSecretKeyError) {
-      const reason = "secret-key-invalid";
-      throw new TokenVerificationError({
-        action: "Contact support@clerk.com",
-        message: invalidSecretKeyError.message,
-        reason
-      });
-    }
-    throw new TokenVerificationError({
-      action: "Contact support@clerk.com",
-      message: `Error loading Clerk JWKS from ${url2.href} with code=${response.status}`,
-      reason: "jwk-remote-failed-to-load"
-      /* RemoteJWKFailedToLoad */
-    });
-  }
-  return response.json();
-}
-__name(fetchJWKSFromBAPI, "fetchJWKSFromBAPI");
-function cacheHasExpired() {
-  if (lastUpdatedAt === -1) {
-    return false;
-  }
-  const isExpired = Date.now() - lastUpdatedAt >= MAX_CACHE_LAST_UPDATED_AT_SECONDS * 1e3;
-  return isExpired;
-}
-__name(cacheHasExpired, "cacheHasExpired");
-async function verifyToken(token, options) {
-  const {
-    apiKey,
-    secretKey,
-    apiUrl,
-    apiVersion,
-    audience,
-    authorizedParties,
-    clockSkewInSeconds,
-    clockSkewInMs,
-    issuer,
-    jwksCacheTtlInMs,
-    jwtKey,
-    skipJwksCache
-  } = options;
-  if (options.apiKey) {
-    deprecated("apiKey", "Use `secretKey` instead.");
-  }
-  const { header } = decodeJwt(token);
-  const { kid } = header;
-  let key;
-  if (jwtKey) {
-    key = loadClerkJWKFromLocal(jwtKey);
-  } else if (typeof issuer === "string") {
-    key = await loadClerkJWKFromRemote({ issuer, kid, jwksCacheTtlInMs, skipJwksCache });
-  } else if (apiKey || secretKey) {
-    key = await loadClerkJWKFromRemote({ apiKey, secretKey, apiUrl, apiVersion, kid, jwksCacheTtlInMs, skipJwksCache });
-  } else {
-    throw new TokenVerificationError({
-      action: "Set the CLERK_JWT_KEY environment variable.",
-      message: "Failed to resolve JWK during verification.",
-      reason: "jwk-failed-to-resolve"
-      /* JWKFailedToResolve */
-    });
-  }
-  return await verifyJwt(token, {
-    audience,
-    authorizedParties,
-    clockSkewInSeconds,
-    clockSkewInMs,
-    key,
-    issuer
-  });
-}
-__name(verifyToken, "verifyToken");
-var shouldRedirectToSatelliteUrl = /* @__PURE__ */ __name((qp) => !!qp?.get("__clerk_satellite_url"), "shouldRedirectToSatelliteUrl");
-var hasJustSynced = /* @__PURE__ */ __name((qp) => qp?.get("__clerk_synced") === "true", "hasJustSynced");
-var VALID_USER_AGENTS = /^Mozilla\/|(Amazon CloudFront)/;
-var isBrowser = /* @__PURE__ */ __name((userAgent) => VALID_USER_AGENTS.test(userAgent || ""), "isBrowser");
-var nonBrowserRequestInDevRule = /* @__PURE__ */ __name((options) => {
-  const { apiKey, secretKey, userAgent } = options;
-  const key = secretKey || apiKey || "";
-  if (isDevelopmentFromApiKey(key) && !isBrowser(userAgent)) {
-    return signedOut(
-      options,
-      "header-missing-non-browser"
-      /* HeaderMissingNonBrowser */
-    );
-  }
-  return void 0;
-}, "nonBrowserRequestInDevRule");
-var crossOriginRequestWithoutHeader = /* @__PURE__ */ __name((options) => {
-  const { origin, host, forwardedHost, forwardedProto } = options;
-  const isCrossOrigin = origin && checkCrossOrigin({
-    originURL: new URL(origin),
-    host,
-    forwardedHost,
-    forwardedProto
-  });
-  if (isCrossOrigin) {
-    return signedOut(
-      options,
-      "header-missing-cors"
-      /* HeaderMissingCORS */
-    );
-  }
-  return void 0;
-}, "crossOriginRequestWithoutHeader");
-var isPrimaryInDevAndRedirectsToSatellite = /* @__PURE__ */ __name((options) => {
-  const { apiKey, secretKey, isSatellite, searchParams } = options;
-  const key = secretKey || apiKey || "";
-  const isDev = isDevelopmentFromApiKey(key);
-  if (isDev && !isSatellite && shouldRedirectToSatelliteUrl(searchParams)) {
-    return interstitial(
-      options,
-      "primary-responds-to-syncing"
-      /* PrimaryRespondsToSyncing */
-    );
-  }
-  return void 0;
-}, "isPrimaryInDevAndRedirectsToSatellite");
-var potentialFirstLoadInDevWhenUATMissing = /* @__PURE__ */ __name((options) => {
-  const { apiKey, secretKey, clientUat } = options;
-  const key = secretKey || apiKey || "";
-  const res = isDevelopmentFromApiKey(key);
-  if (res && !clientUat) {
-    return interstitial(
-      options,
-      "uat-missing"
-      /* CookieUATMissing */
-    );
-  }
-  return void 0;
-}, "potentialFirstLoadInDevWhenUATMissing");
-var potentialRequestAfterSignInOrOutFromClerkHostedUiInDev = /* @__PURE__ */ __name((options) => {
-  const { apiKey, secretKey, referrer, host, forwardedHost, forwardedProto } = options;
-  const crossOriginReferrer = referrer && checkCrossOrigin({ originURL: new URL(referrer), host, forwardedHost, forwardedProto });
-  const key = secretKey || apiKey || "";
-  if (isDevelopmentFromApiKey(key) && crossOriginReferrer) {
-    return interstitial(
-      options,
-      "cross-origin-referrer"
-      /* CrossOriginReferrer */
-    );
-  }
-  return void 0;
-}, "potentialRequestAfterSignInOrOutFromClerkHostedUiInDev");
-var potentialFirstRequestOnProductionEnvironment = /* @__PURE__ */ __name((options) => {
-  const { apiKey, secretKey, clientUat, cookieToken } = options;
-  const key = secretKey || apiKey || "";
-  if (isProductionFromApiKey(key) && !clientUat && !cookieToken) {
-    return signedOut(
-      options,
-      "cookie-and-uat-missing"
-      /* CookieAndUATMissing */
-    );
-  }
-  return void 0;
-}, "potentialFirstRequestOnProductionEnvironment");
-var isNormalSignedOutState = /* @__PURE__ */ __name((options) => {
-  const { clientUat } = options;
-  if (clientUat === "0") {
-    return signedOut(
-      options,
-      "standard-signed-out"
-      /* StandardSignedOut */
-    );
-  }
-  return void 0;
-}, "isNormalSignedOutState");
-var hasPositiveClientUatButCookieIsMissing = /* @__PURE__ */ __name((options) => {
-  const { clientUat, cookieToken } = options;
-  if (clientUat && Number.parseInt(clientUat) > 0 && !cookieToken) {
-    return interstitial(
-      options,
-      "cookie-missing"
-      /* CookieMissing */
-    );
-  }
-  return void 0;
-}, "hasPositiveClientUatButCookieIsMissing");
-var hasValidHeaderToken = /* @__PURE__ */ __name(async (options) => {
-  const { headerToken } = options;
-  const sessionClaims = await verifyRequestState(options, headerToken);
-  return await signedIn({ ...options, token: headerToken }, sessionClaims);
-}, "hasValidHeaderToken");
-var hasValidCookieToken = /* @__PURE__ */ __name(async (options) => {
-  const { cookieToken, clientUat } = options;
-  const sessionClaims = await verifyRequestState(options, cookieToken);
-  const state = await signedIn({ ...options, token: cookieToken }, sessionClaims);
-  const jwt2 = state.toAuth().sessionClaims;
-  const cookieTokenIsOutdated = jwt2.iat < Number.parseInt(clientUat);
-  if (!clientUat || cookieTokenIsOutdated) {
-    return interstitial(
-      options,
-      "cookie-outdated"
-      /* CookieOutDated */
-    );
-  }
-  return state;
-}, "hasValidCookieToken");
-async function runInterstitialRules(opts, rules) {
-  for (const rule of rules) {
-    const res = await rule(opts);
-    if (res) {
-      return res;
-    }
-  }
-  return signedOut(
-    opts,
-    "unexpected-error"
-    /* UnexpectedError */
-  );
-}
-__name(runInterstitialRules, "runInterstitialRules");
-async function verifyRequestState(options, token) {
-  const { isSatellite, proxyUrl } = options;
-  let issuer;
-  if (isSatellite) {
-    issuer = null;
-  } else if (proxyUrl) {
-    issuer = proxyUrl;
-  } else {
-    issuer = /* @__PURE__ */ __name((iss) => iss.startsWith("https://clerk.") || iss.includes(".clerk.accounts"), "issuer");
-  }
-  return verifyToken(token, { ...options, issuer });
-}
-__name(verifyRequestState, "verifyRequestState");
-var isSatelliteAndNeedsSyncing = /* @__PURE__ */ __name((options) => {
-  const { clientUat, isSatellite, searchParams, userAgent } = options;
-  const isSignedOut = !clientUat || clientUat === "0";
-  if (isSatellite && isSignedOut && !isBrowser(userAgent)) {
-    return signedOut(
-      options,
-      "satellite-needs-syncing"
-      /* SatelliteCookieNeedsSyncing */
-    );
-  }
-  if (isSatellite && isSignedOut && !hasJustSynced(searchParams)) {
-    return interstitial(
-      options,
-      "satellite-needs-syncing"
-      /* SatelliteCookieNeedsSyncing */
-    );
-  }
-  return void 0;
-}, "isSatelliteAndNeedsSyncing");
-function assertSignInUrlExists(signInUrl, key) {
-  if (!signInUrl && isDevelopmentFromApiKey(key)) {
-    throw new Error(`Missing signInUrl. Pass a signInUrl for dev instances if an app is satellite`);
-  }
-}
-__name(assertSignInUrlExists, "assertSignInUrlExists");
-function assertProxyUrlOrDomain(proxyUrlOrDomain) {
-  if (!proxyUrlOrDomain) {
-    throw new Error(`Missing domain and proxyUrl. A satellite application needs to specify a domain or a proxyUrl`);
-  }
-}
-__name(assertProxyUrlOrDomain, "assertProxyUrlOrDomain");
-function assertSignInUrlFormatAndOrigin(_signInUrl, origin) {
-  let signInUrl;
-  try {
-    signInUrl = new URL(_signInUrl);
-  } catch {
-    throw new Error(`The signInUrl needs to have a absolute url format.`);
-  }
-  if (signInUrl.origin === origin) {
-    throw new Error(`The signInUrl needs to be on a different origin than your satellite application.`);
-  }
-}
-__name(assertSignInUrlFormatAndOrigin, "assertSignInUrlFormatAndOrigin");
-async function authenticateRequest(options) {
-  const { cookies, headers, searchParams } = buildRequest2(options?.request);
-  if (options.frontendApi) {
-    deprecated("frontendApi", "Use `publishableKey` instead.");
-  }
-  if (options.apiKey) {
-    deprecated("apiKey", "Use `secretKey` instead.");
-  }
-  options = {
-    ...options,
-    ...loadOptionsFromHeaders(options, headers),
-    frontendApi: parsePublishableKey(options.publishableKey)?.frontendApi || options.frontendApi,
-    apiUrl: options.apiUrl || API_URL,
-    apiVersion: options.apiVersion || API_VERSION,
-    cookieToken: options.cookieToken || cookies?.(constants.Cookies.Session),
-    clientUat: options.clientUat || cookies?.(constants.Cookies.ClientUat),
-    searchParams: options.searchParams || searchParams || void 0
-  };
-  assertValidSecretKey(options.secretKey || options.apiKey);
-  if (options.isSatellite) {
-    assertSignInUrlExists(options.signInUrl, options.secretKey || options.apiKey);
-    if (options.signInUrl && options.origin) {
-      assertSignInUrlFormatAndOrigin(options.signInUrl, options.origin);
-    }
-    assertProxyUrlOrDomain(options.proxyUrl || options.domain);
-  }
-  async function authenticateRequestWithTokenInHeader() {
-    try {
-      const state = await runInterstitialRules(options, [hasValidHeaderToken]);
-      return state;
-    } catch (err) {
-      return handleError(err, "header");
-    }
-  }
-  __name(authenticateRequestWithTokenInHeader, "authenticateRequestWithTokenInHeader");
-  async function authenticateRequestWithTokenInCookie() {
-    try {
-      const state = await runInterstitialRules(options, [
-        crossOriginRequestWithoutHeader,
-        nonBrowserRequestInDevRule,
-        isSatelliteAndNeedsSyncing,
-        isPrimaryInDevAndRedirectsToSatellite,
-        potentialFirstRequestOnProductionEnvironment,
-        potentialFirstLoadInDevWhenUATMissing,
-        potentialRequestAfterSignInOrOutFromClerkHostedUiInDev,
-        hasPositiveClientUatButCookieIsMissing,
-        isNormalSignedOutState,
-        hasValidCookieToken
-      ]);
-      return state;
-    } catch (err) {
-      return handleError(err, "cookie");
-    }
-  }
-  __name(authenticateRequestWithTokenInCookie, "authenticateRequestWithTokenInCookie");
-  function handleError(err, tokenCarrier) {
-    if (err instanceof TokenVerificationError) {
-      err.tokenCarrier = tokenCarrier;
-      const reasonToReturnInterstitial = [
-        "token-expired",
-        "token-not-active-yet"
-        /* TokenNotActiveYet */
-      ].includes(err.reason);
-      if (reasonToReturnInterstitial) {
-        if (tokenCarrier === "header") {
-          return unknownState(options, err.reason, err.getFullMessage());
-        }
-        return interstitial(options, err.reason, err.getFullMessage());
-      }
-      return signedOut(options, err.reason, err.getFullMessage());
-    }
-    return signedOut(options, "unexpected-error", err.message);
-  }
-  __name(handleError, "handleError");
-  if (options.headerToken) {
-    return authenticateRequestWithTokenInHeader();
-  }
-  return authenticateRequestWithTokenInCookie();
-}
-__name(authenticateRequest, "authenticateRequest");
-var debugRequestState = /* @__PURE__ */ __name((params) => {
-  const { frontendApi, isSignedIn, proxyUrl, isInterstitial, reason, message, publishableKey, isSatellite, domain: domain2 } = params;
-  return { frontendApi, isSignedIn, proxyUrl, isInterstitial, reason, message, publishableKey, isSatellite, domain: domain2 };
-}, "debugRequestState");
-var loadOptionsFromHeaders = /* @__PURE__ */ __name((options, headers) => {
-  if (!headers) {
-    return {};
-  }
-  return {
-    headerToken: stripAuthorizationHeader(options.headerToken || headers(constants.Headers.Authorization)),
-    origin: options.origin || headers(constants.Headers.Origin),
-    host: options.host || headers(constants.Headers.Host),
-    forwardedHost: options.forwardedHost || headers(constants.Headers.ForwardedHost),
-    forwardedPort: options.forwardedPort || headers(constants.Headers.ForwardedPort),
-    forwardedProto: options.forwardedProto || headers(constants.Headers.CloudFrontForwardedProto) || headers(constants.Headers.ForwardedProto),
-    referrer: options.referrer || headers(constants.Headers.Referrer),
-    userAgent: options.userAgent || headers(constants.Headers.UserAgent)
-  };
-}, "loadOptionsFromHeaders");
-function createAuthenticateRequest(params) {
-  const { apiClient } = params;
-  const {
-    apiKey: buildtimeApiKey = "",
-    secretKey: buildtimeSecretKey = "",
-    jwtKey: buildtimeJwtKey = "",
-    apiUrl = API_URL,
-    apiVersion = API_VERSION,
-    frontendApi: buildtimeFrontendApi = "",
-    proxyUrl: buildProxyUrl = "",
-    publishableKey: buildtimePublishableKey = "",
-    isSatellite: buildtimeIsSatellite = false,
-    domain: buildtimeDomain = "",
-    audience: buildtimeAudience = "",
-    userAgent: buildUserAgent
-  } = params.options;
-  const authenticateRequest2 = /* @__PURE__ */ __name(({
-    apiKey: runtimeApiKey,
-    secretKey: runtimeSecretKey,
-    audience: runtimeAudience,
-    frontendApi: runtimeFrontendApi,
-    proxyUrl: runtimeProxyUrl,
-    publishableKey: runtimePublishableKey,
-    jwtKey: runtimeJwtKey,
-    isSatellite: runtimeIsSatellite,
-    domain: runtimeDomain,
-    searchParams,
-    ...rest
-  }) => {
-    return authenticateRequest({
-      ...rest,
-      apiKey: runtimeApiKey || buildtimeApiKey,
-      secretKey: runtimeSecretKey || buildtimeSecretKey,
-      audience: runtimeAudience || buildtimeAudience,
-      apiUrl,
-      apiVersion,
-      frontendApi: runtimeFrontendApi || buildtimeFrontendApi,
-      proxyUrl: runtimeProxyUrl || buildProxyUrl,
-      publishableKey: runtimePublishableKey || buildtimePublishableKey,
-      isSatellite: runtimeIsSatellite || buildtimeIsSatellite,
-      domain: runtimeDomain || buildtimeDomain,
-      jwtKey: runtimeJwtKey || buildtimeJwtKey,
-      searchParams
-    });
-  }, "authenticateRequest2");
-  const localInterstitial = /* @__PURE__ */ __name(({
-    frontendApi: runtimeFrontendApi,
-    publishableKey: runtimePublishableKey,
-    proxyUrl: runtimeProxyUrl,
-    isSatellite: runtimeIsSatellite,
-    domain: runtimeDomain,
-    ...rest
-  }) => loadInterstitialFromLocal({
-    ...rest,
-    frontendApi: runtimeFrontendApi || buildtimeFrontendApi,
-    proxyUrl: runtimeProxyUrl || buildProxyUrl,
-    publishableKey: runtimePublishableKey || buildtimePublishableKey,
-    isSatellite: runtimeIsSatellite || buildtimeIsSatellite,
-    domain: runtimeDomain || buildtimeDomain
-  }), "localInterstitial");
-  const remotePublicInterstitial = /* @__PURE__ */ __name(({
-    frontendApi: runtimeFrontendApi,
-    publishableKey: runtimePublishableKey,
-    proxyUrl: runtimeProxyUrl,
-    isSatellite: runtimeIsSatellite,
-    domain: runtimeDomain,
-    userAgent: runtimeUserAgent,
-    ...rest
-  }) => {
-    return loadInterstitialFromBAPI({
-      ...rest,
-      apiUrl,
-      frontendApi: runtimeFrontendApi || buildtimeFrontendApi,
-      publishableKey: runtimePublishableKey || buildtimePublishableKey,
-      proxyUrl: runtimeProxyUrl || buildProxyUrl,
-      isSatellite: runtimeIsSatellite || buildtimeIsSatellite,
-      domain: runtimeDomain || buildtimeDomain,
-      userAgent: runtimeUserAgent || buildUserAgent
-    });
-  }, "remotePublicInterstitial");
-  const remotePublicInterstitialUrl = buildPublicInterstitialUrl;
-  const remotePrivateInterstitial = /* @__PURE__ */ __name(() => apiClient.interstitial.getInterstitial(), "remotePrivateInterstitial");
-  return {
-    authenticateRequest: authenticateRequest2,
-    localInterstitial,
-    remotePublicInterstitial,
-    remotePrivateInterstitial,
-    remotePublicInterstitialUrl,
-    debugRequestState
-  };
-}
-__name(createAuthenticateRequest, "createAuthenticateRequest");
-function Clerk(options) {
-  const opts = { ...options };
-  const apiClient = createBackendApiClient(opts);
-  const requestState = createAuthenticateRequest({ options: opts, apiClient });
-  const clerkInstance2 = {
-    ...apiClient,
-    ...requestState,
-    /**
-     * @deprecated This prop has been deprecated and will be removed in the next major release.
-     */
-    __unstable_options: opts
-  };
-  deprecatedObjectProperty(
-    clerkInstance2,
-    "__unstable_options",
-    "Use `createClerkClient({...})` to create a new clerk instance instead."
-  );
-  return clerkInstance2;
-}
-__name(Clerk, "Clerk");
-
-// ../be-auth/src/adapters/clerk.ts
-var clerkInstance = null;
-function getClerkApiKey(env) {
-  if (env?.CLERK_API_KEY) {
-    return env.CLERK_API_KEY;
-  }
-  const key = typeof globalThis !== "undefined" && globalThis.env?.CLERK_API_KEY || typeof process !== "undefined" && process.env?.CLERK_API_KEY || null;
-  if (!key) {
-    throw new Error("CLERK_API_KEY is required but not provided. Make sure it's configured in wrangler.toml (as env.CLERK_API_KEY) or environment variables.");
+    pubCache || (pubCache = /* @__PURE__ */ new WeakMap());
+    return importAndCache(pubCache, key, jwk, alg);
+  }
+  if (isJWK(key)) {
+    if (key.k)
+      return decode(key.k);
+    pubCache || (pubCache = /* @__PURE__ */ new WeakMap());
+    const cryptoKey = importAndCache(pubCache, key, key, alg, true);
+    return cryptoKey;
   }
   return key;
-}
-__name(getClerkApiKey, "getClerkApiKey");
-function getClerk(env) {
-  const actualEnv = env || typeof globalThis !== "undefined" && globalThis.env || typeof process !== "undefined" && process.env || void 0;
-  if (!clerkInstance) {
-    const apiKey = getClerkApiKey(actualEnv);
-    clerkInstance = Clerk({ apiKey });
+}, "normalizePublicKey");
+var normalizePrivateKey = /* @__PURE__ */ __name((key, alg) => {
+  if (isKeyObject(key)) {
+    let jwk = key.export({ format: "jwk" });
+    if (jwk.k) {
+      return exportKeyValue(jwk.k);
+    }
+    privCache || (privCache = /* @__PURE__ */ new WeakMap());
+    return importAndCache(privCache, key, jwk, alg);
   }
-  return clerkInstance;
+  if (isJWK(key)) {
+    if (key.k)
+      return decode(key.k);
+    privCache || (privCache = /* @__PURE__ */ new WeakMap());
+    const cryptoKey = importAndCache(privCache, key, key, alg, true);
+    return cryptoKey;
+  }
+  return key;
+}, "normalizePrivateKey");
+var normalize_key_default = { normalizePublicKey, normalizePrivateKey };
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/key/import.js
+init_checked_fetch();
+init_modules_watch_stub();
+async function importJWK(jwk, alg) {
+  if (!isObject(jwk)) {
+    throw new TypeError("JWK must be an object");
+  }
+  alg || (alg = jwk.alg);
+  switch (jwk.kty) {
+    case "oct":
+      if (typeof jwk.k !== "string" || !jwk.k) {
+        throw new TypeError('missing "k" (Key Value) Parameter value');
+      }
+      return decode(jwk.k);
+    case "RSA":
+      if ("oth" in jwk && jwk.oth !== void 0) {
+        throw new JOSENotSupported('RSA JWK "oth" (Other Primes Info) Parameter value is not supported');
+      }
+    case "EC":
+    case "OKP":
+      return jwk_to_key_default({ ...jwk, alg });
+    default:
+      throw new JOSENotSupported('Unsupported "kty" (Key Type) Parameter value');
+  }
 }
-__name(getClerk, "getClerk");
+__name(importJWK, "importJWK");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/check_key_type.js
+init_checked_fetch();
+init_modules_watch_stub();
+var tag = /* @__PURE__ */ __name((key) => key?.[Symbol.toStringTag], "tag");
+var jwkMatchesOp = /* @__PURE__ */ __name((alg, key, usage) => {
+  if (key.use !== void 0 && key.use !== "sig") {
+    throw new TypeError("Invalid key for this operation, when present its use must be sig");
+  }
+  if (key.key_ops !== void 0 && key.key_ops.includes?.(usage) !== true) {
+    throw new TypeError(`Invalid key for this operation, when present its key_ops must include ${usage}`);
+  }
+  if (key.alg !== void 0 && key.alg !== alg) {
+    throw new TypeError(`Invalid key for this operation, when present its alg must be ${alg}`);
+  }
+  return true;
+}, "jwkMatchesOp");
+var symmetricTypeCheck = /* @__PURE__ */ __name((alg, key, usage, allowJwk) => {
+  if (key instanceof Uint8Array)
+    return;
+  if (allowJwk && isJWK(key)) {
+    if (isSecretJWK(key) && jwkMatchesOp(alg, key, usage))
+      return;
+    throw new TypeError(`JSON Web Key for symmetric algorithms must have JWK "kty" (Key Type) equal to "oct" and the JWK "k" (Key Value) present`);
+  }
+  if (!is_key_like_default(key)) {
+    throw new TypeError(withAlg(alg, key, ...types, "Uint8Array", allowJwk ? "JSON Web Key" : null));
+  }
+  if (key.type !== "secret") {
+    throw new TypeError(`${tag(key)} instances for symmetric algorithms must be of type "secret"`);
+  }
+}, "symmetricTypeCheck");
+var asymmetricTypeCheck = /* @__PURE__ */ __name((alg, key, usage, allowJwk) => {
+  if (allowJwk && isJWK(key)) {
+    switch (usage) {
+      case "sign":
+        if (isPrivateJWK(key) && jwkMatchesOp(alg, key, usage))
+          return;
+        throw new TypeError(`JSON Web Key for this operation be a private JWK`);
+      case "verify":
+        if (isPublicJWK(key) && jwkMatchesOp(alg, key, usage))
+          return;
+        throw new TypeError(`JSON Web Key for this operation be a public JWK`);
+    }
+  }
+  if (!is_key_like_default(key)) {
+    throw new TypeError(withAlg(alg, key, ...types, allowJwk ? "JSON Web Key" : null));
+  }
+  if (key.type === "secret") {
+    throw new TypeError(`${tag(key)} instances for asymmetric algorithms must not be of type "secret"`);
+  }
+  if (usage === "sign" && key.type === "public") {
+    throw new TypeError(`${tag(key)} instances for asymmetric algorithm signing must be of type "private"`);
+  }
+  if (usage === "decrypt" && key.type === "public") {
+    throw new TypeError(`${tag(key)} instances for asymmetric algorithm decryption must be of type "private"`);
+  }
+  if (key.algorithm && usage === "verify" && key.type === "private") {
+    throw new TypeError(`${tag(key)} instances for asymmetric algorithm verifying must be of type "public"`);
+  }
+  if (key.algorithm && usage === "encrypt" && key.type === "private") {
+    throw new TypeError(`${tag(key)} instances for asymmetric algorithm encryption must be of type "public"`);
+  }
+}, "asymmetricTypeCheck");
+function checkKeyType(allowJwk, alg, key, usage) {
+  const symmetric = alg.startsWith("HS") || alg === "dir" || alg.startsWith("PBES2") || /^A\d{3}(?:GCM)?KW$/.test(alg);
+  if (symmetric) {
+    symmetricTypeCheck(alg, key, usage, allowJwk);
+  } else {
+    asymmetricTypeCheck(alg, key, usage, allowJwk);
+  }
+}
+__name(checkKeyType, "checkKeyType");
+var check_key_type_default = checkKeyType.bind(void 0, false);
+var checkKeyTypeWithJwk = checkKeyType.bind(void 0, true);
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/validate_crit.js
+init_checked_fetch();
+init_modules_watch_stub();
+function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
+  if (joseHeader.crit !== void 0 && protectedHeader?.crit === void 0) {
+    throw new Err('"crit" (Critical) Header Parameter MUST be integrity protected');
+  }
+  if (!protectedHeader || protectedHeader.crit === void 0) {
+    return /* @__PURE__ */ new Set();
+  }
+  if (!Array.isArray(protectedHeader.crit) || protectedHeader.crit.length === 0 || protectedHeader.crit.some((input) => typeof input !== "string" || input.length === 0)) {
+    throw new Err('"crit" (Critical) Header Parameter MUST be an array of non-empty strings when present');
+  }
+  let recognized;
+  if (recognizedOption !== void 0) {
+    recognized = new Map([...Object.entries(recognizedOption), ...recognizedDefault.entries()]);
+  } else {
+    recognized = recognizedDefault;
+  }
+  for (const parameter of protectedHeader.crit) {
+    if (!recognized.has(parameter)) {
+      throw new JOSENotSupported(`Extension Header Parameter "${parameter}" is not recognized`);
+    }
+    if (joseHeader[parameter] === void 0) {
+      throw new Err(`Extension Header Parameter "${parameter}" is missing`);
+    }
+    if (recognized.get(parameter) && protectedHeader[parameter] === void 0) {
+      throw new Err(`Extension Header Parameter "${parameter}" MUST be integrity protected`);
+    }
+  }
+  return new Set(protectedHeader.crit);
+}
+__name(validateCrit, "validateCrit");
+var validate_crit_default = validateCrit;
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/validate_algorithms.js
+init_checked_fetch();
+init_modules_watch_stub();
+var validateAlgorithms = /* @__PURE__ */ __name((option, algorithms) => {
+  if (algorithms !== void 0 && (!Array.isArray(algorithms) || algorithms.some((s) => typeof s !== "string"))) {
+    throw new TypeError(`"${option}" option must be an array of strings`);
+  }
+  if (!algorithms) {
+    return void 0;
+  }
+  return new Set(algorithms);
+}, "validateAlgorithms");
+var validate_algorithms_default = validateAlgorithms;
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jws/compact/verify.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jws/flattened/verify.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/verify.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/subtle_dsa.js
+init_checked_fetch();
+init_modules_watch_stub();
+function subtleDsa(alg, algorithm) {
+  const hash2 = `SHA-${alg.slice(-3)}`;
+  switch (alg) {
+    case "HS256":
+    case "HS384":
+    case "HS512":
+      return { hash: hash2, name: "HMAC" };
+    case "PS256":
+    case "PS384":
+    case "PS512":
+      return { hash: hash2, name: "RSA-PSS", saltLength: alg.slice(-3) >> 3 };
+    case "RS256":
+    case "RS384":
+    case "RS512":
+      return { hash: hash2, name: "RSASSA-PKCS1-v1_5" };
+    case "ES256":
+    case "ES384":
+    case "ES512":
+      return { hash: hash2, name: "ECDSA", namedCurve: algorithm.namedCurve };
+    case "Ed25519":
+      return { name: "Ed25519" };
+    case "EdDSA":
+      return { name: algorithm.name };
+    default:
+      throw new JOSENotSupported(`alg ${alg} is not supported either by JOSE or your javascript runtime`);
+  }
+}
+__name(subtleDsa, "subtleDsa");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/get_sign_verify_key.js
+init_checked_fetch();
+init_modules_watch_stub();
+async function getCryptoKey(alg, key, usage) {
+  if (usage === "sign") {
+    key = await normalize_key_default.normalizePrivateKey(key, alg);
+  }
+  if (usage === "verify") {
+    key = await normalize_key_default.normalizePublicKey(key, alg);
+  }
+  if (isCryptoKey(key)) {
+    checkSigCryptoKey(key, alg, usage);
+    return key;
+  }
+  if (key instanceof Uint8Array) {
+    if (!alg.startsWith("HS")) {
+      throw new TypeError(invalid_key_input_default(key, ...types));
+    }
+    return webcrypto_default.subtle.importKey("raw", key, { hash: `SHA-${alg.slice(-3)}`, name: "HMAC" }, false, [usage]);
+  }
+  throw new TypeError(invalid_key_input_default(key, ...types, "Uint8Array", "JSON Web Key"));
+}
+__name(getCryptoKey, "getCryptoKey");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/verify.js
+var verify = /* @__PURE__ */ __name(async (alg, key, signature, data) => {
+  const cryptoKey = await getCryptoKey(alg, key, "verify");
+  check_key_length_default(alg, cryptoKey);
+  const algorithm = subtleDsa(alg, cryptoKey.algorithm);
+  try {
+    return await webcrypto_default.subtle.verify(algorithm, cryptoKey, signature, data);
+  } catch {
+    return false;
+  }
+}, "verify");
+var verify_default = verify;
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jws/flattened/verify.js
+async function flattenedVerify(jws, key, options) {
+  if (!isObject(jws)) {
+    throw new JWSInvalid("Flattened JWS must be an object");
+  }
+  if (jws.protected === void 0 && jws.header === void 0) {
+    throw new JWSInvalid('Flattened JWS must have either of the "protected" or "header" members');
+  }
+  if (jws.protected !== void 0 && typeof jws.protected !== "string") {
+    throw new JWSInvalid("JWS Protected Header incorrect type");
+  }
+  if (jws.payload === void 0) {
+    throw new JWSInvalid("JWS Payload missing");
+  }
+  if (typeof jws.signature !== "string") {
+    throw new JWSInvalid("JWS Signature missing or incorrect type");
+  }
+  if (jws.header !== void 0 && !isObject(jws.header)) {
+    throw new JWSInvalid("JWS Unprotected Header incorrect type");
+  }
+  let parsedProt = {};
+  if (jws.protected) {
+    try {
+      const protectedHeader = decode(jws.protected);
+      parsedProt = JSON.parse(decoder.decode(protectedHeader));
+    } catch {
+      throw new JWSInvalid("JWS Protected Header is invalid");
+    }
+  }
+  if (!is_disjoint_default(parsedProt, jws.header)) {
+    throw new JWSInvalid("JWS Protected and JWS Unprotected Header Parameter names must be disjoint");
+  }
+  const joseHeader = {
+    ...parsedProt,
+    ...jws.header
+  };
+  const extensions = validate_crit_default(JWSInvalid, /* @__PURE__ */ new Map([["b64", true]]), options?.crit, parsedProt, joseHeader);
+  let b64 = true;
+  if (extensions.has("b64")) {
+    b64 = parsedProt.b64;
+    if (typeof b64 !== "boolean") {
+      throw new JWSInvalid('The "b64" (base64url-encode payload) Header Parameter must be a boolean');
+    }
+  }
+  const { alg } = joseHeader;
+  if (typeof alg !== "string" || !alg) {
+    throw new JWSInvalid('JWS "alg" (Algorithm) Header Parameter missing or invalid');
+  }
+  const algorithms = options && validate_algorithms_default("algorithms", options.algorithms);
+  if (algorithms && !algorithms.has(alg)) {
+    throw new JOSEAlgNotAllowed('"alg" (Algorithm) Header Parameter value not allowed');
+  }
+  if (b64) {
+    if (typeof jws.payload !== "string") {
+      throw new JWSInvalid("JWS Payload must be a string");
+    }
+  } else if (typeof jws.payload !== "string" && !(jws.payload instanceof Uint8Array)) {
+    throw new JWSInvalid("JWS Payload must be a string or an Uint8Array instance");
+  }
+  let resolvedKey = false;
+  if (typeof key === "function") {
+    key = await key(parsedProt, jws);
+    resolvedKey = true;
+    checkKeyTypeWithJwk(alg, key, "verify");
+    if (isJWK(key)) {
+      key = await importJWK(key, alg);
+    }
+  } else {
+    checkKeyTypeWithJwk(alg, key, "verify");
+  }
+  const data = concat(encoder.encode(jws.protected ?? ""), encoder.encode("."), typeof jws.payload === "string" ? encoder.encode(jws.payload) : jws.payload);
+  let signature;
+  try {
+    signature = decode(jws.signature);
+  } catch {
+    throw new JWSInvalid("Failed to base64url decode the signature");
+  }
+  const verified = await verify_default(alg, key, signature, data);
+  if (!verified) {
+    throw new JWSSignatureVerificationFailed();
+  }
+  let payload;
+  if (b64) {
+    try {
+      payload = decode(jws.payload);
+    } catch {
+      throw new JWSInvalid("Failed to base64url decode the payload");
+    }
+  } else if (typeof jws.payload === "string") {
+    payload = encoder.encode(jws.payload);
+  } else {
+    payload = jws.payload;
+  }
+  const result = { payload };
+  if (jws.protected !== void 0) {
+    result.protectedHeader = parsedProt;
+  }
+  if (jws.header !== void 0) {
+    result.unprotectedHeader = jws.header;
+  }
+  if (resolvedKey) {
+    return { ...result, key };
+  }
+  return result;
+}
+__name(flattenedVerify, "flattenedVerify");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jws/compact/verify.js
+async function compactVerify(jws, key, options) {
+  if (jws instanceof Uint8Array) {
+    jws = decoder.decode(jws);
+  }
+  if (typeof jws !== "string") {
+    throw new JWSInvalid("Compact JWS must be a string or Uint8Array");
+  }
+  const { 0: protectedHeader, 1: payload, 2: signature, length } = jws.split(".");
+  if (length !== 3) {
+    throw new JWSInvalid("Invalid Compact JWS");
+  }
+  const verified = await flattenedVerify({ payload, protected: protectedHeader, signature }, key, options);
+  const result = { payload: verified.payload, protectedHeader: verified.protectedHeader };
+  if (typeof key === "function") {
+    return { ...result, key: verified.key };
+  }
+  return result;
+}
+__name(compactVerify, "compactVerify");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jwt/verify.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/jwt_claims_set.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/epoch.js
+init_checked_fetch();
+init_modules_watch_stub();
+var epoch_default = /* @__PURE__ */ __name((date6) => Math.floor(date6.getTime() / 1e3), "default");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/secs.js
+init_checked_fetch();
+init_modules_watch_stub();
+var minute = 60;
+var hour = minute * 60;
+var day = hour * 24;
+var week = day * 7;
+var year = day * 365.25;
+var REGEX = /^(\+|\-)? ?(\d+|\d+\.\d+) ?(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)(?: (ago|from now))?$/i;
+var secs_default = /* @__PURE__ */ __name((str) => {
+  const matched = REGEX.exec(str);
+  if (!matched || matched[4] && matched[1]) {
+    throw new TypeError("Invalid time period format");
+  }
+  const value = parseFloat(matched[2]);
+  const unit = matched[3].toLowerCase();
+  let numericDate;
+  switch (unit) {
+    case "sec":
+    case "secs":
+    case "second":
+    case "seconds":
+    case "s":
+      numericDate = Math.round(value);
+      break;
+    case "minute":
+    case "minutes":
+    case "min":
+    case "mins":
+    case "m":
+      numericDate = Math.round(value * minute);
+      break;
+    case "hour":
+    case "hours":
+    case "hr":
+    case "hrs":
+    case "h":
+      numericDate = Math.round(value * hour);
+      break;
+    case "day":
+    case "days":
+    case "d":
+      numericDate = Math.round(value * day);
+      break;
+    case "week":
+    case "weeks":
+    case "w":
+      numericDate = Math.round(value * week);
+      break;
+    default:
+      numericDate = Math.round(value * year);
+      break;
+  }
+  if (matched[1] === "-" || matched[4] === "ago") {
+    return -numericDate;
+  }
+  return numericDate;
+}, "default");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/lib/jwt_claims_set.js
+var normalizeTyp = /* @__PURE__ */ __name((value) => value.toLowerCase().replace(/^application\//, ""), "normalizeTyp");
+var checkAudiencePresence = /* @__PURE__ */ __name((audPayload, audOption) => {
+  if (typeof audPayload === "string") {
+    return audOption.includes(audPayload);
+  }
+  if (Array.isArray(audPayload)) {
+    return audOption.some(Set.prototype.has.bind(new Set(audPayload)));
+  }
+  return false;
+}, "checkAudiencePresence");
+var jwt_claims_set_default = /* @__PURE__ */ __name((protectedHeader, encodedPayload, options = {}) => {
+  let payload;
+  try {
+    payload = JSON.parse(decoder.decode(encodedPayload));
+  } catch {
+  }
+  if (!isObject(payload)) {
+    throw new JWTInvalid("JWT Claims Set must be a top-level JSON object");
+  }
+  const { typ } = options;
+  if (typ && (typeof protectedHeader.typ !== "string" || normalizeTyp(protectedHeader.typ) !== normalizeTyp(typ))) {
+    throw new JWTClaimValidationFailed('unexpected "typ" JWT header value', payload, "typ", "check_failed");
+  }
+  const { requiredClaims = [], issuer, subject, audience, maxTokenAge } = options;
+  const presenceCheck = [...requiredClaims];
+  if (maxTokenAge !== void 0)
+    presenceCheck.push("iat");
+  if (audience !== void 0)
+    presenceCheck.push("aud");
+  if (subject !== void 0)
+    presenceCheck.push("sub");
+  if (issuer !== void 0)
+    presenceCheck.push("iss");
+  for (const claim of new Set(presenceCheck.reverse())) {
+    if (!(claim in payload)) {
+      throw new JWTClaimValidationFailed(`missing required "${claim}" claim`, payload, claim, "missing");
+    }
+  }
+  if (issuer && !(Array.isArray(issuer) ? issuer : [issuer]).includes(payload.iss)) {
+    throw new JWTClaimValidationFailed('unexpected "iss" claim value', payload, "iss", "check_failed");
+  }
+  if (subject && payload.sub !== subject) {
+    throw new JWTClaimValidationFailed('unexpected "sub" claim value', payload, "sub", "check_failed");
+  }
+  if (audience && !checkAudiencePresence(payload.aud, typeof audience === "string" ? [audience] : audience)) {
+    throw new JWTClaimValidationFailed('unexpected "aud" claim value', payload, "aud", "check_failed");
+  }
+  let tolerance;
+  switch (typeof options.clockTolerance) {
+    case "string":
+      tolerance = secs_default(options.clockTolerance);
+      break;
+    case "number":
+      tolerance = options.clockTolerance;
+      break;
+    case "undefined":
+      tolerance = 0;
+      break;
+    default:
+      throw new TypeError("Invalid clockTolerance option type");
+  }
+  const { currentDate } = options;
+  const now = epoch_default(currentDate || /* @__PURE__ */ new Date());
+  if ((payload.iat !== void 0 || maxTokenAge) && typeof payload.iat !== "number") {
+    throw new JWTClaimValidationFailed('"iat" claim must be a number', payload, "iat", "invalid");
+  }
+  if (payload.nbf !== void 0) {
+    if (typeof payload.nbf !== "number") {
+      throw new JWTClaimValidationFailed('"nbf" claim must be a number', payload, "nbf", "invalid");
+    }
+    if (payload.nbf > now + tolerance) {
+      throw new JWTClaimValidationFailed('"nbf" claim timestamp check failed', payload, "nbf", "check_failed");
+    }
+  }
+  if (payload.exp !== void 0) {
+    if (typeof payload.exp !== "number") {
+      throw new JWTClaimValidationFailed('"exp" claim must be a number', payload, "exp", "invalid");
+    }
+    if (payload.exp <= now - tolerance) {
+      throw new JWTExpired('"exp" claim timestamp check failed', payload, "exp", "check_failed");
+    }
+  }
+  if (maxTokenAge) {
+    const age = now - payload.iat;
+    const max = typeof maxTokenAge === "number" ? maxTokenAge : secs_default(maxTokenAge);
+    if (age - tolerance > max) {
+      throw new JWTExpired('"iat" claim timestamp check failed (too far in the past)', payload, "iat", "check_failed");
+    }
+    if (age < 0 - tolerance) {
+      throw new JWTClaimValidationFailed('"iat" claim timestamp check failed (it should be in the past)', payload, "iat", "check_failed");
+    }
+  }
+  return payload;
+}, "default");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jwt/verify.js
+async function jwtVerify(jwt2, key, options) {
+  const verified = await compactVerify(jwt2, key, options);
+  if (verified.protectedHeader.crit?.includes("b64") && verified.protectedHeader.b64 === false) {
+    throw new JWTInvalid("JWTs MUST NOT use unencoded payload");
+  }
+  const payload = jwt_claims_set_default(verified.protectedHeader, verified.payload, options);
+  const result = { payload, protectedHeader: verified.protectedHeader };
+  if (typeof key === "function") {
+    return { ...result, key: verified.key };
+  }
+  return result;
+}
+__name(jwtVerify, "jwtVerify");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jwks/local.js
+init_checked_fetch();
+init_modules_watch_stub();
+function getKtyFromAlg(alg) {
+  switch (typeof alg === "string" && alg.slice(0, 2)) {
+    case "RS":
+    case "PS":
+      return "RSA";
+    case "ES":
+      return "EC";
+    case "Ed":
+      return "OKP";
+    default:
+      throw new JOSENotSupported('Unsupported "alg" value for a JSON Web Key Set');
+  }
+}
+__name(getKtyFromAlg, "getKtyFromAlg");
+function isJWKSLike(jwks) {
+  return jwks && typeof jwks === "object" && Array.isArray(jwks.keys) && jwks.keys.every(isJWKLike);
+}
+__name(isJWKSLike, "isJWKSLike");
+function isJWKLike(key) {
+  return isObject(key);
+}
+__name(isJWKLike, "isJWKLike");
+function clone(obj) {
+  if (typeof structuredClone === "function") {
+    return structuredClone(obj);
+  }
+  return JSON.parse(JSON.stringify(obj));
+}
+__name(clone, "clone");
+var LocalJWKSet = class {
+  static {
+    __name(this, "LocalJWKSet");
+  }
+  constructor(jwks) {
+    this._cached = /* @__PURE__ */ new WeakMap();
+    if (!isJWKSLike(jwks)) {
+      throw new JWKSInvalid("JSON Web Key Set malformed");
+    }
+    this._jwks = clone(jwks);
+  }
+  async getKey(protectedHeader, token) {
+    const { alg, kid } = { ...protectedHeader, ...token?.header };
+    const kty = getKtyFromAlg(alg);
+    const candidates = this._jwks.keys.filter((jwk2) => {
+      let candidate = kty === jwk2.kty;
+      if (candidate && typeof kid === "string") {
+        candidate = kid === jwk2.kid;
+      }
+      if (candidate && typeof jwk2.alg === "string") {
+        candidate = alg === jwk2.alg;
+      }
+      if (candidate && typeof jwk2.use === "string") {
+        candidate = jwk2.use === "sig";
+      }
+      if (candidate && Array.isArray(jwk2.key_ops)) {
+        candidate = jwk2.key_ops.includes("verify");
+      }
+      if (candidate) {
+        switch (alg) {
+          case "ES256":
+            candidate = jwk2.crv === "P-256";
+            break;
+          case "ES256K":
+            candidate = jwk2.crv === "secp256k1";
+            break;
+          case "ES384":
+            candidate = jwk2.crv === "P-384";
+            break;
+          case "ES512":
+            candidate = jwk2.crv === "P-521";
+            break;
+          case "Ed25519":
+            candidate = jwk2.crv === "Ed25519";
+            break;
+          case "EdDSA":
+            candidate = jwk2.crv === "Ed25519" || jwk2.crv === "Ed448";
+            break;
+        }
+      }
+      return candidate;
+    });
+    const { 0: jwk, length } = candidates;
+    if (length === 0) {
+      throw new JWKSNoMatchingKey();
+    }
+    if (length !== 1) {
+      const error45 = new JWKSMultipleMatchingKeys();
+      const { _cached } = this;
+      error45[Symbol.asyncIterator] = async function* () {
+        for (const jwk2 of candidates) {
+          try {
+            yield await importWithAlgCache(_cached, jwk2, alg);
+          } catch {
+          }
+        }
+      };
+      throw error45;
+    }
+    return importWithAlgCache(this._cached, jwk, alg);
+  }
+};
+async function importWithAlgCache(cache, jwk, alg) {
+  const cached2 = cache.get(jwk) || cache.set(jwk, {}).get(jwk);
+  if (cached2[alg] === void 0) {
+    const key = await importJWK({ ...jwk, ext: true }, alg);
+    if (key instanceof Uint8Array || key.type !== "public") {
+      throw new JWKSInvalid("JSON Web Key Set members must be public keys");
+    }
+    cached2[alg] = key;
+  }
+  return cached2[alg];
+}
+__name(importWithAlgCache, "importWithAlgCache");
+function createLocalJWKSet(jwks) {
+  const set2 = new LocalJWKSet(jwks);
+  const localJWKSet = /* @__PURE__ */ __name(async (protectedHeader, token) => set2.getKey(protectedHeader, token), "localJWKSet");
+  Object.defineProperties(localJWKSet, {
+    jwks: {
+      value: /* @__PURE__ */ __name(() => clone(set2._jwks), "value"),
+      enumerable: true,
+      configurable: false,
+      writable: false
+    }
+  });
+  return localJWKSet;
+}
+__name(createLocalJWKSet, "createLocalJWKSet");
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jwks/remote.js
+init_checked_fetch();
+init_modules_watch_stub();
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/runtime/fetch_jwks.js
+init_checked_fetch();
+init_modules_watch_stub();
+var fetchJwks = /* @__PURE__ */ __name(async (url2, timeout, options) => {
+  let controller;
+  let id;
+  let timedOut = false;
+  if (typeof AbortController === "function") {
+    controller = new AbortController();
+    id = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeout);
+  }
+  const response = await fetch(url2.href, {
+    signal: controller ? controller.signal : void 0,
+    redirect: "manual",
+    headers: options.headers
+  }).catch((err) => {
+    if (timedOut)
+      throw new JWKSTimeout();
+    throw err;
+  });
+  if (id !== void 0)
+    clearTimeout(id);
+  if (response.status !== 200) {
+    throw new JOSEError("Expected 200 OK from the JSON Web Key Set HTTP response");
+  }
+  try {
+    return await response.json();
+  } catch {
+    throw new JOSEError("Failed to parse the JSON Web Key Set HTTP response as JSON");
+  }
+}, "fetchJwks");
+var fetch_jwks_default = fetchJwks;
+
+// ../../node_modules/.pnpm/jose@5.10.0/node_modules/jose/dist/browser/jwks/remote.js
+function isCloudflareWorkers() {
+  return typeof WebSocketPair !== "undefined" || typeof navigator !== "undefined" && true || typeof EdgeRuntime !== "undefined" && EdgeRuntime === "vercel";
+}
+__name(isCloudflareWorkers, "isCloudflareWorkers");
+var USER_AGENT;
+if (typeof navigator === "undefined" || !"Cloudflare-Workers"?.startsWith?.("Mozilla/5.0 ")) {
+  const NAME = "jose";
+  const VERSION = "v5.10.0";
+  USER_AGENT = `${NAME}/${VERSION}`;
+}
+var jwksCache = Symbol();
+function isFreshJwksCache(input, cacheMaxAge) {
+  if (typeof input !== "object" || input === null) {
+    return false;
+  }
+  if (!("uat" in input) || typeof input.uat !== "number" || Date.now() - input.uat >= cacheMaxAge) {
+    return false;
+  }
+  if (!("jwks" in input) || !isObject(input.jwks) || !Array.isArray(input.jwks.keys) || !Array.prototype.every.call(input.jwks.keys, isObject)) {
+    return false;
+  }
+  return true;
+}
+__name(isFreshJwksCache, "isFreshJwksCache");
+var RemoteJWKSet = class {
+  static {
+    __name(this, "RemoteJWKSet");
+  }
+  constructor(url2, options) {
+    if (!(url2 instanceof URL)) {
+      throw new TypeError("url must be an instance of URL");
+    }
+    this._url = new URL(url2.href);
+    this._options = { agent: options?.agent, headers: options?.headers };
+    this._timeoutDuration = typeof options?.timeoutDuration === "number" ? options?.timeoutDuration : 5e3;
+    this._cooldownDuration = typeof options?.cooldownDuration === "number" ? options?.cooldownDuration : 3e4;
+    this._cacheMaxAge = typeof options?.cacheMaxAge === "number" ? options?.cacheMaxAge : 6e5;
+    if (options?.[jwksCache] !== void 0) {
+      this._cache = options?.[jwksCache];
+      if (isFreshJwksCache(options?.[jwksCache], this._cacheMaxAge)) {
+        this._jwksTimestamp = this._cache.uat;
+        this._local = createLocalJWKSet(this._cache.jwks);
+      }
+    }
+  }
+  coolingDown() {
+    return typeof this._jwksTimestamp === "number" ? Date.now() < this._jwksTimestamp + this._cooldownDuration : false;
+  }
+  fresh() {
+    return typeof this._jwksTimestamp === "number" ? Date.now() < this._jwksTimestamp + this._cacheMaxAge : false;
+  }
+  async getKey(protectedHeader, token) {
+    if (!this._local || !this.fresh()) {
+      await this.reload();
+    }
+    try {
+      return await this._local(protectedHeader, token);
+    } catch (err) {
+      if (err instanceof JWKSNoMatchingKey) {
+        if (this.coolingDown() === false) {
+          await this.reload();
+          return this._local(protectedHeader, token);
+        }
+      }
+      throw err;
+    }
+  }
+  async reload() {
+    if (this._pendingFetch && isCloudflareWorkers()) {
+      this._pendingFetch = void 0;
+    }
+    const headers = new Headers(this._options.headers);
+    if (USER_AGENT && !headers.has("User-Agent")) {
+      headers.set("User-Agent", USER_AGENT);
+      this._options.headers = Object.fromEntries(headers.entries());
+    }
+    this._pendingFetch || (this._pendingFetch = fetch_jwks_default(this._url, this._timeoutDuration, this._options).then((json3) => {
+      this._local = createLocalJWKSet(json3);
+      if (this._cache) {
+        this._cache.uat = Date.now();
+        this._cache.jwks = json3;
+      }
+      this._jwksTimestamp = Date.now();
+      this._pendingFetch = void 0;
+    }).catch((err) => {
+      this._pendingFetch = void 0;
+      throw err;
+    }));
+    await this._pendingFetch;
+  }
+};
+function createRemoteJWKSet(url2, options) {
+  const set2 = new RemoteJWKSet(url2, options);
+  const remoteJWKSet = /* @__PURE__ */ __name(async (protectedHeader, token) => set2.getKey(protectedHeader, token), "remoteJWKSet");
+  Object.defineProperties(remoteJWKSet, {
+    coolingDown: {
+      get: /* @__PURE__ */ __name(() => set2.coolingDown(), "get"),
+      enumerable: true,
+      configurable: false
+    },
+    fresh: {
+      get: /* @__PURE__ */ __name(() => set2.fresh(), "get"),
+      enumerable: true,
+      configurable: false
+    },
+    reload: {
+      value: /* @__PURE__ */ __name(() => set2.reload(), "value"),
+      enumerable: true,
+      configurable: false,
+      writable: false
+    },
+    reloading: {
+      get: /* @__PURE__ */ __name(() => !!set2._pendingFetch, "get"),
+      enumerable: true,
+      configurable: false
+    },
+    jwks: {
+      value: /* @__PURE__ */ __name(() => set2._local?.jwks(), "value"),
+      enumerable: true,
+      configurable: false,
+      writable: false
+    }
+  });
+  return remoteJWKSet;
+}
+__name(createRemoteJWKSet, "createRemoteJWKSet");
+
+// ../be-auth/src/adapters/neon-auth.ts
+function getNeonAuthConfig(env) {
+  const actualEnv = env || typeof globalThis !== "undefined" && globalThis.env || typeof process !== "undefined" && process.env || {};
+  const projectId = actualEnv.STACK_PROJECT_ID;
+  const projectSecret = actualEnv.STACK_PROJECT_SECRET;
+  const jwksUrl = actualEnv.STACK_JWKS_URL || `https://api.stack-auth.com/api/v1/projects/${projectId}/.well-known/jwks.json`;
+  if (!projectId) {
+    throw new Error(
+      "STACK_PROJECT_ID is required but not provided. Make sure it's configured in wrangler.toml or environment variables."
+    );
+  }
+  return { projectId, projectSecret, jwksUrl };
+}
+__name(getNeonAuthConfig, "getNeonAuthConfig");
+var jwksCache2 = null;
+var jwksUrlCache = null;
+function getJWKS(jwksUrl) {
+  if (!jwksCache2 || jwksUrlCache !== jwksUrl) {
+    jwksCache2 = createRemoteJWKSet(new URL(jwksUrl));
+    jwksUrlCache = jwksUrl;
+  }
+  return jwksCache2;
+}
+__name(getJWKS, "getJWKS");
+async function verifyNeonAuthToken(token, env) {
+  try {
+    const { projectId, jwksUrl } = getNeonAuthConfig(env);
+    const JWKS = getJWKS(jwksUrl);
+    const possibleIssuers = [
+      `https://api.stack-auth.com/api/v1/${projectId}`,
+      `https://api.stackauth.dev/api/v1/${projectId}`,
+      `https://${projectId}.stackauth.dev`,
+      `https://stack-auth.com/${projectId}`
+    ];
+    let payload;
+    let verified = false;
+    try {
+      const result = await jwtVerify(token, JWKS);
+      payload = result.payload;
+      verified = true;
+    } catch (noIssuerError) {
+      for (const issuer of possibleIssuers) {
+        try {
+          const result = await jwtVerify(token, JWKS, { issuer });
+          payload = result.payload;
+          verified = true;
+          break;
+        } catch (issuerError) {
+          continue;
+        }
+      }
+      if (!verified) {
+        throw noIssuerError;
+      }
+    }
+    const userId = payload.sub || payload.userId || payload.id;
+    if (!userId) {
+      throw new Error("Invalid token: No user ID found in token");
+    }
+    return {
+      sub: userId,
+      userId,
+      email: payload.email,
+      ...payload
+    };
+  } catch (error45) {
+    if (error45.code === "ERR_JWT_EXPIRED") {
+      throw new Error("Token has expired");
+    }
+    if (error45.code === "ERR_JWT_INVALID") {
+      throw new Error("Invalid token");
+    }
+    throw new Error(`Token verification failed: ${error45.message}`);
+  }
+}
+__name(verifyNeonAuthToken, "verifyNeonAuthToken");
 
 // ../be-auth/index.ts
 async function authenticate(c, next) {
   try {
     const authHeader = c.req.header("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return c.json({ error: "Unauthorized: Missing or invalid Authorization header" }, 401);
+    if (!authHeader) {
+      console.error("Missing Authorization header");
+      return c.json(
+        { error: "Unauthorized: Missing Authorization header" },
+        401
+      );
+    }
+    if (!authHeader.startsWith("Bearer ")) {
+      console.error(
+        "Invalid Authorization header format:",
+        authHeader.substring(0, 20) + "..."
+      );
+      return c.json(
+        {
+          error: "Unauthorized: Invalid Authorization header format. Expected 'Bearer <token>'"
+        },
+        401
+      );
     }
     const token = authHeader.substring(7);
-    const env = c.env || (typeof process !== "undefined" ? process.env : {});
-    const clerk = getClerk(env);
-    const sessionClaims = await clerk.verifyToken(token);
-    if (!sessionClaims || !sessionClaims.sub) {
-      return c.json({ error: "Unauthorized: Invalid token" }, 401);
+    if (!token || token.trim().length === 0) {
+      console.error("Empty token after Bearer prefix");
+      return c.json({ error: "Unauthorized: Empty token" }, 401);
     }
-    c.set("userId", sessionClaims.sub);
-    await next();
+    const env = c.env || (typeof process !== "undefined" ? process.env : {});
+    try {
+      const sessionClaims = await verifyNeonAuthToken(token, env);
+      console.log("Token verified successfully, user ID:", sessionClaims.sub);
+      if (!sessionClaims || !sessionClaims.sub) {
+        console.error(
+          "Token verification returned no session claims or user ID"
+        );
+        return c.json(
+          { error: "Unauthorized: Invalid token - no user ID found" },
+          401
+        );
+      }
+      c.set("userId", sessionClaims.sub);
+      await next();
+    } catch (verifyError) {
+      console.error("Token verification error:", {
+        message: verifyError.message,
+        name: verifyError.name,
+        stack: verifyError.stack,
+        tokenPreview: token.substring(0, 30) + "...",
+        tokenLength: token.length
+      });
+      if (verifyError.message?.includes("expired")) {
+        return c.json(
+          {
+            error: "Unauthorized: Token has expired",
+            details: verifyError.message
+          },
+          401
+        );
+      }
+      return c.json(
+        {
+          error: "Unauthorized: Token verification failed",
+          details: verifyError.message,
+          errorType: verifyError.name
+        },
+        401
+      );
+    }
   } catch (error45) {
-    console.error("Authentication error:", error45);
+    console.error("Authentication middleware error:", error45);
     return c.json(
-      { error: "Unauthorized: Token verification failed", details: error45.message },
+      { error: "Unauthorized: Authentication failed", details: error45.message },
       401
     );
   }
@@ -12342,16 +9565,16 @@ var ZodToOpenAPIError = class {
   static {
     __name(this, "ZodToOpenAPIError");
   }
-  constructor(message) {
-    this.message = message;
+  constructor(message2) {
+    this.message = message2;
   }
 };
 var ConflictError = class extends ZodToOpenAPIError {
   static {
     __name(this, "ConflictError");
   }
-  constructor(message, data) {
-    super(message);
+  constructor(message2, data) {
+    super(message2);
     this.data = data;
   }
 };
@@ -13334,7 +10557,7 @@ init_checked_fetch();
 init_modules_watch_stub();
 var validCookieNameRegEx = /^[\w!#$%&'*.^`|~+-]+$/;
 var validCookieValueRegEx = /^[ !#-:<-[\]-~]*$/;
-var parse3 = /* @__PURE__ */ __name((cookie, name) => {
+var parse2 = /* @__PURE__ */ __name((cookie, name) => {
   if (name && cookie.indexOf(name) === -1) {
     return {};
   }
@@ -13377,13 +10600,13 @@ var getCookie = /* @__PURE__ */ __name((c, key, prefix) => {
     } else if (prefix === "host") {
       finalKey = "__Host-" + key;
     }
-    const obj2 = parse3(cookie, finalKey);
+    const obj2 = parse2(cookie, finalKey);
     return obj2[finalKey];
   }
   if (!cookie) {
     return {};
   }
-  const obj = parse3(cookie);
+  const obj = parse2(cookie);
   return obj;
 }, "getCookie");
 
@@ -13449,8 +10672,8 @@ var validator = /* @__PURE__ */ __name((target, validationFunc) => {
         try {
           value = await c.req.json();
         } catch {
-          const message = "Malformed JSON in request body";
-          throw new HTTPException(400, { message });
+          const message2 = "Malformed JSON in request body";
+          throw new HTTPException(400, { message: message2 });
         }
         break;
       case "form": {
@@ -13466,9 +10689,9 @@ var validator = /* @__PURE__ */ __name((target, validationFunc) => {
             formData = await bufferToFormData(arrayBuffer, contentType);
             c.req.bodyCache.formData = formData;
           } catch (e) {
-            let message = "Malformed FormData request.";
-            message += e instanceof Error ? ` ${e.message}` : ` ${String(e)}`;
-            throw new HTTPException(400, { message });
+            let message2 = "Malformed FormData request.";
+            message2 += e instanceof Error ? ` ${e.message}` : ` ${String(e)}`;
+            throw new HTTPException(400, { message: message2 });
           }
         }
         const form = {};
@@ -13641,14 +10864,14 @@ __export(external_exports, {
   any: () => any,
   array: () => array,
   base64: () => base642,
-  base64url: () => base64url3,
+  base64url: () => base64url2,
   bigint: () => bigint2,
   boolean: () => boolean2,
   catch: () => _catch2,
   check: () => check,
   cidrv4: () => cidrv42,
   cidrv6: () => cidrv62,
-  clone: () => clone,
+  clone: () => clone2,
   codec: () => codec,
   coerce: () => coerce_exports,
   config: () => config,
@@ -13726,7 +10949,7 @@ __export(external_exports, {
   object: () => object,
   optional: () => optional,
   overwrite: () => _overwrite,
-  parse: () => parse5,
+  parse: () => parse4,
   parseAsync: () => parseAsync2,
   partialRecord: () => partialRecord,
   pipe: () => pipe,
@@ -14018,7 +11241,7 @@ __export(core_exports2, {
   _uuidv7: () => _uuidv7,
   _void: () => _void,
   _xid: () => _xid,
-  clone: () => clone,
+  clone: () => clone2,
   config: () => config,
   decode: () => decode2,
   decodeAsync: () => decodeAsync,
@@ -14032,7 +11255,7 @@ __export(core_exports2, {
   isValidBase64URL: () => isValidBase64URL,
   isValidJWT: () => isValidJWT,
   locales: () => locales_exports,
-  parse: () => parse4,
+  parse: () => parse3,
   parseAsync: () => parseAsync,
   prettifyError: () => prettifyError,
   regexes: () => regexes_exports,
@@ -14161,7 +11384,7 @@ __export(util_exports, {
   captureStackTrace: () => captureStackTrace,
   cleanEnum: () => cleanEnum,
   cleanRegex: () => cleanRegex,
-  clone: () => clone,
+  clone: () => clone2,
   cloneDef: () => cloneDef,
   createTransparentProxy: () => createTransparentProxy,
   defineLazy: () => defineLazy,
@@ -14176,7 +11399,7 @@ __export(util_exports, {
   getParsedType: () => getParsedType,
   getSizableOrigin: () => getSizableOrigin,
   hexToUint8Array: () => hexToUint8Array,
-  isObject: () => isObject,
+  isObject: () => isObject2,
   isPlainObject: () => isPlainObject,
   issue: () => issue,
   joinValues: () => joinValues,
@@ -14364,10 +11587,10 @@ function esc(str) {
 __name(esc, "esc");
 var captureStackTrace = "captureStackTrace" in Error ? Error.captureStackTrace : (..._args) => {
 };
-function isObject(data) {
+function isObject2(data) {
   return typeof data === "object" && data !== null && !Array.isArray(data);
 }
-__name(isObject, "isObject");
+__name(isObject2, "isObject");
 var allowsEval = cached(() => {
   if (typeof navigator !== "undefined" && "Cloudflare-Workers"?.includes("Cloudflare")) {
     return false;
@@ -14381,13 +11604,13 @@ var allowsEval = cached(() => {
   }
 });
 function isPlainObject(o) {
-  if (isObject(o) === false)
+  if (isObject2(o) === false)
     return false;
   const ctor = o.constructor;
   if (ctor === void 0)
     return true;
   const prot = ctor.prototype;
-  if (isObject(prot) === false)
+  if (isObject2(prot) === false)
     return false;
   if (Object.prototype.hasOwnProperty.call(prot, "isPrototypeOf") === false) {
     return false;
@@ -14463,13 +11686,13 @@ function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 __name(escapeRegex, "escapeRegex");
-function clone(inst, def, params) {
+function clone2(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
   if (!def || params?.parent)
     cl._zod.parent = inst;
   return cl;
 }
-__name(clone, "clone");
+__name(clone2, "clone");
 function normalizeParams(_params) {
   const params = _params;
   if (!params)
@@ -14564,7 +11787,7 @@ function pick(schema, mask) {
     },
     checks: []
   });
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(pick, "pick");
 function omit2(schema, mask) {
@@ -14585,7 +11808,7 @@ function omit2(schema, mask) {
     },
     checks: []
   });
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(omit2, "omit");
 function extend(schema, shape) {
@@ -14605,7 +11828,7 @@ function extend(schema, shape) {
     },
     checks: []
   });
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(extend, "extend");
 function safeExtend(schema, shape) {
@@ -14621,7 +11844,7 @@ function safeExtend(schema, shape) {
     },
     checks: schema._zod.def.checks
   };
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(safeExtend, "safeExtend");
 function merge(a, b) {
@@ -14637,7 +11860,7 @@ function merge(a, b) {
     checks: []
     // delete existing checks
   });
-  return clone(a, def);
+  return clone2(a, def);
 }
 __name(merge, "merge");
 function partial(Class2, schema, mask) {
@@ -14670,7 +11893,7 @@ function partial(Class2, schema, mask) {
     },
     checks: []
   });
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(partial, "partial");
 function required(Class2, schema, mask) {
@@ -14703,7 +11926,7 @@ function required(Class2, schema, mask) {
     },
     checks: []
   });
-  return clone(schema, def);
+  return clone2(schema, def);
 }
 __name(required, "required");
 function aborted(x, startIndex = 0) {
@@ -14726,15 +11949,15 @@ function prefixIssues(path, issues) {
   });
 }
 __name(prefixIssues, "prefixIssues");
-function unwrapMessage(message) {
-  return typeof message === "string" ? message : message?.message;
+function unwrapMessage(message2) {
+  return typeof message2 === "string" ? message2 : message2?.message;
 }
 __name(unwrapMessage, "unwrapMessage");
 function finalizeIssue(iss, ctx, config2) {
   const full = { ...iss, path: iss.path ?? [] };
   if (!iss.message) {
-    const message = unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config2.customError?.(iss)) ?? unwrapMessage(config2.localeError?.(iss)) ?? "Invalid input";
-    full.message = message;
+    const message2 = unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config2.customError?.(iss)) ?? unwrapMessage(config2.localeError?.(iss)) ?? "Invalid input";
+    full.message = message2;
   }
   delete full.inst;
   delete full.continue;
@@ -14798,8 +12021,8 @@ function uint8ArrayToBase64(bytes) {
   return btoa(binaryString);
 }
 __name(uint8ArrayToBase64, "uint8ArrayToBase64");
-function base64urlToUint8Array(base64url4) {
-  const base643 = base64url4.replace(/-/g, "+").replace(/_/g, "/");
+function base64urlToUint8Array(base64url3) {
+  const base643 = base64url3.replace(/-/g, "+").replace(/_/g, "/");
   const padding = "=".repeat((4 - base643.length % 4) % 4);
   return base64ToUint8Array(base643 + padding);
 }
@@ -14993,7 +12216,7 @@ var _parse = /* @__PURE__ */ __name((_Err) => (schema, value, _ctx, _params) => 
   }
   return result.value;
 }, "_parse");
-var parse4 = /* @__PURE__ */ _parse($ZodRealError);
+var parse3 = /* @__PURE__ */ _parse($ZodRealError);
 var _parseAsync = /* @__PURE__ */ __name((_Err) => async (schema, value, _ctx, params) => {
   const ctx = _ctx ? Object.assign(_ctx, { async: true }) : { async: true };
   let result = schema._zod.run({ value, issues: [] }, ctx);
@@ -15079,7 +12302,7 @@ init_modules_watch_stub();
 var regexes_exports = {};
 __export(regexes_exports, {
   base64: () => base64,
-  base64url: () => base64url2,
+  base64url: () => base64url,
   bigint: () => bigint,
   boolean: () => boolean,
   browserEmail: () => browserEmail,
@@ -15171,7 +12394,7 @@ var ipv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|(
 var cidrv4 = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/([0-9]|[1-2][0-9]|3[0-2])$/;
 var cidrv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::|([0-9a-fA-F]{1,4})?::([0-9a-fA-F]{1,4}:?){0,6})\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
 var base64 = /^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
-var base64url2 = /^[A-Za-z0-9_-]*$/;
+var base64url = /^[A-Za-z0-9_-]*$/;
 var hostname = /^(?=.{1,253}\.?$)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[-0-9a-zA-Z]{0,61}[0-9a-zA-Z])?)*\.?$/;
 var domain = /^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
 var e164 = /^\+(?:[0-9]){6,14}[0-9]$/;
@@ -16178,7 +13401,7 @@ var $ZodBase64 = /* @__PURE__ */ $constructor("$ZodBase64", (inst, def) => {
   };
 });
 function isValidBase64URL(data) {
-  if (!base64url2.test(data))
+  if (!base64url.test(data))
     return false;
   const base643 = data.replace(/[-_]/g, (c) => c === "-" ? "+" : "/");
   const padded = base643.padEnd(Math.ceil(base643.length / 4) * 4, "=");
@@ -16186,7 +13409,7 @@ function isValidBase64URL(data) {
 }
 __name(isValidBase64URL, "isValidBase64URL");
 var $ZodBase64URL = /* @__PURE__ */ $constructor("$ZodBase64URL", (inst, def) => {
-  def.pattern ?? (def.pattern = base64url2);
+  def.pattern ?? (def.pattern = base64url);
   $ZodStringFormat.init(inst, def);
   inst._zod.onattach.push((inst2) => {
     inst2._zod.bag.contentEncoding = "base64url";
@@ -16559,13 +13782,13 @@ var $ZodObject = /* @__PURE__ */ $constructor("$ZodObject", (inst, def) => {
     }
     return propValues;
   });
-  const isObject2 = isObject;
+  const isObject3 = isObject2;
   const catchall = def.catchall;
   let value;
   inst._zod.parse = (payload, ctx) => {
     value ?? (value = _normalized.value);
     const input = payload.value;
-    if (!isObject2(input)) {
+    if (!isObject3(input)) {
       payload.issues.push({
         expected: "object",
         code: "invalid_type",
@@ -16639,7 +13862,7 @@ var $ZodObjectJIT = /* @__PURE__ */ $constructor("$ZodObjectJIT", (inst, def) =>
     return (payload, ctx) => fn(shape, payload, ctx);
   }, "generateFastpass");
   let fastpass;
-  const isObject2 = isObject;
+  const isObject3 = isObject2;
   const jit = !globalConfig.jitless;
   const allowsEval2 = allowsEval;
   const fastEnabled = jit && allowsEval2.value;
@@ -16648,7 +13871,7 @@ var $ZodObjectJIT = /* @__PURE__ */ $constructor("$ZodObjectJIT", (inst, def) =>
   inst._zod.parse = (payload, ctx) => {
     value ?? (value = _normalized.value);
     const input = payload.value;
-    if (!isObject2(input)) {
+    if (!isObject3(input)) {
       payload.issues.push({
         expected: "object",
         code: "invalid_type",
@@ -16772,7 +13995,7 @@ var $ZodDiscriminatedUnion = /* @__PURE__ */ $constructor("$ZodDiscriminatedUnio
   });
   inst._zod.parse = (payload, ctx) => {
     const input = payload.value;
-    if (!isObject(input)) {
+    if (!isObject2(input)) {
       payload.issues.push({
         code: "invalid_type",
         expected: "object",
@@ -17560,10 +14783,10 @@ var $ZodFunction = /* @__PURE__ */ $constructor("$ZodFunction", (inst, def) => {
       throw new Error("implement() must be called with a function");
     }
     return function(...args) {
-      const parsedArgs = inst._def.input ? parse4(inst._def.input, args) : args;
+      const parsedArgs = inst._def.input ? parse3(inst._def.input, args) : args;
       const result = Reflect.apply(func, this, parsedArgs);
       if (inst._def.output) {
-        return parse4(inst._def.output, result);
+        return parse3(inst._def.output, result);
       }
       return result;
     };
@@ -24112,10 +21335,10 @@ function _property(property, schema, params) {
   });
 }
 __name(_property, "_property");
-function _mime(types2, params) {
+function _mime(types3, params) {
   return new $ZodCheckMimeType({
     check: "mime_type",
-    mime: types2,
+    mime: types3,
     ...normalizeParams(params)
   });
 }
@@ -25395,7 +22618,7 @@ var ZodRealError = $constructor("ZodError", initializer2, {
 });
 
 // ../../node_modules/.pnpm/zod@4.1.8/node_modules/zod/v4/classic/parse.js
-var parse5 = /* @__PURE__ */ _parse(ZodRealError);
+var parse4 = /* @__PURE__ */ _parse(ZodRealError);
 var parseAsync2 = /* @__PURE__ */ _parseAsync(ZodRealError);
 var safeParse2 = /* @__PURE__ */ _safeParse(ZodRealError);
 var safeParseAsync2 = /* @__PURE__ */ _safeParseAsync(ZodRealError);
@@ -25426,13 +22649,13 @@ var ZodType = /* @__PURE__ */ $constructor("ZodType", (inst, def) => {
       // { parent: true }
     );
   };
-  inst.clone = (def2, params) => clone(inst, def2, params);
+  inst.clone = (def2, params) => clone2(inst, def2, params);
   inst.brand = () => inst;
   inst.register = (reg, meta) => {
     reg.add(inst, meta);
     return inst;
   };
-  inst.parse = (data, params) => parse5(inst, data, params, { callee: inst.parse });
+  inst.parse = (data, params) => parse4(inst, data, params, { callee: inst.parse });
   inst.safeParse = (data, params) => safeParse2(inst, data, params);
   inst.parseAsync = async (data, params) => parseAsync2(inst, data, params, { callee: inst.parseAsync });
   inst.safeParseAsync = async (data, params) => safeParseAsync2(inst, data, params);
@@ -25697,10 +22920,10 @@ var ZodBase64URL = /* @__PURE__ */ $constructor("ZodBase64URL", (inst, def) => {
   $ZodBase64URL.init(inst, def);
   ZodStringFormat.init(inst, def);
 });
-function base64url3(params) {
+function base64url2(params) {
   return _base64url(ZodBase64URL, params);
 }
-__name(base64url3, "base64url");
+__name(base64url2, "base64url");
 var ZodE164 = /* @__PURE__ */ $constructor("ZodE164", (inst, def) => {
   $ZodE164.init(inst, def);
   ZodStringFormat.init(inst, def);
@@ -26060,7 +23283,7 @@ function record(keyType, valueType, params) {
 }
 __name(record, "record");
 function partialRecord(keyType, valueType, params) {
-  const k = clone(keyType);
+  const k = clone2(keyType);
   k._zod.values = void 0;
   return new ZodRecord({
     type: "record",
@@ -26181,7 +23404,7 @@ var ZodFile = /* @__PURE__ */ $constructor("ZodFile", (inst, def) => {
   ZodType.init(inst, def);
   inst.min = (size, params) => inst.check(_minSize(size, params));
   inst.max = (size, params) => inst.check(_maxSize(size, params));
-  inst.mime = (types2, params) => inst.check(_mime(Array.isArray(types2) ? types2 : [types2], params));
+  inst.mime = (types3, params) => inst.check(_mime(Array.isArray(types3) ? types3 : [types3], params));
 });
 function file(params) {
   return _file(ZodFile, params);
@@ -26752,10 +23975,10 @@ var OpenAPIHono = class _OpenAPIHono extends Hono2 {
   }
 };
 extendZodWithOpenApi(external_exports);
-function addBasePathToDocument(document, basePath14) {
+function addBasePathToDocument(document, basePath) {
   const updatedPaths = {};
   Object.keys(document.paths).forEach((path) => {
-    updatedPaths[mergePath(basePath14.replaceAll(/:([^\/]+)/g, "{$1}"), path)] = document.paths[path];
+    updatedPaths[mergePath(basePath.replaceAll(/:([^\/]+)/g, "{$1}"), path)] = document.paths[path];
   });
   return {
     ...document,
@@ -26985,7 +24208,7 @@ init_modules_watch_stub();
 init_checked_fetch();
 init_modules_watch_stub();
 var import_index = __toESM(require_serverless(), 1);
-var Client2 = import_index.default.Client;
+var Client = import_index.default.Client;
 var ClientBase = import_index.default.ClientBase;
 var Connection = import_index.default.Connection;
 var DatabaseError = import_index.default.DatabaseError;
@@ -26995,7 +24218,7 @@ var Query = import_index.default.Query;
 var defaults = import_index.default.defaults;
 var neon = import_index.default.neon;
 var neonConfig = import_index.default.neonConfig;
-var types = import_index.default.types;
+var types2 = import_index.default.types;
 
 // ../../node_modules/.pnpm/drizzle-orm@0.44.5_@neondatabase+serverless@0.6.1_pg@8.16.3_postgres@3.4.7/node_modules/drizzle-orm/entity.js
 init_checked_fetch();
@@ -27035,8 +24258,8 @@ var ConsoleLogWriter = class {
     __name(this, "ConsoleLogWriter");
   }
   static [entityKind] = "ConsoleLogWriter";
-  write(message) {
-    console.log(message);
+  write(message2) {
+    console.log(message2);
   }
 };
 var DefaultLogger = class {
@@ -28206,8 +25429,8 @@ var SQL = class _SQL {
     }
     return new _SQL.Aliased(this, alias);
   }
-  mapWith(decoder) {
-    this.decoder = typeof decoder === "function" ? { mapFromDriverValue: decoder } : decoder;
+  mapWith(decoder2) {
+    this.decoder = typeof decoder2 === "function" ? { mapFromDriverValue: decoder2 } : decoder2;
     return this;
   }
   inlineParams() {
@@ -28259,9 +25482,9 @@ var Param = class {
    * @param value - Parameter value
    * @param encoder - Encoder to convert the value to a driver parameter
    */
-  constructor(value, encoder = noopEncoder) {
+  constructor(value, encoder2 = noopEncoder) {
     this.value = value;
-    this.encoder = encoder;
+    this.encoder = encoder2;
   }
   static [entityKind] = "Param";
   brand;
@@ -28318,8 +25541,8 @@ __name(sql, "sql");
   }
   __name(placeholder2, "placeholder2");
   sql2.placeholder = placeholder2;
-  function param2(value, encoder) {
-    return new Param(value, encoder);
+  function param2(value, encoder2) {
+    return new Param(value, encoder2);
   }
   __name(param2, "param2");
   sql2.param = param2;
@@ -28598,13 +25821,13 @@ function mapResultRow(columns, row, joinsNotNullableMap) {
   const nullifyMap = {};
   const result = columns.reduce(
     (result2, { path, field }, columnIndex) => {
-      let decoder;
+      let decoder2;
       if (is(field, Column)) {
-        decoder = field;
+        decoder2 = field;
       } else if (is(field, SQL)) {
-        decoder = field.decoder;
+        decoder2 = field.decoder;
       } else {
-        decoder = field.sql.decoder;
+        decoder2 = field.sql.decoder;
       }
       let node = result2;
       for (const [pathChunkIndex, pathChunk] of path.entries()) {
@@ -28615,7 +25838,7 @@ function mapResultRow(columns, row, joinsNotNullableMap) {
           node = node[pathChunk];
         } else {
           const rawValue = row[columnIndex];
-          const value = node[pathChunk] = rawValue === null ? null : decoder.mapFromDriverValue(rawValue);
+          const value = node[pathChunk] = rawValue === null ? null : decoder2.mapFromDriverValue(rawValue);
           if (joinsNotNullableMap && is(field, Column) && path.length === 2) {
             const objectName = path[0];
             if (!(objectName in nullifyMap)) {
@@ -30833,8 +28056,8 @@ var DrizzleError = class extends Error {
     __name(this, "DrizzleError");
   }
   static [entityKind] = "DrizzleError";
-  constructor({ message, cause }) {
-    super(message);
+  constructor({ message: message2, cause }) {
+    super(message2);
     this.name = "DrizzleError";
     this.cause = cause;
   }
@@ -31278,15 +28501,15 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
     } else {
       const value = mapColumnValue(row[selectionItemIndex]);
       const field = selectionItem.field;
-      let decoder;
+      let decoder2;
       if (is(field, Column)) {
-        decoder = field;
+        decoder2 = field;
       } else if (is(field, SQL)) {
-        decoder = field.decoder;
+        decoder2 = field.decoder;
       } else {
-        decoder = field.sql.decoder;
+        decoder2 = field.sql.decoder;
       }
-      result[selectionItem.tsKey] = value === null ? null : decoder.mapFromDriverValue(value);
+      result[selectionItem.tsKey] = value === null ? null : decoder2.mapFromDriverValue(value);
     }
   }
   return result;
@@ -31670,18 +28893,18 @@ var PgDialect = class {
     const withNoDataSql = withNoData ? sql` with no data` : void 0;
     return sql`refresh materialized view${concurrentlySql} ${view}${withNoDataSql}`;
   }
-  prepareTyping(encoder) {
-    if (is(encoder, PgJsonb) || is(encoder, PgJson)) {
+  prepareTyping(encoder2) {
+    if (is(encoder2, PgJsonb) || is(encoder2, PgJson)) {
       return "json";
-    } else if (is(encoder, PgNumeric)) {
+    } else if (is(encoder2, PgNumeric)) {
       return "decimal";
-    } else if (is(encoder, PgTime)) {
+    } else if (is(encoder2, PgTime)) {
       return "time";
-    } else if (is(encoder, PgTimestamp) || is(encoder, PgTimestampString)) {
+    } else if (is(encoder2, PgTimestamp) || is(encoder2, PgTimestampString)) {
       return "timestamp";
-    } else if (is(encoder, PgDate) || is(encoder, PgDateString)) {
+    } else if (is(encoder2, PgDate) || is(encoder2, PgDateString)) {
       return "date";
-    } else if (is(encoder, PgUUID)) {
+    } else if (is(encoder2, PgUUID)) {
       return "uuid";
     } else {
       return "none";
@@ -33275,12 +30498,12 @@ var QueryBuilder = class {
     return { as };
   }, "$with");
   with(...queries) {
-    const self2 = this;
+    const self = this;
     function select(fields) {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
         session: void 0,
-        dialect: self2.getDialect(),
+        dialect: self.getDialect(),
         withList: queries
       });
     }
@@ -33289,7 +30512,7 @@ var QueryBuilder = class {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
         session: void 0,
-        dialect: self2.getDialect(),
+        dialect: self.getDialect(),
         distinct: true
       });
     }
@@ -33298,7 +30521,7 @@ var QueryBuilder = class {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
         session: void 0,
-        dialect: self2.getDialect(),
+        dialect: self.getDialect(),
         distinct: { on }
       });
     }
@@ -34213,10 +31436,10 @@ var PgDatabase = class {
    * ```
    */
   $with = /* @__PURE__ */ __name((alias, selection) => {
-    const self2 = this;
+    const self = this;
     const as = /* @__PURE__ */ __name((qb) => {
       if (typeof qb === "function") {
-        qb = qb(new QueryBuilder(self2.dialect));
+        qb = qb(new QueryBuilder(self.dialect));
       }
       return new Proxy(
         new WithSubquery(
@@ -34254,12 +31477,12 @@ var PgDatabase = class {
    * ```
    */
   with(...queries) {
-    const self2 = this;
+    const self = this;
     function select(fields) {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
-        session: self2.session,
-        dialect: self2.dialect,
+        session: self.session,
+        dialect: self.dialect,
         withList: queries
       });
     }
@@ -34267,8 +31490,8 @@ var PgDatabase = class {
     function selectDistinct(fields) {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
-        session: self2.session,
-        dialect: self2.dialect,
+        session: self.session,
+        dialect: self.dialect,
         withList: queries,
         distinct: true
       });
@@ -34277,23 +31500,23 @@ var PgDatabase = class {
     function selectDistinctOn(on, fields) {
       return new PgSelectBuilder({
         fields: fields ?? void 0,
-        session: self2.session,
-        dialect: self2.dialect,
+        session: self.session,
+        dialect: self.dialect,
         withList: queries,
         distinct: { on }
       });
     }
     __name(selectDistinctOn, "selectDistinctOn");
     function update(table) {
-      return new PgUpdateBuilder(table, self2.session, self2.dialect, queries);
+      return new PgUpdateBuilder(table, self.session, self.dialect, queries);
     }
     __name(update, "update");
     function insert(table) {
-      return new PgInsertBuilder(table, self2.session, self2.dialect, queries);
+      return new PgInsertBuilder(table, self.session, self.dialect, queries);
     }
     __name(insert, "insert");
     function delete_(table) {
-      return new PgDeleteBase(table, self2.session, self2.dialect, queries);
+      return new PgDeleteBase(table, self.session, self.dialect, queries);
     }
     __name(delete_, "delete_");
     return { select, selectDistinct, selectDistinctOn, update, insert, delete: delete_ };
@@ -34461,8 +31684,8 @@ var NoopCache = class extends Cache {
 };
 async function hashQuery(sql2, params) {
   const dataToHash = `${sql2}-${JSON.stringify(params)}`;
-  const encoder = new TextEncoder();
-  const data = encoder.encode(dataToHash);
+  const encoder2 = new TextEncoder();
+  const data = encoder2.encode(dataToHash);
   const hashBuffer = await crypto.subtle.digest("SHA-256", data);
   const hashArray = [...new Uint8Array(hashBuffer)];
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -34477,12 +31700,12 @@ var PgPreparedQuery = class {
   static {
     __name(this, "PgPreparedQuery");
   }
-  constructor(query, cache2, queryMetadata, cacheConfig) {
+  constructor(query, cache, queryMetadata, cacheConfig) {
     this.query = query;
-    this.cache = cache2;
+    this.cache = cache;
     this.queryMetadata = queryMetadata;
     this.cacheConfig = cacheConfig;
-    if (cache2 && cache2.strategy() === "all" && cacheConfig === void 0) {
+    if (cache && cache.strategy() === "all" && cacheConfig === void 0) {
       this.cacheConfig = { enable: true, autoInvalidate: true };
     }
     if (!this.cacheConfig?.enable) {
@@ -34654,8 +31877,8 @@ var NeonHttpPreparedQuery = class extends PgPreparedQuery {
   static {
     __name(this, "NeonHttpPreparedQuery");
   }
-  constructor(client, query, logger, cache2, queryMetadata, cacheConfig, fields, _isResponseInArrayMode, customResultMapper) {
-    super(query, cache2, queryMetadata, cacheConfig);
+  constructor(client, query, logger, cache, queryMetadata, cacheConfig, fields, _isResponseInArrayMode, customResultMapper) {
+    super(query, cache, queryMetadata, cacheConfig);
     this.client = client;
     this.logger = logger;
     this.fields = fields;
@@ -34824,15 +32047,15 @@ var NeonHttpDriver = class {
     });
   }
   initMappers() {
-    types.setTypeParser(types.builtins.TIMESTAMPTZ, (val) => val);
-    types.setTypeParser(types.builtins.TIMESTAMP, (val) => val);
-    types.setTypeParser(types.builtins.DATE, (val) => val);
-    types.setTypeParser(types.builtins.INTERVAL, (val) => val);
-    types.setTypeParser(1231, (val) => val);
-    types.setTypeParser(1115, (val) => val);
-    types.setTypeParser(1185, (val) => val);
-    types.setTypeParser(1187, (val) => val);
-    types.setTypeParser(1182, (val) => val);
+    types2.setTypeParser(types2.builtins.TIMESTAMPTZ, (val) => val);
+    types2.setTypeParser(types2.builtins.TIMESTAMP, (val) => val);
+    types2.setTypeParser(types2.builtins.DATE, (val) => val);
+    types2.setTypeParser(types2.builtins.INTERVAL, (val) => val);
+    types2.setTypeParser(1231, (val) => val);
+    types2.setTypeParser(1115, (val) => val);
+    types2.setTypeParser(1185, (val) => val);
+    types2.setTypeParser(1187, (val) => val);
+    types2.setTypeParser(1182, (val) => val);
   }
 };
 function wrap(target, token, cb, deep) {
@@ -34937,26 +32160,41 @@ __name(drizzle, "drizzle");
 
 // ../db/src/drizzle/drizzle.ts
 var dbInstance = null;
-function getDatabaseUrl() {
-  const url2 = typeof globalThis !== "undefined" && globalThis.env?.DATABASE_URL || typeof process !== "undefined" && process.env?.DATABASE_URL || null;
+var dbEnv = null;
+function getDatabaseUrl(env) {
+  const url2 = env?.DATABASE_URL || typeof globalThis !== "undefined" && globalThis.env?.DATABASE_URL || typeof process !== "undefined" && process.env?.DATABASE_URL || null;
   if (!url2) {
     throw new Error(
-      "DATABASE_URL is required but not provided. Make sure it's configured in wrangler.toml (as env.DATABASE_URL) or as an environment variable."
+      "DATABASE_URL is required but not provided. Make sure it's configured in wrangler.toml (as [vars] or [env.dev.vars]) or passed via env parameter."
     );
   }
   return url2;
 }
 __name(getDatabaseUrl, "getDatabaseUrl");
-function initializeDb() {
+function initializeDb(env) {
+  if (env && env !== dbEnv) {
+    dbEnv = env;
+    const url3 = getDatabaseUrl(env);
+    const sql3 = neon(url3);
+    dbInstance = drizzle(sql3);
+    return dbInstance;
+  }
   if (dbInstance) {
     return dbInstance;
   }
-  const url2 = getDatabaseUrl();
+  const url2 = getDatabaseUrl(env);
   const sql2 = neon(url2);
   dbInstance = drizzle(sql2);
+  if (env) {
+    dbEnv = env;
+  }
   return dbInstance;
 }
 __name(initializeDb, "initializeDb");
+function getDb(env) {
+  return initializeDb(env);
+}
+__name(getDb, "getDb");
 var _db;
 var db = new Proxy({}, {
   get(_target, prop) {
@@ -35390,11 +32628,13 @@ var taskGroups = pgTable(
 );
 
 // ../be-services/src/goal/listGoals.ts
-async function listGoals(userId, status) {
-  const goalsList = await db.select().from(goals).where(and(eq(goals.userId, userId), eq(goals.status, status))).orderBy(goals.createdAt);
+async function listGoals(userId, status, env) {
+  const db2 = getDb(env);
+  const validStatus = status === "active" || status === "done" ? status : "active";
+  const goalsList = await db2.select().from(goals).where(and(eq(goals.userId, userId), eq(goals.status, validStatus))).orderBy(goals.createdAt);
   const goalsWithTasks = await Promise.all(
     goalsList.map(async (goal2) => {
-      const taskGoalRelations = await db.select().from(taskGoals).where(eq(taskGoals.goalId, goal2.id));
+      const taskGoalRelations = await db2.select().from(taskGoals).where(eq(taskGoals.goalId, goal2.id));
       if (taskGoalRelations.length === 0) {
         return {
           ...goal2,
@@ -35403,13 +32643,13 @@ async function listGoals(userId, status) {
         };
       }
       const taskIds = taskGoalRelations.map((tg) => tg.taskId);
-      const tasksList = taskIds.length > 0 ? await db.select().from(tasks).where(
+      const tasksList = taskIds.length > 0 ? await db2.select().from(tasks).where(
         and(
           eq(tasks.userId, userId),
           inArray(tasks.id, taskIds)
         )
       ).orderBy(tasks.orderIndex) : [];
-      const groupsList = await db.select().from(taskGroups).where(eq(taskGroups.goalId, goal2.id));
+      const groupsList = await db2.select().from(taskGroups).where(eq(taskGroups.goalId, goal2.id));
       const sortedTasks = tasksList.sort((a, b) => a.orderIndex - b.orderIndex);
       return {
         ...goal2,
@@ -35425,8 +32665,9 @@ __name(listGoals, "listGoals");
 // ../be-services/src/goal/createGoal.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function createGoal(userId, data) {
-  const [goal2] = await db.insert(goals).values({
+async function createGoal(userId, data, env) {
+  const db2 = getDb(env);
+  const [goal2] = await db2.insert(goals).values({
     userId,
     title: data.title,
     description: data.description || null,
@@ -35442,8 +32683,9 @@ __name(createGoal, "createGoal");
 // ../be-services/src/goal/updateGoal.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function updateGoal(userId, goalId, data) {
-  const [goal2] = await db.update(goals).set({
+async function updateGoal(userId, goalId, data, env) {
+  const db2 = getDb(env);
+  const [goal2] = await db2.update(goals).set({
     ...data.title !== void 0 && { title: data.title },
     ...data.description !== void 0 && { description: data.description || null },
     ...data.category !== void 0 && { category: data.category },
@@ -35462,8 +32704,9 @@ __name(updateGoal, "updateGoal");
 // ../be-services/src/goal/deleteGoal.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function deleteGoal(userId, goalId) {
-  await db.delete(goals).where(and(eq(goals.id, goalId), eq(goals.userId, userId)));
+async function deleteGoal(userId, goalId, env) {
+  const db2 = getDb(env);
+  await db2.delete(goals).where(and(eq(goals.id, goalId), eq(goals.userId, userId)));
 }
 __name(deleteGoal, "deleteGoal");
 
@@ -35485,7 +32728,7 @@ goal.openapi(
     tags: tags2,
     request: {
       query: external_exports.object({
-        status: GoalStatus
+        status: GoalStatus.optional().default("active")
       })
     },
     responses: {
@@ -35502,7 +32745,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { status } = c.req.valid("query");
-    const data = await listGoals(userId, status);
+    const data = await listGoals(userId, status, c.env);
     return c.json({ data });
   }
 );
@@ -35534,7 +32777,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    const data = await createGoal(userId, body);
+    const data = await createGoal(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -35570,7 +32813,7 @@ goal.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateGoal(userId, id, body);
+    const data = await updateGoal(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -35598,7 +32841,7 @@ goal.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    await deleteGoal(userId, id);
+    await deleteGoal(userId, id, c.env);
     return c.json({ message: "Goal deleted" });
   }
 );
@@ -35610,12 +32853,13 @@ init_modules_watch_stub();
 // ../be-services/src/task/listTasks.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function listTasks(userId, limit = 20, offset = 0) {
-  const tasksList = await db.select().from(tasks).where(eq(tasks.userId, userId)).limit(limit).offset(offset).orderBy(tasks.orderIndex);
+async function listTasks(userId, limit = 20, offset = 0, env) {
+  const db2 = getDb(env);
+  const tasksList = await db2.select().from(tasks).where(eq(tasks.userId, userId)).limit(limit).offset(offset).orderBy(tasks.orderIndex);
   const taskIds = tasksList.map((t) => t.id);
-  const taskGoalRelations = taskIds.length > 0 ? await db.select().from(taskGoals).where(inArray(taskGoals.taskId, taskIds)) : [];
+  const taskGoalRelations = taskIds.length > 0 ? await db2.select().from(taskGoals).where(inArray(taskGoals.taskId, taskIds)) : [];
   const goalIds = [...new Set(taskGoalRelations.map((tg) => tg.goalId))];
-  const goalsList = goalIds.length > 0 ? await db.select().from(goals).where(inArray(goals.id, goalIds)) : [];
+  const goalsList = goalIds.length > 0 ? await db2.select().from(goals).where(inArray(goals.id, goalIds)) : [];
   const goalMap = /* @__PURE__ */ new Map();
   goalsList.forEach((goal2) => goalMap.set(goal2.id, goal2));
   const taskGoalMap = /* @__PURE__ */ new Map();
@@ -35636,8 +32880,9 @@ __name(listTasks, "listTasks");
 // ../be-services/src/task/createTask.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function createTask(userId, data) {
-  const [task2] = await db.insert(tasks).values({
+async function createTask(userId, data, env) {
+  const db2 = getDb(env);
+  const [task2] = await db2.insert(tasks).values({
     userId,
     title: data.title,
     description: data.description || null,
@@ -35652,7 +32897,7 @@ async function createTask(userId, data) {
     orderIndex: data.orderIndex || 0
   }).returning();
   if (data.goalId) {
-    await db.insert(taskGoals).values({
+    await db2.insert(taskGoals).values({
       taskId: task2.id,
       goalId: data.goalId
     });
@@ -35664,7 +32909,8 @@ __name(createTask, "createTask");
 // ../be-services/src/task/updateTask.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function updateTask(userId, taskId, data) {
+async function updateTask(userId, taskId, data, env) {
+  const db2 = getDb(env);
   const updateData = {
     updatedAt: (/* @__PURE__ */ new Date()).toISOString()
   };
@@ -35679,7 +32925,7 @@ async function updateTask(userId, taskId, data) {
   if (data.isTemplate !== void 0) updateData.isTemplate = data.isTemplate;
   if (data.templateId !== void 0) updateData.templateId = data.templateId || null;
   if (data.orderIndex !== void 0) updateData.orderIndex = data.orderIndex;
-  const [task2] = await db.update(tasks).set(updateData).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId))).returning();
+  const [task2] = await db2.update(tasks).set(updateData).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId))).returning();
   if (!task2) {
     throw new Error("Task not found");
   }
@@ -35690,18 +32936,20 @@ __name(updateTask, "updateTask");
 // ../be-services/src/task/deleteTask.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function deleteTask(userId, taskId) {
-  await db.delete(tasks).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)));
+async function deleteTask(userId, taskId, env) {
+  const db2 = getDb(env);
+  await db2.delete(tasks).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)));
 }
 __name(deleteTask, "deleteTask");
 
 // ../be-services/src/task/updateTaskOrder.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function updateTaskOrder(userId, taskOrders) {
+async function updateTaskOrder(userId, taskOrders, env) {
+  const db2 = getDb(env);
   await Promise.all(
     taskOrders.map(
-      ({ taskId, orderIndex }) => db.update(tasks).set({ orderIndex }).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
+      ({ taskId, orderIndex }) => db2.update(tasks).set({ orderIndex }).where(and(eq(tasks.id, taskId), eq(tasks.userId, userId)))
     )
   );
 }
@@ -35710,11 +32958,12 @@ __name(updateTaskOrder, "updateTaskOrder");
 // ../be-services/src/task/listSubtasks.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function listSubtasks(userId, parentIds) {
+async function listSubtasks(userId, parentIds, env) {
   if (parentIds.length === 0) {
     return {};
   }
-  const subtasksList = await db.select().from(tasks).where(
+  const db2 = getDb(env);
+  const subtasksList = await db2.select().from(tasks).where(
     and(
       eq(tasks.userId, userId),
       inArray(tasks.parentId, parentIds)
@@ -35736,11 +32985,12 @@ __name(listSubtasks, "listSubtasks");
 // ../be-services/src/task/listTaskSubtaskCount.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function listTaskSubtaskCount(parentIds) {
+async function listTaskSubtaskCount(parentIds, env) {
   if (parentIds.length === 0) {
     return [];
   }
-  const counts = await db.select({
+  const db2 = getDb(env);
+  const counts = await db2.select({
     parentId: tasks.parentId,
     count: sql`count(*)`.as("count")
   }).from(tasks).where(inArray(tasks.parentId, parentIds)).groupBy(tasks.parentId);
@@ -35787,7 +33037,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId2(c);
     const { limit, offset } = c.req.valid("query");
-    const data = await listTasks(userId, limit, offset);
+    const data = await listTasks(userId, limit, offset, c.env);
     return c.json({ data });
   }
 );
@@ -35819,7 +33069,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId2(c);
     const body = c.req.valid("json");
-    const data = await createTask(userId, body);
+    const data = await createTask(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -35855,7 +33105,7 @@ task.openapi(
     const userId = getUserId2(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateTask(userId, id, body);
+    const data = await updateTask(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -35883,7 +33133,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId2(c);
     const { id } = c.req.valid("param");
-    await deleteTask(userId, id);
+    await deleteTask(userId, id, c.env);
     return c.json({ message: "Task deleted" });
   }
 );
@@ -35922,7 +33172,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId2(c);
     const { orders } = c.req.valid("json");
-    await updateTaskOrder(userId, orders);
+    await updateTaskOrder(userId, orders, c.env);
     return c.json({ message: "Task order updated" });
   }
 );
@@ -35956,7 +33206,7 @@ task.openapi(
   async (c) => {
     const userId = getUserId2(c);
     const { parentIds } = c.req.valid("json");
-    const data = await listSubtasks(userId, parentIds);
+    const data = await listSubtasks(userId, parentIds, c.env);
     return c.json(data);
   }
 );
@@ -35994,7 +33244,7 @@ task.openapi(
   },
   async (c) => {
     const { parentIds } = c.req.valid("json");
-    const data = await listTaskSubtaskCount(parentIds);
+    const data = await listTaskSubtaskCount(parentIds, c.env);
     return c.json(data);
   }
 );
@@ -36006,8 +33256,9 @@ init_modules_watch_stub();
 // ../be-services/src/energy/listEnergyReadings.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function listEnergyReadings(userId) {
-  const readings = await db.select().from(energyReadings).where(eq(energyReadings.userId, userId)).orderBy(energyReadings.timestamp);
+async function listEnergyReadings(userId, env) {
+  const db2 = getDb(env);
+  const readings = await db2.select().from(energyReadings).where(eq(energyReadings.userId, userId)).orderBy(energyReadings.timestamp);
   return readings;
 }
 __name(listEnergyReadings, "listEnergyReadings");
@@ -36015,8 +33266,9 @@ __name(listEnergyReadings, "listEnergyReadings");
 // ../be-services/src/energy/createEnergyReading.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function createEnergyReading(userId, data) {
-  const [reading] = await db.insert(energyReadings).values({
+async function createEnergyReading(userId, data, env) {
+  const db2 = getDb(env);
+  const [reading] = await db2.insert(energyReadings).values({
     userId,
     level: data.level,
     note: data.note || null,
@@ -36029,12 +33281,13 @@ __name(createEnergyReading, "createEnergyReading");
 // ../be-services/src/energy/updateEnergyReading.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function updateEnergyReading(userId, readingId, data) {
+async function updateEnergyReading(userId, readingId, data, env) {
+  const db2 = getDb(env);
   const updateData = {};
   if (data.level !== void 0) updateData.level = data.level;
   if (data.note !== void 0) updateData.note = data.note || null;
   if (data.timestamp !== void 0) updateData.timestamp = data.timestamp;
-  const [reading] = await db.update(energyReadings).set(updateData).where(and(eq(energyReadings.id, readingId), eq(energyReadings.userId, userId))).returning();
+  const [reading] = await db2.update(energyReadings).set(updateData).where(and(eq(energyReadings.id, readingId), eq(energyReadings.userId, userId))).returning();
   if (!reading) {
     throw new Error("Energy reading not found");
   }
@@ -36045,8 +33298,9 @@ __name(updateEnergyReading, "updateEnergyReading");
 // ../be-services/src/energy/deleteEnergyReading.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function deleteEnergyReading(userId, readingId) {
-  await db.delete(energyReadings).where(and(eq(energyReadings.id, readingId), eq(energyReadings.userId, userId)));
+async function deleteEnergyReading(userId, readingId, env) {
+  const db2 = getDb(env);
+  await db2.delete(energyReadings).where(and(eq(energyReadings.id, readingId), eq(energyReadings.userId, userId)));
 }
 __name(deleteEnergyReading, "deleteEnergyReading");
 
@@ -36080,7 +33334,7 @@ energy.openapi(
   },
   async (c) => {
     const userId = getUserId3(c);
-    const data = await listEnergyReadings(userId);
+    const data = await listEnergyReadings(userId, c.env);
     return c.json({ data });
   }
 );
@@ -36112,7 +33366,7 @@ energy.openapi(
   async (c) => {
     const userId = getUserId3(c);
     const body = c.req.valid("json");
-    const data = await createEnergyReading(userId, body);
+    const data = await createEnergyReading(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -36148,7 +33402,7 @@ energy.openapi(
     const userId = getUserId3(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateEnergyReading(userId, id, body);
+    const data = await updateEnergyReading(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -36176,7 +33430,7 @@ energy.openapi(
   async (c) => {
     const userId = getUserId3(c);
     const { id } = c.req.valid("param");
-    await deleteEnergyReading(userId, id);
+    await deleteEnergyReading(userId, id, c.env);
     return c.json({ message: "Energy reading deleted" });
   }
 );
@@ -36188,8 +33442,9 @@ init_modules_watch_stub();
 // ../be-services/src/taskGroup/createTaskGroup.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function createTaskGroup(userId, data) {
-  const [group] = await db.insert(taskGroups).values({
+async function createTaskGroup(userId, data, env) {
+  const db2 = getDb(env);
+  const [group] = await db2.insert(taskGroups).values({
     userId,
     title: data.title,
     goalId: data.goalId,
@@ -36202,13 +33457,14 @@ __name(createTaskGroup, "createTaskGroup");
 // ../be-services/src/taskGroup/updateTaskGroup.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function updateTaskGroup(userId, groupId, data) {
+async function updateTaskGroup(userId, groupId, data, env) {
+  const db2 = getDb(env);
   const updateData = {
     updatedAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   if (data.title !== void 0) updateData.title = data.title;
   if (data.orderIndex !== void 0) updateData.orderIndex = data.orderIndex;
-  const [group] = await db.update(taskGroups).set(updateData).where(and(eq(taskGroups.id, groupId), eq(taskGroups.userId, userId))).returning();
+  const [group] = await db2.update(taskGroups).set(updateData).where(and(eq(taskGroups.id, groupId), eq(taskGroups.userId, userId))).returning();
   if (!group) {
     throw new Error("Task group not found");
   }
@@ -36219,9 +33475,10 @@ __name(updateTaskGroup, "updateTaskGroup");
 // ../be-services/src/taskGroup/deleteTaskGroup.ts
 init_checked_fetch();
 init_modules_watch_stub();
-async function deleteTaskGroup(userId, groupId) {
-  await db.update(tasks).set({ groupId: null }).where(and(eq(tasks.groupId, groupId), eq(tasks.userId, userId)));
-  await db.delete(taskGroups).where(and(eq(taskGroups.id, groupId), eq(taskGroups.userId, userId)));
+async function deleteTaskGroup(userId, groupId, env) {
+  const db2 = getDb(env);
+  await db2.update(tasks).set({ groupId: null }).where(and(eq(tasks.groupId, groupId), eq(tasks.userId, userId)));
+  await db2.delete(taskGroups).where(and(eq(taskGroups.id, groupId), eq(taskGroups.userId, userId)));
 }
 __name(deleteTaskGroup, "deleteTaskGroup");
 
@@ -36264,7 +33521,7 @@ taskGroup.openapi(
   async (c) => {
     const userId = getUserId4(c);
     const body = c.req.valid("json");
-    const data = await createTaskGroup(userId, body);
+    const data = await createTaskGroup(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -36300,7 +33557,7 @@ taskGroup.openapi(
     const userId = getUserId4(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateTaskGroup(userId, id, body);
+    const data = await updateTaskGroup(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -36328,7 +33585,7 @@ taskGroup.openapi(
   async (c) => {
     const userId = getUserId4(c);
     const { id } = c.req.valid("param");
-    await deleteTaskGroup(userId, id);
+    await deleteTaskGroup(userId, id, c.env);
     return c.json({ message: "Task group deleted" });
   }
 );
@@ -36410,7 +33667,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// .wrangler/tmp/bundle-CGODiG/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-7VJgmU/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -36444,7 +33701,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-CGODiG/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-7VJgmU/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
@@ -36545,14 +33802,6 @@ export {
   middleware_loader_entry_default as default
 };
 /*! Bundled license information:
-
-cookie/index.js:
-  (*!
-   * cookie
-   * Copyright(c) 2012-2014 Roman Shtylman
-   * Copyright(c) 2015 Douglas Christopher Wilson
-   * MIT Licensed
-   *)
 
 @neondatabase/serverless/index.js:
   (*! Bundled license information:

@@ -45,7 +45,8 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { limit, offset } = c.req.valid("query");
-    const data = await listTasks(userId, limit, offset);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await listTasks(userId, limit, offset, c.env);
     return c.json({ data });
   }
 );
@@ -78,7 +79,8 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const body = c.req.valid("json");
-    const data = await createTask(userId, body);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await createTask(userId, body, c.env);
     return c.json({ data });
   }
 );
@@ -115,7 +117,8 @@ task.openapi(
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
     const body = c.req.valid("json");
-    const data = await updateTask(userId, id, body);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await updateTask(userId, id, body, c.env);
     return c.json({ data });
   }
 );
@@ -144,7 +147,8 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { id } = c.req.valid("param");
-    await deleteTask(userId, id);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    await deleteTask(userId, id, c.env);
     return c.json({ message: "Task deleted" });
   }
 );
@@ -184,7 +188,8 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { orders } = c.req.valid("json");
-    await updateTaskOrder(userId, orders);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    await updateTaskOrder(userId, orders, c.env);
     return c.json({ message: "Task order updated" });
   }
 );
@@ -219,7 +224,8 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { parentIds } = c.req.valid("json");
-    const data = await listSubtasks(userId, parentIds);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await listSubtasks(userId, parentIds, c.env);
     return c.json(data);
   }
 );
@@ -258,7 +264,8 @@ task.openapi(
   },
   async (c) => {
     const { parentIds } = c.req.valid("json");
-    const data = await listTaskSubtaskCount(parentIds);
+    // @ts-ignore - c.env is available in Cloudflare Workers when Bindings type is set
+    const data = await listTaskSubtaskCount(parentIds, c.env);
     return c.json(data);
   }
 );

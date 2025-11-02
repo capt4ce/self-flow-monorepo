@@ -1,11 +1,17 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { tasks, taskGoals } from "@self-flow/db/src/drizzle/schema";
 import { CreateTaskDTO, TaskDTO } from "@self-flow/common/types";
 
+type Env = {
+  DATABASE_URL?: string;
+};
+
 export async function createTask(
   userId: string,
-  data: CreateTaskDTO
+  data: CreateTaskDTO,
+  env?: Env
 ): Promise<TaskDTO> {
+  const db = getDb(env);
   const [task] = await db
     .insert(tasks)
     .values({

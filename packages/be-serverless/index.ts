@@ -3,7 +3,9 @@ import { cors } from "hono/cors";
 import { routes } from "./src/routes";
 
 type Env = {
-  CLERK_API_KEY?: string;
+  STACK_PROJECT_ID?: string;
+  STACK_PROJECT_SECRET?: string;
+  STACK_JWKS_URL?: string;
   DATABASE_URL?: string;
   FRONTEND_URL?: string;
 };

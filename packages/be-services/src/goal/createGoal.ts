@@ -1,9 +1,14 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { goals } from "@self-flow/db/src/drizzle/schema";
 import { CreateGoalDTO } from "@self-flow/common/types";
 import { GoalDTO } from "@self-flow/common/types";
 
-export async function createGoal(userId: string, data: CreateGoalDTO): Promise<GoalDTO> {
+type Env = {
+  DATABASE_URL?: string;
+};
+
+export async function createGoal(userId: string, data: CreateGoalDTO, env?: Env): Promise<GoalDTO> {
+  const db = getDb(env);
   const [goal] = await db
     .insert(goals)
     .values({

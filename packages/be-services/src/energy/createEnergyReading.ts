@@ -1,11 +1,17 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { energyReadings } from "@self-flow/db/src/drizzle/schema";
 import { CreateEnergyReadingDTO, EnergyReadingDTO } from "@self-flow/common/types";
 
+type Env = {
+  DATABASE_URL?: string;
+};
+
 export async function createEnergyReading(
   userId: string,
-  data: CreateEnergyReadingDTO
+  data: CreateEnergyReadingDTO,
+  env?: Env
 ): Promise<EnergyReadingDTO> {
+  const db = getDb(env);
   const [reading] = await db
     .insert(energyReadings)
     .values({

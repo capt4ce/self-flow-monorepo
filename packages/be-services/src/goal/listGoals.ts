@@ -1,14 +1,22 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { goals, taskGoals, tasks, taskGroups } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { GoalDTO } from "@self-flow/common/types";
 import type { GoalStatus } from "@self-flow/common/types";
 
-export async function listGoals(userId: string, status: GoalStatus) {
+type Env = {
+  DATABASE_URL?: string;
+};
+
+export async function listGoals(userId: string, status: GoalStatus | undefined, env?: Env) {
+  const db = getDb(env);
+  // Ensure status is valid, default to "active" if not provided or invalid
+  const validStatus: "active" | "done" = status === "active" || status === "done" ? status : "active";
+  
   const goalsList = await db
     .select()
     .from(goals)
-    .where(and(eq(goals.userId, userId), eq(goals.status, status)))
+    .where(and(eq(goals.userId, userId), eq(goals.status, validStatus)))
     .orderBy(goals.createdAt);
 
   // Get tasks for each goal

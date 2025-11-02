@@ -1,13 +1,19 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { energyReadings } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { UpdateEnergyReadingDTO, EnergyReadingDTO } from "@self-flow/common/types";
 
+type Env = {
+  DATABASE_URL?: string;
+};
+
 export async function updateEnergyReading(
   userId: string,
   readingId: string,
-  data: UpdateEnergyReadingDTO
+  data: UpdateEnergyReadingDTO,
+  env?: Env
 ): Promise<EnergyReadingDTO> {
+  const db = getDb(env);
   const updateData: any = {};
 
   if (data.level !== undefined) updateData.level = data.level;

@@ -1,1 +1,1 @@
-export { db } from "./src/drizzle/drizzle";
+export { db, getDb } from "./src/drizzle/drizzle";

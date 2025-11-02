@@ -1,13 +1,19 @@
-import { db } from "@self-flow/db";
+import { getDb } from "@self-flow/db";
 import { goals } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { UpdateGoalDTO, GoalDTO } from "@self-flow/common/types";
 
+type Env = {
+  DATABASE_URL?: string;
+};
+
 export async function updateGoal(
   userId: string,
   goalId: string,
-  data: UpdateGoalDTO
+  data: UpdateGoalDTO,
+  env?: Env
 ): Promise<GoalDTO> {
+  const db = getDb(env);
   const [goal] = await db
     .update(goals)
     .set({
