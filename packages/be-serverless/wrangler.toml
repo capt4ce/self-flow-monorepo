@@ -1,4 +1,4 @@
-name = "be-serverless"
+name = "selfflow-be"
 main = "index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
@@ -8,3 +8,11 @@ compatibility_flags = ["nodejs_compat"]
 #                     wrangler secret put STACK_PROJECT_SECRET
 #                     wrangler secret put DATABASE_URL
 
+# Production environment
+[env.production]
+# Secrets are set via wrangler secret put, not in this file
+
+# Routes (optional - if you want a custom domain)
+# routes = [
+#   { pattern = "api.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]

@@ -96,6 +96,9 @@ importers:
       '@hello-pangea/dnd':
         specifier: ^18.0.1
         version: 18.0.1(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.66.0)
       '@radix-ui/react-accordion':
         specifier: ^1.2.2
         version: 1.2.12(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
@@ -177,6 +180,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
+      '@self-flow/common':
+        specifier: workspace:*
+        version: link:../common
       '@stackframe/react':
         specifier: ^2.8.48
         version: 2.8.48(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)(tailwindcss@4.1.13)
@@ -186,9 +192,15 @@ importers:
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
+      cmdk:
+        specifier: ^1.1.1
+        version: 1.1.1(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      embla-carousel-react:
+        specifier: ^8.6.0
+        version: 8.6.0(react@19.1.0)
       lucide-react:
         specifier: ^0.358.0
         version: 0.358.0(react@19.1.0)
@@ -204,6 +216,12 @@ importers:
       react-dom:
         specifier: 19.1.0
         version: 19.1.0(react@19.1.0)
+      react-hook-form:
+        specifier: ^7.66.0
+        version: 7.66.0(react@19.1.0)
+      react-resizable-panels:
+        specifier: ^3.0.6
+        version: 3.0.6(react-dom@19.1.0)(react@19.1.0)
       tailwind-merge:
         specifier: ^2.2.1
         version: 2.6.0
@@ -213,6 +231,12 @@ importers:
       use-debounce:
         specifier: ^10.0.5
         version: 10.0.6(react@19.1.0)
+      vaul:
+        specifier: ^1.1.2
+        version: 1.1.2(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
+      zod:
+        specifier: ^4.1.8
+        version: 4.1.8
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -1302,6 +1326,15 @@ packages:
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
+      react-hook-form: 7.66.0(react@19.1.0)
+    dev: false
+
+  /@hookform/resolvers@5.2.2(react-hook-form@7.66.0):
+    resolution: {integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==}
+    peerDependencies:
+      react-hook-form: ^7.55.0
+    dependencies:
+      '@standard-schema/utils': 0.3.0
       react-hook-form: 7.66.0(react@19.1.0)
     dev: false
 
@@ -3530,6 +3563,10 @@ packages:
       - buffer
     dev: false
 
+  /@standard-schema/utils@0.3.0:
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
+    dev: false
+
   /@swc/helpers@0.5.15:
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
     dependencies:
@@ -4714,6 +4751,28 @@ packages:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
       minimalistic-crypto-utils: 1.0.1
+    dev: false
+
+  /embla-carousel-react@8.6.0(react@19.1.0):
+    resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.1 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      embla-carousel: 8.6.0
+      embla-carousel-reactive-utils: 8.6.0(embla-carousel@8.6.0)
+      react: 19.1.0
+    dev: false
+
+  /embla-carousel-reactive-utils@8.6.0(embla-carousel@8.6.0):
+    resolution: {integrity: sha512-fMVUDUEx0/uIEDM0Mz3dHznDhfX+znCCDCeIophYb1QGVM7YThSWX+wz11zlYwWFOr74b4QLGg0hrGPJeG2s4A==}
+    peerDependencies:
+      embla-carousel: 8.6.0
+    dependencies:
+      embla-carousel: 8.6.0
+    dev: false
+
+  /embla-carousel@8.6.0:
+    resolution: {integrity: sha512-SjWyZBHJPbqxHOzckOfo8lHisEaJWmwd23XppYFYVh10bU66/Pn5tkVkbkCMZVdbUE5eTCI2nD8OyIP4Z+uwkA==}
     dev: false
 
   /emoji-regex@8.0.0:
@@ -6634,6 +6693,16 @@ packages:
       react-dom: 19.1.0(react@19.1.0)
     dev: false
 
+  /react-resizable-panels@3.0.6(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-b3qKHQ3MLqOgSS+FRYKapNkJZf5EQzuf6+RLiq1/IlTHw99YrZ2NJZLk4hQIzTnnIkRg2LUqyVinu6YWWpUYew==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    dev: false
+
   /react-style-singleton@2.2.3(@types/react@19.1.13)(react@19.1.0):
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
     engines: {node: '>=10'}
@@ -7401,6 +7470,20 @@ packages:
 
   /uzip@0.20201231.0:
     resolution: {integrity: sha512-OZeJfZP+R0z9D6TmBgLq2LHzSSptGMGDGigGiEe0pr8UBe/7fdflgHlHBNDASTXB5jnFuxHpNaJywSg8YFeGng==}
+    dev: false
+
+  /vaul@1.1.2(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0):
+    resolution: {integrity: sha512-ZFkClGpWyI2WUQjdLJ/BaGuV6AVQiJ3uELGk3OYtP+B6yCO7Cmn9vPFXVJkRaGkOJu3m8bQMgtyzNHixULceQA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      '@radix-ui/react-dialog': 1.1.15(@types/react-dom@19.1.9)(@types/react@19.1.13)(react-dom@19.1.0)(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
     dev: false
 
   /which-boxed-primitive@1.1.1:

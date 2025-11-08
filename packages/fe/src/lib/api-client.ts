@@ -1,10 +1,32 @@
+import type {
+  GoalDTO,
+  CreateGoalDTO,
+  UpdateGoalDTO,
+  TaskDTO,
+  CreateTaskDTO,
+  UpdateTaskDTO,
+  TaskGroupDTO,
+  CreateTaskGroupDTO,
+  UpdateTaskGroupDTO,
+  EnergyReadingDTO,
+  CreateEnergyReadingDTO,
+  UpdateEnergyReadingDTO,
+} from "@self-flow/common/types";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787/api";
+
+// Extend Window interface for token getter
+declare global {
+  interface Window {
+    __stackAuthTokenGetter?: () => Promise<string | null>;
+  }
+}
 
 // Set token globally (called from auth context)
 export function setAuthTokenGetter(getter: () => Promise<string | null>) {
   if (typeof window !== "undefined") {
-    (window as any).__stackAuthTokenGetter = getter;
+    window.__stackAuthTokenGetter = getter;
   }
 }
 
@@ -12,7 +34,7 @@ export function setAuthTokenGetter(getter: () => Promise<string | null>) {
 async function getAuthToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
 
-  const getter = (window as any).__stackAuthTokenGetter;
+  const getter = window.__stackAuthTokenGetter;
   if (getter) {
     return await getter();
   }
@@ -59,14 +81,33 @@ export const api = {
   // Goals
   goals: {
     list: (status: string) =>
-      fetchAPI<{ data: any[] }>(`/goals?status=${status}`),
-    create: (data: any) =>
-      fetchAPI<{ data: any }>("/goals", {
+      fetchAPI<{ data: GoalDTO[] }>(`/goals?status=${status}`),
+    create: (data: CreateGoalDTO & {
+      newTasks?: Array<{
+        title: string;
+        description?: string;
+        effort?: string;
+        status?: string;
+        templateId?: string;
+      }>;
+      existingTaskIds?: string[];
+    }) =>
+      fetchAPI<{ data: GoalDTO }>("/goals", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: any) =>
-      fetchAPI<{ data: any }>(`/goals/${id}`, {
+    update: (id: string, data: UpdateGoalDTO & {
+      newTasks?: Array<{
+        title: string;
+        description?: string;
+        effort?: string;
+        status?: string;
+        templateId?: string;
+      }>;
+      selectedTaskIds?: string[];
+      currentTaskIds?: string[];
+    }) =>
+      fetchAPI<{ data: GoalDTO }>(`/goals/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
@@ -77,14 +118,35 @@ export const api = {
   // Tasks
   tasks: {
     list: (limit = 20, offset = 0) =>
-      fetchAPI<{ data: any[] }>(`/tasks?limit=${limit}&offset=${offset}`),
-    create: (data: any) =>
-      fetchAPI<{ data: any }>("/tasks", {
+      fetchAPI<{ data: TaskDTO[] }>(`/tasks?limit=${limit}&offset=${offset}`),
+    create: (data: CreateTaskDTO & {
+      newSubtasks?: Array<{
+        title: string;
+        description?: string;
+        effort?: string;
+        priority?: string;
+        status?: string;
+        goalId?: string;
+      }>;
+      existingSubtaskIds?: string[];
+    }) =>
+      fetchAPI<{ data: TaskDTO }>("/tasks", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: any) =>
-      fetchAPI<{ data: any }>(`/tasks/${id}`, {
+    update: (id: string, data: UpdateTaskDTO & {
+      newSubtasks?: Array<{
+        title: string;
+        description?: string;
+        effort?: string;
+        priority?: string;
+        status?: string;
+        goalId?: string;
+      }>;
+      selectedSubtaskIds?: string[];
+      currentSubtaskIds?: string[];
+    }) =>
+      fetchAPI<{ data: TaskDTO }>(`/tasks/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
@@ -96,7 +158,7 @@ export const api = {
         body: JSON.stringify({ orders }),
       }),
     listSubtasks: (parentIds: string[]) =>
-      fetchAPI<Record<string, any[]>>("/tasks/subtasks", {
+      fetchAPI<Record<string, TaskDTO[]>>("/tasks/subtasks", {
         method: "POST",
         body: JSON.stringify({ parentIds }),
       }),
@@ -117,7 +179,7 @@ export const api = {
         excludeCompleted?: boolean;
       }
     ) => {
-      const allTasks = await fetchAPI<{ data: any[] }>(
+      const allTasks = await fetchAPI<{ data: TaskDTO[] }>(
         `/tasks?limit=100&offset=0`
       );
       let filtered = allTasks.data;
@@ -128,7 +190,7 @@ export const api = {
       }
       if (filters?.excludeStatus) {
         filtered = filtered.filter(
-          (t) => !filters.excludeStatus?.includes(t.status)
+          (t) => t.status && !filters.excludeStatus?.includes(t.status)
         );
       }
       if (filters?.excludeCompleted) {
@@ -142,7 +204,7 @@ export const api = {
           .filter((term) => term.trim() !== "");
         filtered = filtered.filter((task) =>
           searchTerms.some((term) =>
-            task.title.toLowerCase().includes(term.toLowerCase())
+            task.title?.toLowerCase().includes(term.toLowerCase())
           )
         );
       }
@@ -153,13 +215,13 @@ export const api = {
 
   // Task Groups
   taskGroups: {
-    create: (data: any) =>
-      fetchAPI<{ data: any }>("/task-groups", {
+    create: (data: CreateTaskGroupDTO) =>
+      fetchAPI<{ data: TaskGroupDTO }>("/task-groups", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: any) =>
-      fetchAPI<{ data: any }>(`/task-groups/${id}`, {
+    update: (id: string, data: UpdateTaskGroupDTO) =>
+      fetchAPI<{ data: TaskGroupDTO }>(`/task-groups/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
@@ -169,14 +231,14 @@ export const api = {
 
   // Energy
   energy: {
-    list: () => fetchAPI<{ data: any[] }>("/energy"),
-    create: (data: any) =>
-      fetchAPI<{ data: any }>("/energy", {
+    list: () => fetchAPI<{ data: EnergyReadingDTO[] }>("/energy"),
+    create: (data: CreateEnergyReadingDTO) =>
+      fetchAPI<{ data: EnergyReadingDTO }>("/energy", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: any) =>
-      fetchAPI<{ data: any }>(`/energy/${id}`, {
+    update: (id: string, data: UpdateEnergyReadingDTO) =>
+      fetchAPI<{ data: EnergyReadingDTO }>(`/energy/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
