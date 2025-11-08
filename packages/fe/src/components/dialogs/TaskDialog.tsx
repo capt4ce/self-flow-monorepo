@@ -109,13 +109,13 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     try {
       const taskDataToSave: CreateTaskDTO | UpdateTaskDTO = {
         title: taskFormData.title,
-        description: taskFormData.description || null,
-        effort: taskFormData.effort || null,
+        description: taskFormData.description || undefined,
+        effort: taskFormData.effort || undefined,
         status: (taskFormData.status as TaskStatus) || "todo",
-        priority: taskFormData.priority || null,
-        parentId: taskFormData.parentId || null,
-        goalId: taskFormData.goal_id || null,
-        groupId: taskFormData.groupId || null,
+        priority: taskFormData.priority || undefined,
+        parentId: taskFormData.parentId || undefined,
+        goalId: taskFormData.goal_id || undefined,
+        groupId: taskFormData.groupId || undefined,
         isTemplate: taskFormData.isTemplate || false,
         completed: taskFormData.completed || false,
         orderIndex: taskFormData.orderIndex || 0,
@@ -131,11 +131,11 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           newSubtasks: subtasksToAdd.length > 0
             ? subtasksToAdd.map((st) => ({
                 title: st.title,
-                description: st.description || null,
-                effort: st.effort || null,
-                priority: st.priority || null,
+                description: st.description || undefined,
+                effort: st.effort || undefined,
+                priority: st.priority || undefined,
                 status: (st.status as TaskStatus) || "todo",
-                goalId: taskFormData.goal_id || null,
+                goalId: taskFormData.goal_id || undefined,
               }))
             : undefined,
           selectedSubtaskIds: selectedExistingTaskIds,
@@ -150,11 +150,11 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           newSubtasks: subtasksToAdd.length > 0
             ? subtasksToAdd.map((st) => ({
                 title: st.title,
-                description: st.description || null,
-                effort: st.effort || null,
-                priority: st.priority || null,
+                description: st.description || undefined,
+                effort: st.effort || undefined,
+                priority: st.priority || undefined,
                 status: (st.status as TaskStatus) || "todo",
-                goalId: taskFormData.goal_id || null,
+                goalId: taskFormData.goal_id || undefined,
               }))
             : undefined,
           existingSubtaskIds: selectedExistingTaskIds.length > 0 ? selectedExistingTaskIds : undefined,
@@ -186,15 +186,15 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         onKeyDown={handleKeyDown}
-        className="max-w-2xl max-h-[80vh] overflow-y-auto"
+        className="max-w-2xl max-h-[85vh] sm:max-h-[80vh] overflow-y-auto w-[95vw] sm:w-full"
       >
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {taskFormData?.id ? "Edit Task" : "Create New Task"}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="task-title">Title</Label>
               <Input
@@ -347,7 +347,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
               {newTasks.map((task, index) => (
                 <div
                   key={index}
-                  className="flex gap-2 items-center p-2 border rounded"
+                  className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center p-2 border rounded"
                 >
                   <Input
                     placeholder="Subtask title"
@@ -359,50 +359,53 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
                     }}
                     className="flex-1"
                   />
-                  <Select
-                    value={task.effort || ""}
-                    onValueChange={(value) => {
-                      const updated = [...newTasks];
-                      updated[index].effort = value as TaskEffort;
-                      setNewTasks(updated);
-                    }}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue placeholder="Effort" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="med">Med</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={task.priority || ""}
-                    onValueChange={(value) => {
-                      const updated = [...newTasks];
-                      updated[index].priority = value as TaskPriority;
-                      setNewTasks(updated);
-                    }}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue placeholder="Priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="med">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      const updated = newTasks.filter((_, i) => i !== index);
-                      setNewTasks(updated);
-                    }}
-                  >
-                    ×
-                  </Button>
+                  <div className="flex gap-2">
+                    <Select
+                      value={task.effort || ""}
+                      onValueChange={(value) => {
+                        const updated = [...newTasks];
+                        updated[index].effort = value as TaskEffort;
+                        setNewTasks(updated);
+                      }}
+                    >
+                      <SelectTrigger className="w-full sm:w-20">
+                        <SelectValue placeholder="Effort" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="med">Med</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={task.priority || ""}
+                      onValueChange={(value) => {
+                        const updated = [...newTasks];
+                        updated[index].priority = value as TaskPriority;
+                        setNewTasks(updated);
+                      }}
+                    >
+                      <SelectTrigger className="w-full sm:w-20">
+                        <SelectValue placeholder="Priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="med">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex-shrink-0"
+                      onClick={() => {
+                        const updated = newTasks.filter((_, i) => i !== index);
+                        setNewTasks(updated);
+                      }}
+                    >
+                      ×
+                    </Button>
+                  </div>
                 </div>
               ))}
               <Button
@@ -414,6 +417,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
                     { title: "", description: "", status: "todo" },
                   ])
                 }
+                className="w-full sm:w-auto"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Subtask
@@ -423,7 +427,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
           <ParentTaskSearch
             label="Parent Task"
-            selectedParentId={taskFormData.parentId || null}
+            selectedParentId={taskFormData.parentId || undefined}
             setSelectedParentId={(id) =>
               setTaskFormData({ ...taskFormData, parentId: id || undefined })
             }

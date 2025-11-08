@@ -28,3 +28,4 @@ export const UpdateEnergyReadingDTO = z.object({
 export type UpdateEnergyReadingDTO = z.infer<typeof UpdateEnergyReadingDTO>;
 
 
+

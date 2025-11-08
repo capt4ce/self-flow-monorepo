@@ -125,25 +125,26 @@ const GoalCard: React.FC<GoalCardProps> = ({
   return (
     <Card className="bg-white hover:shadow-md transition-shadow">
       <CardHeader className={compact ? "pb-2" : "pb-3"}>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
             <CardTitle
               className={`${
-                compact ? "text-base" : "text-lg"
-              } mb-2 cursor-pointer hover:text-blue-600`}
+                compact ? "text-base" : "text-base sm:text-lg"
+              } mb-2 cursor-pointer hover:text-blue-600 break-words`}
               onClick={() => onEdit?.(goal.id)}
             >
               {goal.title}
             </CardTitle>
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-wrap gap-2 mb-2">
               <Badge
-                className={getCategoryBadgeColor(goal.category as GoalCategory)}
+                className={`text-xs sm:text-sm ${getCategoryBadgeColor(goal.category as GoalCategory)}`}
               >
                 {goal.category}
               </Badge>
               {goal.status && (
                 <Badge
                   variant={goal.status === "active" ? "default" : "secondary"}
+                  className="text-xs sm:text-sm"
                 >
                   {goal.status}
                 </Badge>
@@ -151,12 +152,12 @@ const GoalCard: React.FC<GoalCardProps> = ({
             </div>
           </div>
           {!compact && (
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-shrink-0">
               {onEdit && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="px-2"
+                  className="px-2 h-8 w-8"
                   onClick={() => onEdit(goal.id)}
                   title="Edit goal"
                 >
@@ -169,7 +170,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="px-2 text-red-500 hover:text-red-700"
+                      className="px-2 h-8 w-8 text-red-500 hover:text-red-700"
                       title="Delete goal"
                     >
                       <Trash2 size={16} />
@@ -220,11 +221,11 @@ const GoalCard: React.FC<GoalCardProps> = ({
       </CardHeader>
       <CardContent>
         {showProgress && taskCount > 0 && (
-          <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-            <span>
+          <div className="flex items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground mb-4">
+            <span className="flex-shrink-0">
               Tasks: {completedTaskCount}/{taskCount}
             </span>
-            <div className="w-20 bg-gray-200 rounded-full h-2">
+            <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-none sm:w-20 bg-gray-200 rounded-full h-2">
               <div
                 className="bg-green-500 h-2 rounded-full transition-all"
                 style={{
@@ -293,7 +294,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {onToggleGoalStatus && (
             <Button
               variant="outline"
@@ -301,9 +302,14 @@ const GoalCard: React.FC<GoalCardProps> = ({
               onClick={() =>
                 onToggleGoalStatus(goal.id, goal.status || "active")
               }
-              className="flex-1"
+              className="flex-1 sm:flex-initial min-w-[120px]"
             >
-              Mark as {goal.status === "active" ? "Done" : "Active"}
+              <span className="hidden sm:inline">
+                Mark as {goal.status === "active" ? "Done" : "Active"}
+              </span>
+              <span className="sm:hidden">
+                {goal.status === "active" ? "Done" : "Active"}
+              </span>
             </Button>
           )}
           {onCreateTaskGroup && (
@@ -312,9 +318,10 @@ const GoalCard: React.FC<GoalCardProps> = ({
               size="sm"
               onClick={() => onCreateTaskGroup(goal.id)}
               title="Create task group"
+              className="flex-shrink-0"
             >
-              <FolderPlus className="h-4 w-4 mr-2" />
-              Group
+              <FolderPlus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Group</span>
             </Button>
           )}
           {onAddTask && (
@@ -323,18 +330,21 @@ const GoalCard: React.FC<GoalCardProps> = ({
               size="sm"
               onClick={() => onAddTask(goal.id)}
               className={
-                onToggleGoalStatus || onCreateTaskGroup ? "" : "w-full"
+                onToggleGoalStatus || onCreateTaskGroup 
+                  ? "flex-1 sm:flex-initial" 
+                  : "w-full"
               }
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Task
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Task</span>
+              <span className="sm:hidden">Task</span>
             </Button>
           )}
           {compact && onEdit && (
             <Button
               variant="ghost"
               size="sm"
-              className="px-2"
+              className="px-2 h-8 w-8"
               onClick={() => onEdit(goal.id)}
               title="Edit goal"
             >
@@ -347,7 +357,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="px-2 text-red-500 hover:text-red-700"
+                  className="px-2 h-8 w-8 text-red-500 hover:text-red-700"
                   title="Delete goal"
                 >
                   <Trash2 size={16} />

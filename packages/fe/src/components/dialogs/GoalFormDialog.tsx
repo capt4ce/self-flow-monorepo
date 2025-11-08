@@ -110,11 +110,11 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
     try {
       const goalData = {
         title: goalFormData.title,
-        description: goalFormData.description || null,
+        description: goalFormData.description || undefined,
         category: goalFormData.category,
         status: goalFormData.status,
-        startDate: goalFormData.startDate || null,
-        endDate: goalFormData.endDate || null,
+        startDate: goalFormData.startDate || undefined,
+        endDate: goalFormData.endDate || undefined,
       };
 
       let savedGoal: GoalDTO;
@@ -128,10 +128,10 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
             tasksToAdd.length > 0
               ? tasksToAdd.map((t) => ({
                   title: t.title,
-                  description: t.description || null,
-                  effort: t.effort || null,
+                  description: t.description || undefined,
+                  effort: t.effort || undefined,
                   status: (t.status as any) || "todo",
-                  templateId: t.templateId || null,
+                  templateId: t.templateId || undefined,
                 }))
               : undefined,
           selectedTaskIds: selectedExistingTaskIds,
@@ -147,10 +147,10 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
             tasksToAdd.length > 0
               ? tasksToAdd.map((t) => ({
                   title: t.title,
-                  description: t.description || null,
-                  effort: t.effort || null,
+                  description: t.description || undefined,
+                  effort: t.effort || undefined,
                   status: (t.status as any) || "todo",
-                  templateId: t.templateId || null,
+                  templateId: t.templateId || undefined,
                 }))
               : undefined,
           existingTaskIds:
@@ -187,17 +187,17 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         onKeyDown={handleKeyDown}
-        className="max-w-4xl max-h-[90vh] overflow-y-auto"
+        className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full"
       >
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {isEditing ? "Edit Goal" : "Create New Goal"}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-6 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4 sm:space-y-6 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="goal-title">Title</Label>
+              <Label htmlFor="goal-title" className="text-sm sm:text-base">Title</Label>
               <Input
                 id="goal-title"
                 value={goalFormData.title}
@@ -211,7 +211,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="goal-category">Category</Label>
+              <Label htmlFor="goal-category" className="text-sm sm:text-base">Category</Label>
               <Select
                 value={goalFormData.category}
                 onValueChange={(value) =>
@@ -236,9 +236,9 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="goal-status">Status</Label>
+              <Label htmlFor="goal-status" className="text-sm sm:text-base">Status</Label>
               <Select
                 value={goalFormData.status}
                 onValueChange={(value) =>
@@ -258,7 +258,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="goal-start-date">Start Date</Label>
+              <Label htmlFor="goal-start-date" className="text-sm sm:text-base">Start Date</Label>
               <Input
                 id="goal-start-date"
                 type="date"
@@ -272,7 +272,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="goal-end-date">End Date</Label>
+              <Label htmlFor="goal-end-date" className="text-sm sm:text-base">End Date</Label>
               <Input
                 id="goal-end-date"
                 type="date"
@@ -361,7 +361,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
 
           {/* Quick Add Tasks Section */}
           <div className="space-y-2">
-            <Label>Quick Add Tasks</Label>
+            <Label className="text-sm sm:text-base">Quick Add Tasks</Label>
             <div className="p-2 border rounded-lg">
               <TaskAutocomplete
                 label="Duplicate Task from Template"
@@ -380,7 +380,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                 {newTasks.map((task, index) => (
                   <div
                     key={index}
-                    className="flex gap-2 items-center p-2 border rounded"
+                    className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center p-2 border rounded"
                   >
                     <Input
                       placeholder="Task title"
@@ -392,33 +392,36 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                       }}
                       className="flex-1"
                     />
-                    <Select
-                      value={task.effort || ""}
-                      onValueChange={(value) => {
-                        const updated = [...newTasks];
-                        updated[index].effort = value as TaskEffort;
-                        setNewTasks(updated);
-                      }}
-                    >
-                      <SelectTrigger className="w-20">
-                        <SelectValue placeholder="Effort" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="med">Med</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        const updated = newTasks.filter((_, i) => i !== index);
-                        setNewTasks(updated);
-                      }}
-                    >
-                      ×
-                    </Button>
+                    <div className="flex gap-2">
+                      <Select
+                        value={task.effort || ""}
+                        onValueChange={(value) => {
+                          const updated = [...newTasks];
+                          updated[index].effort = value as TaskEffort;
+                          setNewTasks(updated);
+                        }}
+                      >
+                        <SelectTrigger className="w-full sm:w-20">
+                          <SelectValue placeholder="Effort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low</SelectItem>
+                          <SelectItem value="med">Med</SelectItem>
+                          <SelectItem value="high">High</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0"
+                        onClick={() => {
+                          const updated = newTasks.filter((_, i) => i !== index);
+                          setNewTasks(updated);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
                   </div>
                 ))}
                 <Button
@@ -430,6 +433,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                       { title: "", description: "", status: "todo" },
                     ])
                   }
+                  className="w-full sm:w-auto"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Task

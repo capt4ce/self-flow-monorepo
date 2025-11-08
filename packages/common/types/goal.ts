@@ -46,3 +46,4 @@ export type CreateGoalDTO = z.infer<typeof CreateGoalDTO>;
 export const UpdateGoalDTO = CreateGoalDTO.partial();
 export type UpdateGoalDTO = z.infer<typeof UpdateGoalDTO>;
 
+

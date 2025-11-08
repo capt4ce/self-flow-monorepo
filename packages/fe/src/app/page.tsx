@@ -1,227 +1,122 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { PlusCircle, Plus } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api-client";
-import GoalCard from "@/components/common/GoalCard";
-import GoalFormDialog from "@/components/dialogs/GoalFormDialog";
 import TaskDialog from "@/components/dialogs/TaskDialog";
-import { GoalDTO, GoalCategory, GoalStatus } from "@self-flow/common/types";
 import { TaskDTO } from "@self-flow/common/types";
-import TaskGroupDialog from "@/components/dialogs/TaskGroupDialog";
-import { TaskGroupDTO } from "@self-flow/common/types";
 import { useSubtasks } from "@/contexts/SubtasksContext";
+import WeekCalendarWidget from "@/components/common/WeekCalendarWidget";
+import MonthCalendarDialog from "@/components/dialogs/MonthCalendarDialog";
+import TaskListItem from "@/components/common/TaskListItem";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   const { user, loading } = useAuth();
-  const [goals, setGoals] = useState<GoalDTO[]>([]);
+  const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [editingGoal, setEditingGoal] = useState<GoalDTO | null>(null);
+  const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
   const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string }>({
     title: "",
     description: "",
     status: "todo",
     completed: false,
   });
-  const [groupDialogOpen, setGroupDialogOpen] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<TaskGroupDTO | null>(null);
-  const [currentGoalId, setCurrentGoalId] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  });
+  const [monthCalendarOpen, setMonthCalendarOpen] = useState(false);
   const { refreshSubtasks } = useSubtasks();
 
   useEffect(() => {
     if (user && !loading) {
-      fetchGoals();
+      fetchAllTasks();
     } else if (!loading && !user) {
       setIsLoading(false);
     }
   }, [user, loading]);
 
-  const fetchGoals = async () => {
+  const fetchAllTasks = async () => {
+    if (!user) return;
+    setIsLoading(true);
     try {
-      const response = await api.goals.list("active");
-      setGoals(response.data);
+      const response = await api.tasks.list(1000, 0);
+      setAllTasks(response.data || []);
     } catch (error) {
-      console.error("Error fetching goals:", error);
+      console.error("Error fetching tasks:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCreateTaskGroup = async (goalId: string) => {
-    setCurrentGoalId(goalId);
-    setEditingGroup(null);
-    setGroupDialogOpen(true);
-  };
-
-  const handleEditTaskGroup = async (groupId: string) => {
-    const goal = goals.find((g) =>
-      g.taskGroups?.some((tg) => tg.id === groupId)
-    );
-    const group = goal?.taskGroups?.find((tg) => tg.id === groupId);
-    if (group) {
-      setCurrentGoalId(goal!.id);
-      setEditingGroup(group);
-      setGroupDialogOpen(true);
-    }
-  };
-
-  const handleDeleteTaskGroup = async (groupId: string) => {
-    if (!user) return;
-
+  // Filter tasks by selected date (by creation date)
+  const dailyTasks = useMemo(() => {
+    if (!selectedDate || !(selectedDate instanceof Date)) return [];
+    
     try {
-      await api.taskGroups.delete(groupId);
-      await fetchGoals();
-    } catch (error) {
-      console.error("Error deleting task group:", error);
+      const startOfDay = new Date(selectedDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      
+      const endOfDay = new Date(selectedDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      return allTasks.filter((task) => {
+        if (!task.createdAt) return false;
+        try {
+          const taskDate = new Date(task.createdAt);
+          if (isNaN(taskDate.getTime())) return false;
+          return taskDate >= startOfDay && taskDate <= endOfDay;
+        } catch (e) {
+          console.error("Error parsing task date:", task.createdAt, e);
+          return false;
+        }
+      });
+    } catch (e) {
+      console.error("Error filtering tasks by date:", e);
+      return [];
     }
+  }, [allTasks, selectedDate]);
+
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date);
   };
 
-  const handleSaveTaskGroup = async (title: string) => {
-    if (!user || !currentGoalId) return;
+  const handleOpenMonthCalendar = () => {
+    setMonthCalendarOpen(true);
+  };
 
-    try {
-      if (editingGroup) {
-        await api.taskGroups.update(editingGroup.id, { title });
-      } else {
-        await api.taskGroups.create({
-          title,
-          goalId: currentGoalId,
-        });
-      }
-
-      await fetchGoals();
-    } catch (error) {
-      console.error("Error saving task group:", error);
-      throw error;
+  const handleMonthCalendarDateSelect = (date: Date | undefined) => {
+    if (date) {
+      const newDate = new Date(date);
+      newDate.setHours(0, 0, 0, 0);
+      setSelectedDate(newDate);
     }
-  };
-
-  const handleMoveTaskToGroup = async (
-    taskId: string,
-    groupId: string | null
-  ) => {
-    if (!user) return;
-
-    try {
-      await api.tasks.update(taskId, { groupId });
-      await fetchGoals();
-    } catch (error) {
-      console.error("Error moving task to group:", error);
-    }
-  };
-
-  const allCategories: GoalCategory[] = [
-    "Main",
-    "Yearly",
-    "Quarterly",
-    "Monthly",
-    "Weekly",
-    "Daily",
-  ];
-
-  const groupedGoals = allCategories.reduce((acc, category) => {
-    acc[category] = goals.filter((goal) => goal.category === category);
-    return acc;
-  }, {} as Record<GoalCategory, GoalDTO[]>);
-
-  const resetGoalForm = () => {
-    setEditingGoal(null);
-  };
-
-  const handleEditGoal = (goalId: string) => {
-    const goal = goals.find((g) => g.id === goalId);
-    if (goal) {
-      setEditingGoal(goal);
-      setGoalDialogOpen(true);
-    }
-  };
-
-  const handleOpenGoalDialog = (category?: GoalCategory) => {
-    resetGoalForm();
-    setEditingGoal(category ? ({ category } as any) : null);
-    setGoalDialogOpen(true);
   };
 
   const handleEditTask = (task: TaskDTO) => {
+    setEditingTask(task);
     setTaskFormData({
       ...task,
       status: task.status || "todo",
-      goal_id: goals.find((g) => g.tasks?.some((t) => t.id === task.id))?.id,
+      goal_id: task.goal_id,
     });
     setTaskDialogOpen(true);
   };
 
-  const handleAddTask = async (goalId: string, parentId?: string) => {
-    if (!user) return;
-
+  const handleCreateTask = () => {
+    setEditingTask(null);
     setTaskFormData({
       title: "",
       description: "",
       status: "todo",
       completed: false,
-      goal_id: goalId,
-      parentId: parentId,
     });
     setTaskDialogOpen(true);
-  };
-
-  const handleDeleteGoal = async (goalId: string) => {
-    if (!user) return;
-
-    try {
-      await api.goals.delete(goalId);
-      setGoals(goals.filter((goal) => goal.id !== goalId));
-    } catch (error) {
-      console.error("Error deleting goal:", error);
-    }
-  };
-
-  const updateGoalTasks = (goalId: string, tasks: TaskDTO[]) => {
-    const newGoals = [...goals];
-    newGoals.forEach((goal) => {
-      if (goal.id !== goalId) {
-        return;
-      }
-      goal.tasks = tasks;
-    });
-    setGoals(newGoals);
-  };
-
-  const handleDeleteTask = async (goalId: string, taskId: string) => {
-    if (!user) return;
-
-    try {
-      await api.tasks.delete(taskId);
-      setGoals(
-        goals.map((goal) => {
-          if (goal.id === goalId) {
-            return {
-              ...goal,
-              tasks: (goal.tasks || []).filter((t) => t.id !== taskId),
-            };
-          }
-          return goal;
-        })
-      );
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
-
-  const handleToggleGoalStatus = async (goalId: string, currentStatus: GoalStatus) => {
-    if (!user) return;
-
-    try {
-      const newStatus = currentStatus === "active" ? "done" : "active";
-      await api.goals.update(goalId, { status: newStatus });
-      await fetchGoals();
-    } catch (error) {
-      console.error("Error toggling goal status:", error);
-    }
   };
 
   if (loading || isLoading) {
@@ -247,95 +142,100 @@ export default function Home() {
     );
   }
 
+  const formatSelectedDate = (date: Date) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return "Invalid date";
+    }
+    try {
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return "Invalid date";
+    }
+  };
+
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Overview of your goals and progress
-            </p>
+    <div className="flex flex-col min-h-full">
+      {/* Week Calendar Widget - positioned below header */}
+      <WeekCalendarWidget
+        selectedDate={selectedDate}
+        onDateChange={handleDateChange}
+        onOpenMonthCalendar={handleOpenMonthCalendar}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 p-3 sm:p-4 lg:p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl font-bold">Daily Tasks</h1>
+                <p className="text-sm sm:text-base text-muted-foreground truncate">
+                  {formatSelectedDate(selectedDate)}
+                </p>
+              </div>
+              <Button 
+                onClick={handleCreateTask} 
+                className="flex items-center gap-2 w-full sm:w-auto"
+                size="sm"
+              >
+                <Plus size={16} />
+                Add Task
+              </Button>
+            </div>
           </div>
-          <Button
-            onClick={() => handleOpenGoalDialog()}
-            className="flex items-center gap-2"
-          >
-            <PlusCircle size={16} />
-            Add Goal
-          </Button>
+
+          {isLoading ? (
+            <div className="text-center py-8">
+              <p>Loading tasks...</p>
+            </div>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Tasks ({dailyTasks.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {dailyTasks.length > 0 ? (
+                  <div className="space-y-2">
+                    {dailyTasks.map((task) => {
+                      if (!task.id) {
+                        console.warn("Task without ID found:", task);
+                        return null;
+                      }
+                      return (
+                        <TaskListItem
+                          key={task.id}
+                          task={task}
+                          onEditTask={handleEditTask}
+                        />
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No tasks for this date.</p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={handleCreateTask}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create your first task
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
-
-      {isLoading ? (
-        <div className="text-center py-8">
-          <p>Loading...</p>
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {Object.entries(groupedGoals).map(([category, categoryGoals]) => (
-            <div key={category} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-muted-foreground">
-                  {category}
-                </h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleOpenGoalDialog(category as GoalCategory)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add {category} Goal
-                </Button>
-              </div>
-
-              {categoryGoals.length > 0 ? (
-                <div
-                  style={{
-                    padding: "4px",
-                  }}
-                  className="border-gray-200 border-2 rounded-lg"
-                >
-                  {categoryGoals.map((goal) => (
-                    <GoalCard
-                      key={goal.id}
-                      goal={goal}
-                      onEdit={handleEditGoal}
-                      onDelete={handleDeleteGoal}
-                      onAddTask={handleAddTask}
-                      onEditTask={handleEditTask}
-                      onCreateTaskGroup={handleCreateTaskGroup}
-                      onEditTaskGroup={handleEditTaskGroup}
-                      onDeleteTaskGroup={handleDeleteTaskGroup}
-                      onMoveTaskToGroup={handleMoveTaskToGroup}
-                      onToggleGoalStatus={handleToggleGoalStatus}
-                      showTasks={true}
-                      showProgress={true}
-                      compact={false}
-                      updateGoalTasks={updateGoalTasks}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground text-sm border-2 border-dashed border-gray-200 rounded-lg">
-                  No {category.toLowerCase()} goals yet.
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Unified Goal Dialog */}
-      <GoalFormDialog
-        open={goalDialogOpen}
-        onOpenChange={setGoalDialogOpen}
-        goal={editingGoal}
-        onSaved={() => {
-          fetchGoals();
-          resetGoalForm();
-        }}
-      />
 
       {/* Task Dialog */}
       <TaskDialog
@@ -343,7 +243,7 @@ export default function Home() {
         onOpenChange={setTaskDialogOpen}
         task={taskFormData}
         onSaved={async () => {
-          await fetchGoals();
+          await fetchAllTasks();
           setTaskDialogOpen(false);
           setTaskFormData({
             title: "",
@@ -351,16 +251,17 @@ export default function Home() {
             status: "todo",
             completed: false,
           });
+          setEditingTask(null);
           await refreshSubtasks();
         }}
       />
 
-      {/* Task Group Dialog */}
-      <TaskGroupDialog
-        open={groupDialogOpen}
-        onOpenChange={setGroupDialogOpen}
-        group={editingGroup}
-        onSave={handleSaveTaskGroup}
+      {/* Month Calendar Dialog */}
+      <MonthCalendarDialog
+        open={monthCalendarOpen}
+        onOpenChange={setMonthCalendarOpen}
+        selectedDate={selectedDate}
+        onDateSelect={handleMonthCalendarDateSelect}
       />
     </div>
   );

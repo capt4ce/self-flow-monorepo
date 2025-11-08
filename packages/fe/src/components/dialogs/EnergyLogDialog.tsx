@@ -74,7 +74,7 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
     try {
       await api.energy.update(energyReading.id, {
         level: editLevel,
-        note: editNote.trim() || null,
+        note: editNote.trim() || undefined,
         timestamp: new Date(editTime).toISOString(),
       });
 
@@ -94,7 +94,7 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
     try {
       await api.energy.create({
         level: editLevel,
-        note: editNote.trim() || null,
+        note: editNote.trim() || undefined,
         timestamp: new Date(editTime).toISOString(),
       });
 
@@ -125,19 +125,22 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent onKeyDown={handleKeyDown}>
+      <DialogContent 
+        onKeyDown={handleKeyDown}
+        className="w-[95vw] sm:w-full max-w-md"
+      >
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
             {energyReading?.id ? "Edit Energy Reading" : "Add Energy Reading"}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="add-energy-level">
+              <Label htmlFor="add-energy-level" className="text-sm sm:text-base">
                 Energy Level: {editLevel}
               </Label>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {editLevel}/10
               </span>
             </div>
@@ -153,7 +156,7 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="add-time">Time</Label>
+            <Label htmlFor="add-time" className="text-sm sm:text-base">Time</Label>
             <Input
               id="add-time"
               type="datetime-local"
@@ -163,7 +166,7 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="add-note">Note (optional)</Label>
+            <Label htmlFor="add-note" className="text-sm sm:text-base">Note (optional)</Label>
             <Input
               id="add-note"
               placeholder="What were you doing?"
@@ -182,4 +185,5 @@ const EnergyLogDialog: React.FC<EnergyLogDialogProps> = ({
 };
 
 export default EnergyLogDialog;
+
 

@@ -28,6 +28,28 @@
 
 ## Development
 
+See [SETUP.md](./SETUP.md) for local development setup.
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy
+
+1. **Backend (Cloudflare Workers)**:
+   ```bash
+   cd packages/be-serverless
+   wrangler secret put STACK_PROJECT_ID
+   wrangler secret put STACK_PROJECT_SECRET
+   wrangler secret put DATABASE_URL
+   wrangler secret put FRONTEND_URL
+   pnpm deploy
+   ```
+
+2. **Frontend (Cloudflare Pages)**:
+   - Deploy via Cloudflare Dashboard (recommended)
+   - Or use: `cd packages/fe && pnpm deploy`
+
 ### Roadmap
 
 1. Initialize codebase ✅
@@ -41,4 +63,4 @@
 9. setup db schema
 10. Initialize auth (clerk)
 11. Create basic functionalities for validations (homepage, login & register)
-12. setup deployment pipeline
+12. setup deployment pipeline ✅

@@ -39,6 +39,7 @@ async function fetchAPI<T>(
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
+    credentials: "include", // Include credentials (cookies, auth headers) in CORS requests
   });
 
   if (!response.ok) {

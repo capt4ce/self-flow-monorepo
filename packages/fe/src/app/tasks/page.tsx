@@ -134,19 +134,19 @@ export default function AllTasksPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 lg:p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">All Tasks</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold">All Tasks</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             View and manage all tasks across all goals
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex gap-2 flex-1 min-w-0">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
             <div className="relative flex-1 min-w-0">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search tasks..."
                 value={searchQuery}
@@ -154,42 +154,44 @@ export default function AllTasksPage() {
                 className="pl-10"
               />
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="todo">To Do</SelectItem>
-                <SelectItem value="in progress">In Progress</SelectItem>
-                <SelectItem value="blocked">Blocked</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="not done">Not Done</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={effortFilter} onValueChange={setEffortFilter}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Effort" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Effort</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="med">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={templateFilter} onValueChange={setTemplateFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Templates" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Tasks</SelectItem>
-                <SelectItem value="templates">Templates Only</SelectItem>
-                <SelectItem value="non-templates">Non-Templates</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[140px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="todo">To Do</SelectItem>
+                  <SelectItem value="in progress">In Progress</SelectItem>
+                  <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="not done">Not Done</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={effortFilter} onValueChange={setEffortFilter}>
+                <SelectTrigger className="w-full sm:w-[120px]">
+                  <SelectValue placeholder="Effort" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Effort</SelectItem>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="med">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={templateFilter} onValueChange={setTemplateFilter}>
+                <SelectTrigger className="w-full sm:w-[140px]">
+                  <SelectValue placeholder="Templates" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tasks</SelectItem>
+                  <SelectItem value="templates">Templates Only</SelectItem>
+                  <SelectItem value="non-templates">Non-Templates</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <Button onClick={handleCreateTask}>
+          <Button onClick={handleCreateTask} className="w-full sm:w-auto" size="sm">
             <Plus className="h-4 w-4 mr-2" />
             Create Task
           </Button>
@@ -216,21 +218,21 @@ export default function AllTasksPage() {
                 <p>Loading tasks...</p>
               </div>
             ) : filteredTasks.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {filteredTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="flex items-start gap-3 p-4 border rounded-lg hover:bg-accent/50"
+                    className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg hover:bg-accent/50"
                   >
                     <Checkbox
                       checked={task.completed || false}
                       onCheckedChange={() => handleToggleComplete(task.id!)}
-                      className="mt-1"
+                      className="mt-1 flex-shrink-0"
                     />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                         <h3
-                          className={`font-medium ${
+                          className={`font-medium break-words ${
                             task.completed ? "line-through text-muted-foreground" : ""
                           } ${
                             task.status === "not done"
@@ -240,7 +242,7 @@ export default function AllTasksPage() {
                         >
                           {task.title}
                         </h3>
-                        <div className="flex gap-1">
+                        <div className="flex flex-wrap gap-1">
                           {task.status && (
                             <Badge
                               className={`text-xs ${getStatusBadgeColor(
@@ -263,7 +265,7 @@ export default function AllTasksPage() {
                       </div>
                       {task.description && (
                         <div
-                          className={`mt-2 text-sm ${
+                          className={`mt-2 text-xs sm:text-sm ${
                             task.completed
                               ? "text-muted-foreground"
                               : "text-foreground/70"
@@ -272,7 +274,7 @@ export default function AllTasksPage() {
                         />
                       )}
                     </div>
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 flex-shrink-0">
                       <Button
                         variant="ghost"
                         size="sm"

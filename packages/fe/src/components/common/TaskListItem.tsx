@@ -32,6 +32,10 @@ const TaskListItem = ({
 
   const [isExpanded, setIsExpanded] = useState(false);
   const toggleExpand = useCallback(() => {
+    if (!task.id) {
+      console.error("Cannot expand task without ID");
+      return;
+    }
     setIsExpanded(!isExpanded);
     fetchTaskSubtasks(task.id);
   }, [setIsExpanded, isExpanded, fetchTaskSubtasks, task]);
@@ -40,6 +44,10 @@ const TaskListItem = ({
   const cachedSubtasks = subtasksCache?.[task.id] || [];
 
   const toggleTaskComplete = async (task: TaskDTO, completed: boolean) => {
+    if (!task.id) {
+      console.error("Cannot toggle task without ID");
+      return;
+    }
     try {
       await api.tasks.update(task.id, { completed });
       setChecked(completed);
@@ -49,9 +57,9 @@ const TaskListItem = ({
   };
 
   return (
-    <div key={task.id} className={`${level > 0 ? "ml-6" : ""}`}>
-      <div className="flex items-center gap-2 p-2 border rounded hover:bg-gray-50">
-        <div className="flex items-center gap-1">
+    <div key={task.id} className={`${level > 0 ? "ml-4 sm:ml-6" : ""}`}>
+      <div className="flex items-start sm:items-center gap-2 p-2 border rounded hover:bg-gray-50">
+        <div className="flex items-center gap-1 flex-shrink-0">
           {!!hasSubtasks && (
             <button
               onClick={toggleExpand}
@@ -64,36 +72,36 @@ const TaskListItem = ({
               )}
             </button>
           )}
-          {!hasSubtasks && <div className="w-5" />}
+          {!hasSubtasks && <div className="w-4 sm:w-5" />}
         </div>
         <Checkbox
           checked={checked}
           onCheckedChange={(checked) => toggleTaskComplete(task, !!checked)}
-          className="flex-shrink-0"
+          className="flex-shrink-0 mt-0.5 sm:mt-0"
         />
         <span
-          className={`flex-1 text-sm cursor-pointer hover:text-blue-600 ${
+          className={`flex-1 min-w-0 text-xs sm:text-sm cursor-pointer hover:text-blue-600 break-words ${
             checked ? "line-through text-gray-500" : ""
           } ${task.status === "not done" ? "line-through text-red-500" : ""}`}
           onClick={() => onEditTask?.(task)}
         >
           {task.title}
         </span>
-        <div className="flex gap-1">
-          {task.isTemplate && <Badge>Template</Badge>}
+        <div className="flex flex-wrap gap-1 flex-shrink-0">
+          {task.isTemplate && <Badge className="text-[10px] sm:text-xs">Template</Badge>}
           {task.status && (
-            <Badge className={`text-xs ${getStatusBadgeColor(task.status)}`}>
+            <Badge className={`text-[10px] sm:text-xs ${getStatusBadgeColor(task.status)}`}>
               {task.status}
             </Badge>
           )}
           {task.effort && (
-            <Badge className={`text-xs ${getEffortBadgeColor(task.effort)}`}>
+            <Badge className={`text-[10px] sm:text-xs ${getEffortBadgeColor(task.effort)}`}>
               {task.effort}
             </Badge>
           )}
           {task.priority && (
             <Badge
-              className={`text-xs ${getPriorityBadgeColor(task.priority)}`}
+              className={`text-[10px] sm:text-xs ${getPriorityBadgeColor(task.priority)}`}
             >
               {task.priority}
             </Badge>

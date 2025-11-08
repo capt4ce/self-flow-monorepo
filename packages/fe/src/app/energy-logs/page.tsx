@@ -158,16 +158,20 @@ export default function AllEnergyLogsPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 lg:p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Energy Logs</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold">Energy Logs</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               View and manage all your energy readings
             </p>
           </div>
-          <Button onClick={openAddDialog}>
+          <Button 
+            onClick={openAddDialog}
+            className="w-full sm:w-auto"
+            size="sm"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Reading
           </Button>
@@ -211,33 +215,33 @@ export default function AllEnergyLogsPage() {
                     .map((reading) => (
                       <div
                         key={reading.id}
-                        className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50"
+                        className="flex items-start sm:items-center justify-between gap-2 sm:gap-3 p-3 border rounded-lg hover:bg-accent/50"
                       >
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="font-medium">
+                            <span className="font-medium text-sm sm:text-base">
                               Level: {reading.level}/10
                             </span>
                             <div
-                              className="w-3 h-3 rounded-full"
+                              className="w-3 h-3 rounded-full flex-shrink-0"
                               style={{
                                 backgroundColor: `hsl(${(reading.level / 10) * 120}, 70%, 50%)`,
                               }}
                             />
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             {format(
                               new Date(reading.timestamp),
                               "MMM dd, yyyy 'at' HH:mm"
                             )}
                           </p>
                           {reading.note && (
-                            <p className="text-sm text-foreground/70 mt-1">
+                            <p className="text-xs sm:text-sm text-foreground/70 mt-1 break-words">
                               {reading.note}
                             </p>
                           )}
                         </div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-shrink-0">
                           <Button
                             variant="ghost"
                             size="sm"

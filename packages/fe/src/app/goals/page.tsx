@@ -214,26 +214,31 @@ export default function AllGoalsPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 lg:p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">All Goals</h1>
-            <p className="text-muted-foreground">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold">All Goals</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               View and manage all your goals
             </p>
           </div>
-          <Button onClick={handleOpenGoalDialog}>
+          <Button 
+            onClick={handleOpenGoalDialog}
+            className="w-full sm:w-auto"
+            size="sm"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Goal
           </Button>
         </div>
 
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-4 sm:mb-6">
           <Button
             variant={filter === "active" ? "default" : "outline"}
             onClick={() => setFilter("active")}
             size="sm"
+            className="flex-1 sm:flex-initial"
           >
             Active
           </Button>
@@ -241,6 +246,7 @@ export default function AllGoalsPage() {
             variant={filter === "done" ? "default" : "outline"}
             onClick={() => setFilter("done")}
             size="sm"
+            className="flex-1 sm:flex-initial"
           >
             Done
           </Button>
