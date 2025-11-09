@@ -8,11 +8,10 @@ export const stackClientApp = new StackClientApp({
   redirectMethod: "window",
   // Configure auth URLs
   urls: {
-    signIn: "/auth/sign-in",
-    signUp: "/auth/sign-up",
-    signOut: "/auth/sign-out",
-    afterSignIn: "/",
-    afterSignUp: "/",
+    signIn: window.location.origin + "/auth/sign-in",
+    signUp: window.location.origin + "/auth/sign-up",
+    signOut: window.location.origin + "/auth/sign-out",
+    afterSignIn: window.location.origin + "/",
+    afterSignUp: window.location.origin + "/",
   },
 });
-
