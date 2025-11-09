@@ -20,6 +20,7 @@ function getAllowedOrigins(c: Context<{ Bindings: Env }>): string[] {
     "http://localhost:3001",
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
+    "https://selfflow.aliabdilah.com",
   ];
 
   // Add environment variable from Cloudflare Workers bindings if set (for production)
@@ -48,7 +49,7 @@ app.use(
   cors({
     origin: (origin, c) => {
       const allowed = getAllowedOrigins(c);
-      
+
       // Normalize the origin for comparison (remove trailing slash, lowercase)
       const normalize = (url: string) => {
         let normalized = url.toLowerCase().trim();
@@ -57,28 +58,28 @@ app.use(
         }
         return normalized;
       };
-      
+
       // Allow requests with no origin (e.g., mobile apps, Postman, server-to-server)
       // When credentials is true, we can't use "*", so we allow the first origin
       if (!origin) {
         return allowed.length > 0 ? allowed[0] : "http://localhost:3000";
       }
-      
+
       const normalizedOrigin = normalize(origin);
-      
+
       // Check exact match
       for (const allowedOrigin of allowed) {
         if (normalize(allowedOrigin) === normalizedOrigin) {
           return origin; // Return the actual origin (not normalized) to preserve case
         }
       }
-      
+
       // In development, allow any localhost origin (for flexibility)
       // This helps when frontend runs on different ports
-      const isDevelopment = 
-        typeof process !== "undefined" && 
+      const isDevelopment =
+        typeof process !== "undefined" &&
         (process.env.NODE_ENV === "development" || !process.env.NODE_ENV);
-      
+
       if (isDevelopment) {
         // Allow localhost with any port in development
         if (
@@ -88,7 +89,7 @@ app.use(
           return origin;
         }
       }
-      
+
       // Not allowed - return false
       return false;
     },

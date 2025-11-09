@@ -169,21 +169,9 @@ ADD
 
 --> statement-breakpoint
 ALTER TABLE
-	"energy_readings"
-ADD
-	CONSTRAINT "energy_readings_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
 	"tasks"
 ADD
 	CONSTRAINT "tasks_assignee_id_fkey" FOREIGN KEY ("assignee_id") REFERENCES "auth"."users"("id") ON DELETE no action ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
-	"tasks"
-ADD
-	CONSTRAINT "tasks_assignee_id_fkey1" FOREIGN KEY ("assignee_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 
 --> statement-breakpoint
 ALTER TABLE
@@ -215,18 +203,6 @@ ADD
 ALTER TABLE
 	"assign_history"
 ADD
-	CONSTRAINT "assign_history_assignee_id_fkey" FOREIGN KEY ("assignee_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
-	"assign_history"
-ADD
-	CONSTRAINT "assign_history_assignor_id_fkey" FOREIGN KEY ("assignor_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
-	"assign_history"
-ADD
 	CONSTRAINT "assign_history_task_id_fkey" FOREIGN KEY ("task_id") REFERENCES "public"."tasks"("id") ON DELETE no action ON UPDATE no action;
 
 --> statement-breakpoint
@@ -246,12 +222,6 @@ ALTER TABLE
 	"system_users"
 ADD
 	CONSTRAINT "system_users_system_id_fkey" FOREIGN KEY ("system_id") REFERENCES "public"."system"("id") ON DELETE no action ON UPDATE no action;
-
---> statement-breakpoint
-ALTER TABLE
-	"system_users"
-ADD
-	CONSTRAINT "system_users_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 
 --> statement-breakpoint
 ALTER TABLE
