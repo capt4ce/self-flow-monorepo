@@ -42,14 +42,6 @@ export default function AllTasksPage() {
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchAllTasks();
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
-
   const fetchAllTasks = async () => {
     if (!user) return;
     setLoading(true);
@@ -62,6 +54,15 @@ export default function AllTasksPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchAllTasks();
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const filteredTasks = allTasks.filter((task) => {
     // Status filter
@@ -299,7 +300,7 @@ export default function AllTasksPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Task</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{task.title}"?
+                              Are you sure you want to delete &quot;{task.title}&quot;?
                               This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>

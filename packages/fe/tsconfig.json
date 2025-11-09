@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@self-flow/common": ["../common"]
+      "@self-flow/common": ["../common"],
+      "@self-flow/common/types": ["../common/types"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

@@ -16,6 +16,7 @@ import { Edit, Trash2, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api-client";
+import { EnergyReadingDTO } from "@self-flow/common/types";
 
 interface EnergyReading {
   id?: string;
@@ -48,9 +49,10 @@ export default function AllEnergyLogsPage() {
   const fetchEnergyReadings = async () => {
     try {
       const response = await api.energy.list();
-      const readings = (response.data || []).map((reading: any) => ({
+      const readings = (response.data || []).map((reading: EnergyReadingDTO) => ({
         ...reading,
         timestamp: new Date(reading.timestamp),
+        note: reading.note ?? undefined,
       }));
       setEnergyReadings(readings.sort((a: EnergyReading, b: EnergyReading) => 
         new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
@@ -76,7 +78,7 @@ export default function AllEnergyLogsPage() {
     try {
       await api.energy.update(editingReading.id!, {
         level: editLevel,
-        note: editNote.trim() || null,
+        note: editNote.trim() || undefined,
         timestamp: new Date(editTime).toISOString(),
       });
 
@@ -121,13 +123,14 @@ export default function AllEnergyLogsPage() {
     try {
       const response = await api.energy.create({
         level: editLevel,
-        note: editNote.trim() || null,
+        note: editNote.trim() || undefined,
         timestamp: new Date(editTime).toISOString(),
       });
 
       const newReading: EnergyReading = {
         ...response.data,
         timestamp: new Date(response.data.timestamp),
+        note: response.data.note ?? undefined,
       };
 
       const updatedReadings = [...energyReadings, newReading].sort(

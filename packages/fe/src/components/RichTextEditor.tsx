@@ -85,7 +85,7 @@ const RichTextEditor = ({
   const renderMarkdown = (text: string) => {
     // This is a very basic markdown renderer for preview
     // In a real app, you would use a proper markdown library
-    let html = text
+    const html = text
       // Headers
       .replace(/^### (.+)$/gm, "<h3>$1</h3>")
       .replace(/^## (.+)$/gm, "<h2>$1</h2>")

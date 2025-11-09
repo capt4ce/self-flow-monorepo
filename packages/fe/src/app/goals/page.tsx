@@ -23,7 +23,9 @@ export default function AllGoalsPage() {
   const [goalDialogOpen, setGoalDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<GoalDTO | null>(null);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string }>({
+  const [taskFormData, setTaskFormData] = useState<
+    Partial<TaskDTO> & { goal_id?: string }
+  >({
     title: "",
     description: "",
     status: "todo",
@@ -32,14 +34,6 @@ export default function AllGoalsPage() {
   const [groupDialogOpen, setGroupDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<TaskGroupDTO | null>(null);
   const [currentGoalId, setCurrentGoalId] = useState<string>("");
-
-  useEffect(() => {
-    if (user) {
-      fetchGoals();
-    } else {
-      setLoading(false);
-    }
-  }, [user, filter]);
 
   const fetchGoals = async () => {
     try {
@@ -51,6 +45,15 @@ export default function AllGoalsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      fetchGoals();
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, filter]);
 
   const handleToggleGoalStatus = async (
     goalId: string,
@@ -125,27 +128,6 @@ export default function AllGoalsPage() {
     setTaskDialogOpen(true);
   };
 
-  const handleDeleteTask = async (goalId: string, taskId: string) => {
-    if (!user) return;
-
-    try {
-      await api.tasks.delete(taskId);
-      setGoals(
-        goals.map((goal) => {
-          if (goal.id === goalId) {
-            return {
-              ...goal,
-              tasks: (goal.tasks || []).filter((t) => t.id !== taskId),
-            };
-          }
-          return goal;
-        })
-      );
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
-
   const handleCreateTaskGroup = async (goalId: string) => {
     setCurrentGoalId(goalId);
     setEditingGroup(null);
@@ -202,7 +184,7 @@ export default function AllGoalsPage() {
     if (!user) return;
 
     try {
-      await api.tasks.update(taskId, { groupId });
+      await api.tasks.update(taskId, { groupId: groupId ?? undefined });
       await fetchGoals();
     } catch (error) {
       console.error("Error moving task to group:", error);
@@ -223,7 +205,7 @@ export default function AllGoalsPage() {
               View and manage all your goals
             </p>
           </div>
-          <Button 
+          <Button
             onClick={handleOpenGoalDialog}
             className="w-full sm:w-auto"
             size="sm"
@@ -325,4 +307,3 @@ export default function AllGoalsPage() {
     </div>
   );
 }
-

@@ -34,12 +34,11 @@ import TaskSearch from "../common/TaskSearch";
 import ParentTaskSearch from "../common/ParentTaskSearch";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api-client";
-import { Textarea } from "../ui/textarea";
 
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  task?: Partial<TaskDTO> & { goal_id?: string };
+  task?: (Partial<TaskDTO> & { goal_id?: string }) | null;
   onSaved?: () => void;
 }
 
@@ -51,12 +50,17 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 }) => {
   const { user } = useAuth();
   const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string; ai_agent?: string; ai_prompt?: string }>(
-    task || {
+    task ? {
+      ...task,
+      goal_id: task.goal_id,
+      ai_agent: "none",
+      ai_prompt: "",
+    } : {
       title: "",
       description: "",
       status: "todo",
       completed: false,
-      goal_id: task?.goal_id,
+      goal_id: undefined,
       ai_agent: "none",
       ai_prompt: "",
     }
@@ -100,6 +104,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     } else {
       resetForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [task]);
 
   const handleSave = async () => {
@@ -107,8 +112,11 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
     setLoading(true);
     try {
+      const title = taskFormData.title;
+      if (!title) return;
+      
       const taskDataToSave: CreateTaskDTO | UpdateTaskDTO = {
-        title: taskFormData.title,
+        title,
         description: taskFormData.description || undefined,
         effort: taskFormData.effort || undefined,
         status: (taskFormData.status as TaskStatus) || "todo",
@@ -121,12 +129,10 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
         orderIndex: taskFormData.orderIndex || 0,
       };
 
-      let savedTask: TaskDTO;
-
       if (taskFormData?.id) {
         // Update task with subtasks (batch operation)
         const subtasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
-        const response = await api.tasks.update(taskFormData.id, {
+        await api.tasks.update(taskFormData.id, {
           ...taskDataToSave,
           newSubtasks: subtasksToAdd.length > 0
             ? subtasksToAdd.map((st) => ({
@@ -141,12 +147,21 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           selectedSubtaskIds: selectedExistingTaskIds,
           currentSubtaskIds: subtasks.map((st) => st.id!),
         });
-        savedTask = response.data;
       } else {
         // Create task with subtasks (batch operation)
         const subtasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
-        const response = await api.tasks.create({
-          ...taskDataToSave,
+        const createData = {
+          title,
+          description: taskDataToSave.description,
+          effort: taskDataToSave.effort,
+          status: taskDataToSave.status,
+          priority: taskDataToSave.priority,
+          parentId: taskDataToSave.parentId,
+          goalId: taskDataToSave.goalId,
+          groupId: taskDataToSave.groupId,
+          isTemplate: taskDataToSave.isTemplate,
+          completed: taskDataToSave.completed,
+          orderIndex: taskDataToSave.orderIndex,
           newSubtasks: subtasksToAdd.length > 0
             ? subtasksToAdd.map((st) => ({
                 title: st.title,
@@ -158,8 +173,8 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
               }))
             : undefined,
           existingSubtaskIds: selectedExistingTaskIds.length > 0 ? selectedExistingTaskIds : undefined,
-        });
-        savedTask = response.data;
+        };
+        await api.tasks.create(createData);
       }
 
       if (typeof onSaved === "function") {

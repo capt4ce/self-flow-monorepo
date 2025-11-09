@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true, // Required for static export
   },
+  transpilePackages: ['@self-flow/common'],
 };
 
 export default nextConfig;

@@ -18,7 +18,6 @@ export default function Home() {
   const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
   const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string }>({
     title: "",
     description: "",
@@ -33,14 +32,6 @@ export default function Home() {
   const [monthCalendarOpen, setMonthCalendarOpen] = useState(false);
   const { refreshSubtasks } = useSubtasks();
 
-  useEffect(() => {
-    if (user && !loading) {
-      fetchAllTasks();
-    } else if (!loading && !user) {
-      setIsLoading(false);
-    }
-  }, [user, loading]);
-
   const fetchAllTasks = async () => {
     if (!user) return;
     setIsLoading(true);
@@ -54,6 +45,15 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (user && !loading) {
+      fetchAllTasks();
+    } else if (!loading && !user) {
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading]);
+
   // Filter tasks by selected date (by creation date)
   const dailyTasks = useMemo(() => {
     if (!selectedDate || !(selectedDate instanceof Date)) return [];
@@ -66,7 +66,7 @@ export default function Home() {
       endOfDay.setHours(23, 59, 59, 999);
       
       return allTasks.filter((task) => {
-        if (!task.createdAt) return false;
+        if (!task.createdAt || typeof task.createdAt !== 'string') return false;
         try {
           const taskDate = new Date(task.createdAt);
           if (isNaN(taskDate.getTime())) return false;
@@ -99,17 +99,15 @@ export default function Home() {
   };
 
   const handleEditTask = (task: TaskDTO) => {
-    setEditingTask(task);
     setTaskFormData({
       ...task,
       status: task.status || "todo",
-      goal_id: task.goal_id,
+      goal_id: (task.goal_id && typeof task.goal_id === 'string') ? task.goal_id : undefined,
     });
     setTaskDialogOpen(true);
   };
 
   const handleCreateTask = () => {
-    setEditingTask(null);
     setTaskFormData({
       title: "",
       description: "",
@@ -204,19 +202,15 @@ export default function Home() {
               <CardContent>
                 {dailyTasks.length > 0 ? (
                   <div className="space-y-2">
-                    {dailyTasks.map((task) => {
-                      if (!task.id) {
-                        console.warn("Task without ID found:", task);
-                        return null;
-                      }
-                      return (
+                    {dailyTasks
+                      .filter((task) => task.id && typeof task.id === 'string')
+                      .map((task) => (
                         <TaskListItem
-                          key={task.id}
+                          key={task.id!}
                           task={task}
                           onEditTask={handleEditTask}
                         />
-                      );
-                    })}
+                      ))}
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
@@ -251,7 +245,6 @@ export default function Home() {
             status: "todo",
             completed: false,
           });
-          setEditingTask(null);
           await refreshSubtasks();
         }}
       />

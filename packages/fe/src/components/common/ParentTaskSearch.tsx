@@ -53,6 +53,7 @@ const ParentTaskSearch = ({
   React.useEffect(() => {
     setIsSearching(true);
     searchTasks(searchQueryToApply).then(() => setIsSearching(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQueryToApply]);
 
   React.useEffect(() => {

@@ -15,7 +15,30 @@ export const TaskStatus = z.enum([
 ]);
 export type TaskStatus = z.infer<typeof TaskStatus>;
 
-export const TaskDTO = z.object({
+// Define TaskDTO schema with lazy reference for subtasks to handle circular references
+type TaskDTOType = {
+  id: string;
+  userId: string;
+  parentId: string | null;
+  title: string;
+  description: string | null;
+  completed: boolean;
+  orderIndex: number;
+  createdAt: string;
+  updatedAt: string;
+  status: TaskStatus | null;
+  effort: TaskEffort | null;
+  groupId: string | null;
+  isTemplate: boolean;
+  templateId: string | null;
+  priority: TaskPriority | null;
+  assigneeId: string | null;
+  subtasks?: TaskDTOType[];
+  subtaskCount?: number;
+  goal_id?: string;
+};
+
+const TaskDTOSchema: z.ZodType<TaskDTOType> = z.lazy(() => z.object({
   id: z.string().uuid(),
   userId: z.string().uuid(),
   parentId: z.string().uuid().nullable(),
@@ -32,12 +55,13 @@ export const TaskDTO = z.object({
   templateId: z.string().uuid().nullable(),
   priority: TaskPriority.nullable(),
   assigneeId: z.string().uuid().nullable(),
-  subtasks: z.array(z.lazy(() => TaskDTO)).optional(),
+  subtasks: z.array(TaskDTOSchema).optional(),
   subtaskCount: z.number().optional(),
   goal_id: z.string().uuid().optional(),
-});
+}));
 
-export type TaskDTO = z.infer<typeof TaskDTO>;
+export const TaskDTO = TaskDTOSchema;
+export type TaskDTO = TaskDTOType;
 
 export const CreateTaskDTO = z.object({
   title: z.string(),

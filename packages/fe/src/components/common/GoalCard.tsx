@@ -1,21 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Edit,
-  Trash2,
-  Plus,
-  Calendar,
-  ChevronRight,
-  ChevronDown,
-  Expand,
-  FolderPlus,
-  Folder,
-} from "lucide-react";
+import { Edit, Trash2, Plus, Calendar, FolderPlus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,16 +19,14 @@ import {
 import { format } from "date-fns";
 import { GoalDTO, GoalCategory, GoalStatus } from "@self-flow/common/types";
 import { TaskDTO } from "@self-flow/common/types";
-import {
-  getCategoryBadgeColor,
-  getStatusBadgeColor,
-  getEffortBadgeColor,
-} from "@/utils/badgeColors";
-import { useAuth } from "@/contexts/AuthContext";
-import TaskGroupDialog from "@/components/dialogs/TaskGroupDialog";
-import { TaskGroupDTO } from "@self-flow/common/types";
+import { getCategoryBadgeColor } from "@/utils/badgeColors";
 import TaskListItem from "./TaskListItem";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import moveElement from "@/helpers/moveElement";
 import { api } from "@/lib/api-client";
 
@@ -49,7 +36,7 @@ interface GoalCardProps {
   onDelete?: (goalId: string) => void;
   onAddTask?: (goalId: string, parentId?: string) => void;
   onEditTask?: (task: TaskDTO) => void;
-  onToggleGoalStatus?: (goalId: string, currentStatus: string) => void;
+  onToggleGoalStatus?: (goalId: string, currentStatus: GoalStatus) => void;
   onCreateTaskGroup?: (goalId: string) => void;
   onEditTaskGroup?: (groupId: string) => void;
   onDeleteTaskGroup?: (groupId: string) => void;
@@ -68,31 +55,27 @@ const GoalCard: React.FC<GoalCardProps> = ({
   onEditTask,
   onToggleGoalStatus,
   onCreateTaskGroup,
-  onEditTaskGroup,
-  onDeleteTaskGroup,
-  onMoveTaskToGroup,
+  onEditTaskGroup: _onEditTaskGroup, // eslint-disable-line @typescript-eslint/no-unused-vars
+  onDeleteTaskGroup: _onDeleteTaskGroup, // eslint-disable-line @typescript-eslint/no-unused-vars
+  onMoveTaskToGroup: _onMoveTaskToGroup, // eslint-disable-line @typescript-eslint/no-unused-vars
   updateGoalTasks,
   showTasks = true,
   showProgress = true,
   compact = false,
 }) => {
-  const [groupDialogOpen, setGroupDialogOpen] = React.useState(false);
-  const [editingGroup, setEditingGroup] = React.useState<TaskGroupDTO | null>(
-    null
-  );
   const tasks = goal.tasks || [];
 
   const taskCount = goal.taskCount || tasks.length;
   const completedTaskCount =
     goal.completedTaskCount || tasks.filter((t) => t.completed).length;
 
-  const handleDragEnd = async (result: any) => {
+  const handleDragEnd = async (result: DropResult) => {
     const {
       reason,
       source: { index: sourceIdx },
       destination,
     } = result;
-    
+
     if (
       reason !== "DROP" ||
       !destination ||
@@ -103,7 +86,7 @@ const GoalCard: React.FC<GoalCardProps> = ({
     }
 
     const newTasksOrder = moveElement(tasks, sourceIdx, destination.index);
-    
+
     // Update order indexes
     const orders = newTasksOrder.map((task, idx) => ({
       taskId: task.id,
@@ -111,7 +94,10 @@ const GoalCard: React.FC<GoalCardProps> = ({
     }));
 
     // Optimistically update local state
-    updateGoalTasks?.(goal.id, newTasksOrder.map((task, idx) => ({ ...task, orderIndex: idx })));
+    updateGoalTasks?.(
+      goal.id,
+      newTasksOrder.map((task, idx) => ({ ...task, orderIndex: idx }))
+    );
 
     try {
       await api.tasks.reorder(orders);
@@ -180,8 +166,8 @@ const GoalCard: React.FC<GoalCardProps> = ({
                     <AlertDialogHeader>
                       <AlertDialogTitle>Delete Goal</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Are you sure you want to delete "{goal.title}
-                        "? This action cannot be undone and will remove all
+                        Are you sure you want to delete &quot;{goal.title}
+                        &quot;? This action cannot be undone and will remove all
                         associated tasks.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
@@ -330,8 +316,8 @@ const GoalCard: React.FC<GoalCardProps> = ({
               size="sm"
               onClick={() => onAddTask(goal.id)}
               className={
-                onToggleGoalStatus || onCreateTaskGroup 
-                  ? "flex-1 sm:flex-initial" 
+                onToggleGoalStatus || onCreateTaskGroup
+                  ? "flex-1 sm:flex-initial"
                   : "w-full"
               }
             >
@@ -367,8 +353,9 @@ const GoalCard: React.FC<GoalCardProps> = ({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Goal</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete "{goal.title}"? This action
-                    cannot be undone and will remove all associated tasks.
+                    Are you sure you want to delete &quot;{goal.title}&quot;?
+                    This action cannot be undone and will remove all associated
+                    tasks.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -384,21 +371,9 @@ const GoalCard: React.FC<GoalCardProps> = ({
             </AlertDialog>
           )}
         </div>
-
-        {/* Task Group Dialog */}
-        <TaskGroupDialog
-          open={groupDialogOpen}
-          onOpenChange={setGroupDialogOpen}
-          group={editingGroup}
-          onSave={async (title) => {
-            // This would be handled by the parent component
-            console.log("Save group:", title);
-          }}
-        />
       </CardContent>
     </Card>
   );
 };
 
 export default GoalCard;
-

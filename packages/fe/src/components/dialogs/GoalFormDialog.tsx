@@ -24,7 +24,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import RichTextEditor from "@/components/RichTextEditor";
 import { format } from "date-fns";
 import { GoalDTO, GoalCategory, GoalStatus } from "@self-flow/common/types";
-import { TaskDTO, TaskEffort } from "@self-flow/common/types";
+import { TaskDTO, TaskEffort, TaskStatus } from "@self-flow/common/types";
 import { getStatusBadgeColor, getEffortBadgeColor } from "@/utils/badgeColors";
 import TaskSearch from "../common/TaskSearch";
 import TaskAutocomplete from "../common/TaskAutocomplete";
@@ -117,12 +117,10 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
         endDate: goalFormData.endDate || undefined,
       };
 
-      let savedGoal: GoalDTO;
-
       if (goal?.id) {
         // Update goal with tasks (batch operation)
         const tasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
-        const response = await api.goals.update(goal.id, {
+        await api.goals.update(goal.id, {
           ...goalData,
           newTasks:
             tasksToAdd.length > 0
@@ -130,18 +128,17 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                   title: t.title,
                   description: t.description || undefined,
                   effort: t.effort || undefined,
-                  status: (t.status as any) || "todo",
+                  status: (t.status as TaskStatus) || "todo",
                   templateId: t.templateId || undefined,
                 }))
               : undefined,
           selectedTaskIds: selectedExistingTaskIds,
           currentTaskIds: goalTasks.map((t: TaskDTO) => t.id),
         });
-        savedGoal = response.data;
       } else {
         // Create goal with tasks (batch operation)
         const tasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
-        const response = await api.goals.create({
+        await api.goals.create({
           ...goalData,
           newTasks:
             tasksToAdd.length > 0
@@ -149,7 +146,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                   title: t.title,
                   description: t.description || undefined,
                   effort: t.effort || undefined,
-                  status: (t.status as any) || "todo",
+                  status: (t.status as TaskStatus) || "todo",
                   templateId: t.templateId || undefined,
                 }))
               : undefined,
@@ -158,7 +155,6 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
               ? selectedExistingTaskIds
               : undefined,
         });
-        savedGoal = response.data;
       }
 
       resetForm();

@@ -7,7 +7,7 @@ import { setAuthTokenGetter } from "@/lib/api-client";
 import { useUser } from "@stackframe/react";
 
 interface AuthContextType {
-  user: any;
+  user: { id: string; email: string | null } | null;
   loading: boolean;
   signOut: () => Promise<void>;
   getToken: () => Promise<string | null>;
@@ -63,7 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       return tokens.accessToken;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error getting token from Stack Auth:", error);
       return null;
     }
@@ -74,7 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (typeof window !== "undefined") {
       setAuthTokenGetter(getToken);
     }
-  }, [getToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const value = {
     user: user ? { id: user.id, email: user.primaryEmail } : null,
