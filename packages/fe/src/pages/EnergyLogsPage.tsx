@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +23,7 @@ interface EnergyReading {
   timestamp: Date | string;
 }
 
-export default function AllEnergyLogsPage() {
+export default function EnergyLogsPage() {
   const { user } = useAuth();
   const [energyReadings, setEnergyReadings] = useState<EnergyReading[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);

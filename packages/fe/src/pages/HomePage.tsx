@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +11,7 @@ import MonthCalendarDialog from "@/components/dialogs/MonthCalendarDialog";
 import TaskListItem from "@/components/common/TaskListItem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function Home() {
+export default function HomePage() {
   const { user, loading } = useAuth();
   const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -259,3 +257,4 @@ export default function Home() {
     </div>
   );
 }
+

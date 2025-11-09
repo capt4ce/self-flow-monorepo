@@ -1,5 +1,3 @@
-"use client";
-
 import { SignIn } from "@stackframe/react";
 
 export default function SignInPage() {

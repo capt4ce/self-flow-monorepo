@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -14,7 +12,7 @@ import { TaskGroupDTO } from "@self-flow/common/types";
 import { api } from "@/lib/api-client";
 import { useSubtasks } from "@/contexts/SubtasksContext";
 
-export default function AllGoalsPage() {
+export default function GoalsPage() {
   const { user } = useAuth();
   const { refreshSubtasks } = useSubtasks();
   const [goals, setGoals] = useState<GoalDTO[]>([]);
@@ -307,3 +305,4 @@ export default function AllGoalsPage() {
     </div>
   );
 }
+

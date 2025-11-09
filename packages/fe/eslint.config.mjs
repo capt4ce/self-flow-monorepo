@@ -10,14 +10,32 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends("eslint:recommended", "plugin:react/recommended", "plugin:react-hooks/recommended"),
   {
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        console: "readonly",
+        process: "readonly",
+      },
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+    },
     ignores: [
       "node_modules/**",
-      ".next/**",
-      "out/**",
+      "dist/**",
       "build/**",
-      "next-env.d.ts",
+      "*.config.*",
     ],
   },
 ];

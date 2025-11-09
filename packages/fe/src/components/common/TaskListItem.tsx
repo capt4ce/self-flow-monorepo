@@ -1,4 +1,3 @@
-"use client";
 
 import { TaskDTO } from "@self-flow/common/types";
 import { ChevronDown, ChevronRight } from "lucide-react";

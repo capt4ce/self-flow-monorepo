@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +29,7 @@ import { getEffortBadgeColor, getStatusBadgeColor } from "@/utils/badgeColors";
 import TaskDialog from "@/components/dialogs/TaskDialog";
 import { api } from "@/lib/api-client";
 
-export default function AllTasksPage() {
+export default function TasksPage() {
   const { user } = useAuth();
   const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");

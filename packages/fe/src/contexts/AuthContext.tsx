@@ -1,5 +1,3 @@
-"use client";
-
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { setAuthTokenGetter } from "@/lib/api-client";
 
@@ -27,7 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   // Hooks must be called unconditionally - they require StackProvider above this component
-  // StackProvider should be wrapped in StackProviderWrapper (client component) in layout.tsx
+  // StackProvider is always provided by StackProviderWrapper, even if config is missing
   const user = useUser();
   const [loading, setLoading] = useState(true);
 
@@ -38,16 +36,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const signOut = async () => {
     if (!user) {
-      console.error("User is not available for sign out");
+      console.warn("User is not available for sign out - Stack Auth may not be configured");
       return;
     }
-    await user.signOut();
+    try {
+      await user.signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
 
   const getToken = async () => {
     try {
       if (!user) {
-        console.error("User is not available");
+        // Silent return when user is not available (e.g., Stack Auth not configured)
         return null;
       }
 

@@ -13,8 +13,12 @@ import type {
   UpdateEnergyReadingDTO,
 } from "@self-flow/common/types";
 
+// In development, use relative URL which will be proxied by Vite
+// In production, use the full API URL from environment variable
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8787/api";
+  import.meta.env.DEV
+    ? "/api" // Use relative URL in development (proxied by Vite)
+    : import.meta.env.VITE_API_URL || "http://localhost:8787/api";
 
 // Extend Window interface for token getter
 declare global {

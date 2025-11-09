@@ -1,8 +1,5 @@
-"use client";
-
 import React, { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Home, CheckSquare, Target, Battery, LogOut, Menu, X, LogIn, UserPlus } from "lucide-react";
@@ -15,7 +12,8 @@ interface AppLayoutProps {
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const { user, signOut, loading } = useAuth();
-  const pathname = usePathname();
+  const location = useLocation();
+  const pathname = location.pathname;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [energyLogDialogOpen, setEnergyLogDialogOpen] = useState(false);
 
@@ -48,13 +46,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <h1 className="text-base sm:text-lg font-semibold">Self Flow</h1>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
-              <Link href="/auth/sign-in">
+              <Link to="/auth/sign-in">
                 <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
                   <LogIn className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">Login</span>
                 </Button>
               </Link>
-              <Link href="/auth/sign-up">
+              <Link to="/auth/sign-up">
                 <Button size="sm" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
                   <UserPlus className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="hidden sm:inline">Sign Up</span>
@@ -110,7 +108,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           {navItems.map(({ path, label, icon: Icon }) => {
             const isActive = pathname === path;
             return (
-              <Link key={path} href={path} onClick={() => setSidebarOpen(false)}>
+              <Link key={path} to={path} onClick={() => setSidebarOpen(false)}>
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   className="w-full justify-start"

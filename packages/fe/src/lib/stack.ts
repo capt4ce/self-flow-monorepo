@@ -1,12 +1,10 @@
-"use client";
-
 import { StackClientApp } from "@stackframe/react";
 
 export const stackClientApp = new StackClientApp({
-  projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID || "",
-  publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY || "",
+  projectId: import.meta.env.VITE_STACK_PROJECT_ID || "",
+  publishableClientKey: import.meta.env.VITE_STACK_PUBLISHABLE_CLIENT_KEY || "",
   tokenStore: "cookie",
-  // For Next.js, we use window redirect method (works with App Router)
+  // For plain React, we use window redirect method
   redirectMethod: "window",
   // Configure auth URLs
   urls: {

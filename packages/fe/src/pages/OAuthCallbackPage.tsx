@@ -1,12 +1,10 @@
-"use client";
-
 import { useStackApp } from "@stackframe/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 export default function OAuthCallbackPage() {
   const app = useStackApp();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
 
   useEffect(() => {
@@ -16,7 +14,7 @@ export default function OAuthCallbackPage() {
         if (success) {
           setStatus("success");
           // Redirect to home page after successful OAuth callback
-          router.push("/");
+          navigate("/");
         } else {
           setStatus("error");
         }
@@ -27,7 +25,7 @@ export default function OAuthCallbackPage() {
     }
 
     handleCallback();
-  }, [app, router]);
+  }, [app, navigate]);
 
   if (status === "loading") {
     return (
@@ -46,7 +44,7 @@ export default function OAuthCallbackPage() {
         <div className="text-center">
           <p className="text-destructive mb-4">Failed to complete sign in.</p>
           <button
-            onClick={() => router.push("/auth/sign-in")}
+            onClick={() => navigate("/auth/sign-in")}
             className="text-primary hover:underline"
           >
             Return to sign in

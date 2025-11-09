@@ -1,5 +1,3 @@
-"use client";
-
 import { SignUp } from "@stackframe/react";
 
 export default function SignUpPage() {
