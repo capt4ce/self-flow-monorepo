@@ -4,19 +4,26 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api-client";
 import TaskDialog from "@/components/dialogs/TaskDialog";
-import { TaskDTO } from "@self-flow/common/types";
+import GoalFormDialog from "@/components/dialogs/GoalFormDialog";
+import { TaskDTO, GoalDTO } from "@self-flow/common/types";
 import { useSubtasks } from "@/contexts/SubtasksContext";
 import WeekCalendarWidget from "@/components/common/WeekCalendarWidget";
 import MonthCalendarDialog from "@/components/dialogs/MonthCalendarDialog";
 import TaskListItem from "@/components/common/TaskListItem";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
+  const [goals, setGoals] = useState<GoalDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
-  const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string }>({
+  const [goalDialogOpen, setGoalDialogOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<GoalDTO | null>(null);
+  const [taskFormData, setTaskFormData] = useState<
+    Partial<TaskDTO> & { goal_id?: string }
+  >({
     title: "",
     description: "",
     status: "todo",
@@ -28,6 +35,7 @@ export default function HomePage() {
     return today;
   });
   const [monthCalendarOpen, setMonthCalendarOpen] = useState(false);
+  const [goalsRefreshKey, setGoalsRefreshKey] = useState(0);
   const { refreshSubtasks } = useSubtasks();
 
   const fetchAllTasks = async () => {
@@ -43,9 +51,20 @@ export default function HomePage() {
     }
   };
 
+  const fetchGoals = async () => {
+    if (!user) return;
+    try {
+      const response = await api.goals.list("active");
+      setGoals(response.data || []);
+    } catch (error) {
+      console.error("Error fetching goals:", error);
+    }
+  };
+
   useEffect(() => {
     if (user && !loading) {
       fetchAllTasks();
+      fetchGoals();
     } else if (!loading && !user) {
       setIsLoading(false);
     }
@@ -55,16 +74,16 @@ export default function HomePage() {
   // Filter tasks by selected date (by creation date)
   const dailyTasks = useMemo(() => {
     if (!selectedDate || !(selectedDate instanceof Date)) return [];
-    
+
     try {
       const startOfDay = new Date(selectedDate);
       startOfDay.setHours(0, 0, 0, 0);
-      
+
       const endOfDay = new Date(selectedDate);
       endOfDay.setHours(23, 59, 59, 999);
-      
+
       return allTasks.filter((task) => {
-        if (!task.createdAt || typeof task.createdAt !== 'string') return false;
+        if (!task.createdAt || typeof task.createdAt !== "string") return false;
         try {
           const taskDate = new Date(task.createdAt);
           if (isNaN(taskDate.getTime())) return false;
@@ -100,7 +119,10 @@ export default function HomePage() {
     setTaskFormData({
       ...task,
       status: task.status || "todo",
-      goal_id: (task.goal_id && typeof task.goal_id === 'string') ? task.goal_id : undefined,
+      goal_id:
+        task.goal_id && typeof task.goal_id === "string"
+          ? task.goal_id
+          : undefined,
     });
     setTaskDialogOpen(true);
   };
@@ -113,6 +135,56 @@ export default function HomePage() {
       completed: false,
     });
     setTaskDialogOpen(true);
+  };
+
+  // Find today's daily goal for the selected date
+  const findTodaysDailyGoal = (date: Date): GoalDTO | null => {
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    return (
+      goals.find((goal) => {
+        // Must be a Daily goal
+        if (goal.category !== "Daily") return false;
+
+        // Must be active
+        if (goal.status !== "active") return false;
+
+        // Check if date matches startDate/endDate
+        // If no dates specified, it's always active
+        if (!goal.startDate && !goal.endDate) return true;
+
+        // If both dates exist, check if date is within range
+        if (goal.startDate && goal.endDate) {
+          return dateStr >= goal.startDate && dateStr <= goal.endDate;
+        }
+
+        // If only startDate, check if date is on or after startDate
+        if (goal.startDate) {
+          return dateStr >= goal.startDate;
+        }
+
+        // If only endDate, check if date is on or before endDate
+        if (goal.endDate) {
+          return dateStr <= goal.endDate;
+        }
+
+        return false;
+      }) || null
+    );
+  };
+
+  const handleDailyTasksClick = () => {
+    const todaysGoal = findTodaysDailyGoal(selectedDate);
+
+    if (todaysGoal) {
+      // Edit existing daily goal
+      setEditingGoal(todaysGoal);
+      setGoalDialogOpen(true);
+    } else {
+      // Create new daily goal for selected date
+      setEditingGoal(null);
+      setGoalDialogOpen(true);
+    }
   };
 
   if (loading || isLoading) {
@@ -155,6 +227,22 @@ export default function HomePage() {
     }
   };
 
+  const formatDateForGoalTitle = (date: Date) => {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return "";
+    }
+    try {
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (e) {
+      console.error("Error formatting date for goal title:", e);
+      return "";
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-full">
       {/* Week Calendar Widget - positioned below header */}
@@ -162,6 +250,7 @@ export default function HomePage() {
         selectedDate={selectedDate}
         onDateChange={handleDateChange}
         onOpenMonthCalendar={handleOpenMonthCalendar}
+        goalsRefreshKey={goalsRefreshKey}
       />
 
       {/* Main Content */}
@@ -170,13 +259,24 @@ export default function HomePage() {
           <div className="mb-4 sm:mb-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl font-bold">Daily Tasks</h1>
+                <h1
+                  className="text-xl sm:text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
+                  onClick={handleDailyTasksClick}
+                  title="Click to create or edit today's daily goal"
+                >
+                  Daily Tasks
+                </h1>
                 <p className="text-sm sm:text-base text-muted-foreground truncate">
-                  {formatSelectedDate(selectedDate)}
+                  {(() => {
+                    const todaysGoal = findTodaysDailyGoal(selectedDate);
+                    return (
+                      todaysGoal?.title || formatSelectedDate(selectedDate)
+                    );
+                  })()}
                 </p>
               </div>
-              <Button 
-                onClick={handleCreateTask} 
+              <Button
+                onClick={handleCreateTask}
                 className="flex items-center gap-2 w-full sm:w-auto"
                 size="sm"
               >
@@ -193,15 +293,13 @@ export default function HomePage() {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>
-                  Tasks ({dailyTasks.length})
-                </CardTitle>
+                <CardTitle>Tasks ({dailyTasks.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 {dailyTasks.length > 0 ? (
                   <div className="space-y-2">
                     {dailyTasks
-                      .filter((task) => task.id && typeof task.id === 'string')
+                      .filter((task) => task.id && typeof task.id === "string")
                       .map((task) => (
                         <TaskListItem
                           key={task.id!}
@@ -254,7 +352,23 @@ export default function HomePage() {
         selectedDate={selectedDate}
         onDateSelect={handleMonthCalendarDateSelect}
       />
+
+      {/* Goal Dialog */}
+      <GoalFormDialog
+        open={goalDialogOpen}
+        onOpenChange={setGoalDialogOpen}
+        goal={editingGoal}
+        initialDate={editingGoal ? undefined : selectedDate}
+        initialTitle={
+          editingGoal ? undefined : formatDateForGoalTitle(selectedDate)
+        }
+        onSaved={async () => {
+          await fetchGoals();
+          setGoalDialogOpen(false);
+          setEditingGoal(null);
+          setGoalsRefreshKey((prev) => prev + 1);
+        }}
+      />
     </div>
   );
 }
-

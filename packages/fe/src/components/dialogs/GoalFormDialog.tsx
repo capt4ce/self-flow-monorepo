@@ -34,6 +34,8 @@ interface GoalFormDialogProps {
   onOpenChange: (open: boolean) => void;
   goal?: GoalDTO | null;
   onSaved: () => void;
+  initialDate?: Date;
+  initialTitle?: string;
 }
 
 const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
@@ -41,16 +43,19 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
   onOpenChange,
   goal,
   onSaved,
+  initialDate,
+  initialTitle,
 }) => {
   const isEditing = !!goal?.id;
   const { user } = useAuth();
+  const defaultDate = initialDate || new Date();
   const [goalFormData, setGoalFormData] = useState({
-    title: "",
+    title: initialTitle || "",
     description: "",
     category: "Daily" as GoalCategory,
     status: "active" as GoalStatus,
-    startDate: format(new Date(), "yyyy-MM-dd"),
-    endDate: format(new Date(), "yyyy-MM-dd"),
+    startDate: format(defaultDate, "yyyy-MM-dd"),
+    endDate: format(defaultDate, "yyyy-MM-dd"),
   });
   const [newTasks, setNewTasks] = useState<
     Array<{
@@ -66,6 +71,21 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
   >([]);
   const [loading, setLoading] = useState(false);
   const [goalTasks, setGoalTasks] = useState<TaskDTO[]>([]);
+
+  const resetForm = () => {
+    const dateToUse = initialDate || new Date();
+    setGoalFormData({
+      title: initialTitle || "",
+      description: "",
+      category: "Daily",
+      status: "active",
+      startDate: format(dateToUse, "yyyy-MM-dd"),
+      endDate: format(dateToUse, "yyyy-MM-dd"),
+    });
+    setNewTasks([]);
+    setSelectedExistingTaskIds([]);
+    setGoalTasks([]);
+  };
 
   useEffect(() => {
     if (goal) {
@@ -86,21 +106,8 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
     } else {
       resetForm();
     }
-  }, [goal]);
-
-  const resetForm = () => {
-    setGoalFormData({
-      title: "",
-      description: "",
-      category: "Daily",
-      status: "active",
-      startDate: format(new Date(), "yyyy-MM-dd"),
-      endDate: format(new Date(), "yyyy-MM-dd"),
-    });
-    setNewTasks([]);
-    setSelectedExistingTaskIds([]);
-    setGoalTasks([]);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goal, initialDate, initialTitle]);
 
   const handleSaveGoal = async () => {
     if (goalFormData.title.trim() === "" || !user) return;

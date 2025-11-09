@@ -7,11 +7,13 @@ import { api } from "@/lib/api-client";
 import { GoalDTO, GoalCategory } from "@self-flow/common/types";
 import { useAuth } from "@/contexts/AuthContext";
 import DateGoalsDialog from "@/components/dialogs/DateGoalsDialog";
+import { format } from "date-fns";
 
 interface WeekCalendarWidgetProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   onOpenMonthCalendar: () => void;
+  goalsRefreshKey?: number;
 }
 
 // Goal category colors in order (top to bottom)
@@ -37,6 +39,7 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
   selectedDate,
   onDateChange,
   onOpenMonthCalendar,
+  goalsRefreshKey,
 }) => {
   const [weekOffset, setWeekOffset] = useState(0);
   const [goals, setGoals] = useState<GoalDTO[]>([]);
@@ -44,7 +47,7 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
   const [dateGoalsDialogOpen, setDateGoalsDialogOpen] = useState(false);
   const [selectedDateForDialog, setSelectedDateForDialog] = useState<Date | null>(null);
 
-  // Fetch goals when user is available
+  // Fetch goals when user is available or when refresh key changes
   useEffect(() => {
     if (!user) return;
 
@@ -58,13 +61,13 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
     };
 
     fetchGoals();
-  }, [user]);
+  }, [user, goalsRefreshKey]);
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
     if (goal.status !== "active") return false;
 
-    const dateStr = date.toISOString().split("T")[0];
+    const dateStr = format(date, "yyyy-MM-dd");
 
     // If no dates specified, goal is always active
     if (!goal.startDate && !goal.endDate) return true;
@@ -81,6 +84,40 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
     }
 
     return false;
+  };
+
+  // Check if a date has a daily goal specifically
+  const hasDailyGoalForDate = (date: Date): boolean => {
+    const dateStr = format(date, "yyyy-MM-dd");
+
+    return goals.some((goal) => {
+      // Must be a Daily goal
+      if (goal.category !== "Daily") return false;
+
+      // Must be active
+      if (goal.status !== "active") return false;
+
+      // Check if date matches startDate/endDate
+      // If no dates specified, it's always active
+      if (!goal.startDate && !goal.endDate) return true;
+
+      // If both dates exist, check if date is within range
+      if (goal.startDate && goal.endDate) {
+        return dateStr >= goal.startDate && dateStr <= goal.endDate;
+      }
+
+      // If only startDate, check if date is on or after startDate
+      if (goal.startDate) {
+        return dateStr >= goal.startDate;
+      }
+
+      // If only endDate, check if date is on or before endDate
+      if (goal.endDate) {
+        return dateStr <= goal.endDate;
+      }
+
+      return false;
+    });
   };
 
   // Get active goals for a specific date, grouped by category
@@ -231,7 +268,7 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
             const selected = isSelected(date);
             const today = isToday(date);
             const activeGoals = getActiveGoalsForDate(date);
-            const hasDailyGoal = activeGoals.Daily;
+            const hasDailyGoal = hasDailyGoalForDate(date);
 
             return (
               <button

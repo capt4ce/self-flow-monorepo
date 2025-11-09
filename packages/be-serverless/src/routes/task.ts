@@ -3,6 +3,7 @@ import { z } from "zod";
 import { TaskDTO, CreateTaskDTO, UpdateTaskDTO } from "@self-flow/common/types";
 import { listTasks } from "@self-flow/be-services/src/task/listTasks";
 import { createTask } from "@self-flow/be-services/src/task/createTask";
+import { createTaskForDate } from "@self-flow/be-services/src/task/createTaskForDate";
 import { updateTask } from "@self-flow/be-services/src/task/updateTask";
 import { deleteTask } from "@self-flow/be-services/src/task/deleteTask";
 import { updateTaskOrder } from "@self-flow/be-services/src/task/updateTaskOrder";
@@ -60,7 +61,9 @@ task.openapi(
         content: {
           "application/json": {
             schema: CreateTaskDTO.extend({
-              newSubtasks: z.array(CreateTaskDTO.omit({ parentId: true })).optional(),
+              newSubtasks: z
+                .array(CreateTaskDTO.omit({ parentId: true }))
+                .optional(),
               existingSubtaskIds: z.array(z.string().uuid()).optional(),
             }),
           },
@@ -88,6 +91,51 @@ task.openapi(
 
 task.openapi(
   {
+    method: "post",
+    path: "/date/:date",
+    tags,
+    request: {
+      params: z.object({
+        date: z
+          .string()
+          .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
+      }),
+      body: {
+        content: {
+          "application/json": {
+            schema: CreateTaskDTO.extend({
+              newSubtasks: z
+                .array(CreateTaskDTO.omit({ parentId: true }))
+                .optional(),
+              existingSubtaskIds: z.array(z.string().uuid()).optional(),
+            }),
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description:
+          "Create task for a specific date. Creates a daily goal for that date if it doesn't exist.",
+        content: {
+          "application/json": {
+            schema: z.object({ data: TaskDTO }),
+          },
+        },
+      },
+    },
+  },
+  async (c) => {
+    const userId = getUserId(c);
+    const { date } = c.req.valid("param");
+    const body = c.req.valid("json");
+    const data = await createTaskForDate(userId, date, body);
+    return c.json({ data });
+  }
+);
+
+task.openapi(
+  {
     method: "put",
     path: "/:id",
     tags,
@@ -99,7 +147,9 @@ task.openapi(
         content: {
           "application/json": {
             schema: UpdateTaskDTO.extend({
-              newSubtasks: z.array(CreateTaskDTO.omit({ parentId: true })).optional(),
+              newSubtasks: z
+                .array(CreateTaskDTO.omit({ parentId: true }))
+                .optional(),
               selectedSubtaskIds: z.array(z.string().uuid()).optional(),
               currentSubtaskIds: z.array(z.string().uuid()).optional(),
             }),
@@ -269,6 +319,3 @@ task.openapi(
     return c.json(data);
   }
 );
-
-
-
