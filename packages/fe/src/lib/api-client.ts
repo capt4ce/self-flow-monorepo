@@ -11,6 +11,7 @@ import type {
   EnergyReadingDTO,
   CreateEnergyReadingDTO,
   UpdateEnergyReadingDTO,
+  TaskQuery,
 } from "@self-flow/common/types";
 
 // In development, use relative URL which will be proxied by Vite
@@ -121,8 +122,54 @@ export const api = {
 
   // Tasks
   tasks: {
-    list: (limit = 20, offset = 0) =>
-      fetchAPI<{ data: TaskDTO[] }>(`/tasks?limit=${limit}&offset=${offset}`),
+    list: (paramsOrLimit?: TaskQuery | number, legacyOffset?: number) => {
+      if (typeof paramsOrLimit === "number") {
+        const limit = paramsOrLimit;
+        const offset = legacyOffset ?? 0;
+        return fetchAPI<{ data: TaskDTO[] }>(
+          `/tasks?limit=${limit}&offset=${offset}`
+        );
+      }
+
+      const params: TaskQuery = paramsOrLimit ?? {};
+      const shouldUseAdvancedEndpoint =
+        Boolean(params.search?.trim()) ||
+        Boolean(params.filters && params.filters.length > 0) ||
+        Boolean(params.sort && params.sort.length > 0);
+
+      if (shouldUseAdvancedEndpoint) {
+        const body: TaskQuery = {
+          ...params,
+          limit: params.limit ?? 100,
+          offset: params.offset ?? 0,
+          filters: params.filters && params.filters.length > 0 ? params.filters : undefined,
+          sort: params.sort && params.sort.length > 0 ? params.sort : undefined,
+        };
+
+        return fetchAPI<{ data: TaskDTO[] }>("/tasks/query", {
+          method: "POST",
+          body: JSON.stringify(body),
+        });
+      }
+
+      const limit = params.limit ?? 20;
+      const offset = params.offset ?? 0;
+      return fetchAPI<{ data: TaskDTO[] }>(
+        `/tasks?limit=${limit}&offset=${offset}`
+      );
+    },
+    query: (query: TaskQuery) =>
+      fetchAPI<{ data: TaskDTO[] }>("/tasks/query", {
+        method: "POST",
+        body: JSON.stringify({
+          ...query,
+          limit: query.limit ?? 100,
+          offset: query.offset ?? 0,
+          filters:
+            query.filters && query.filters.length > 0 ? query.filters : undefined,
+          sort: query.sort && query.sort.length > 0 ? query.sort : undefined,
+        }),
+      }),
     createForDate: (
       date: string,
       data: CreateTaskDTO & {
@@ -192,7 +239,6 @@ export const api = {
           body: JSON.stringify({ parentIds }),
         }
       ),
-    // Search is implemented client-side by fetching and filtering
     search: async (
       searchQuery: string,
       filters?: {
@@ -202,44 +248,43 @@ export const api = {
         statusEquals?: string[];
       }
     ) => {
-      const allTasks = await fetchAPI<{ data: TaskDTO[] }>(
-        `/tasks?limit=100&offset=0`
-      );
-      let filtered = allTasks.data;
+      const advancedFilters: NonNullable<TaskQuery["filters"]> = [];
 
-      // Apply filters
       if (filters?.isTemplate !== undefined) {
-        filtered = filtered.filter((t) => t.isTemplate === filters.isTemplate);
+        advancedFilters.push({
+          field: "isTemplate",
+          conditions: { eq: filters.isTemplate },
+        });
       }
-      if (filters?.statusEquals && filters.statusEquals.length > 0) {
-        const statusSet = new Set(filters.statusEquals.filter(Boolean));
-        filtered = filtered.filter(
-          (t) => t.status && statusSet.has(t.status)
-        );
-      }
-      if (filters?.excludeStatus) {
-        filtered = filtered.filter(
-          (t) => t.status && !filters.excludeStatus?.includes(t.status)
-        );
-      }
+
       if (filters?.excludeCompleted) {
-        filtered = filtered.filter((t) => !t.completed);
+        advancedFilters.push({
+          field: "completed",
+          conditions: { eq: false },
+        });
       }
 
-      // Apply search query
-      const trimmedQuery = searchQuery.trim();
-      if (trimmedQuery) {
-        const searchTerms = trimmedQuery
-          .split(" ")
-          .filter((term) => term.trim() !== "");
-        filtered = filtered.filter((task) =>
-          searchTerms.some((term) =>
-            task.title?.toLowerCase().includes(term.toLowerCase())
-          )
-        );
+      if (filters?.statusEquals && filters.statusEquals.length > 0) {
+        advancedFilters.push({
+          field: "status",
+          conditions: { in: filters.statusEquals },
+        });
       }
 
-      return { data: filtered.slice(0, 100) };
+      if (filters?.excludeStatus && filters.excludeStatus.length > 0) {
+        advancedFilters.push({
+          field: "status",
+          conditions: { nin: filters.excludeStatus },
+        });
+      }
+
+      return api.tasks.query({
+        search: searchQuery,
+        filters: advancedFilters.length > 0 ? advancedFilters : undefined,
+        limit: 100,
+        offset: 0,
+        sort: [{ field: "orderIndex", direction: "asc" }],
+      });
     },
   },
 

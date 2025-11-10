@@ -25,7 +25,7 @@ const TaskAutocomplete = ({
   const [selectedTasks, setSelectedTasks] = React.useState<TaskDTO[]>([]);
   const [isSearching, setIsSearching] = React.useState(false);
 
-  const searchTasks = async (searchQuery: string) => {
+  const searchTasks = React.useCallback(async (searchQuery: string) => {
     try {
       setIsSearching(true);
       const response = await api.tasks.search(searchQuery, {
@@ -39,18 +39,16 @@ const TaskAutocomplete = ({
     } finally {
       setIsSearching(false);
     }
-  };
+  }, []);
 
   React.useEffect(() => {
     void searchTasks(searchQueryToApply);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQueryToApply]);
+  }, [searchQueryToApply, searchTasks]);
 
   // Prefetch templates on mount
   React.useEffect(() => {
     void searchTasks("");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchTasks]);
 
   const handleToggleTaskSelection = (task: TaskDTO) => {
     setSelectedTasks((prev) =>

@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState } from "react";
 import {
   Dialog,
@@ -6,6 +5,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -79,27 +89,44 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   }, [createForDate]);
 
   const { user } = useAuth();
-  const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string; ai_agent?: string; ai_prompt?: string }>(
-    task ? {
-      ...task,
-      goal_id: task.goal_id,
-      ai_agent: "none",
-      ai_prompt: "",
-    } : {
-      title: "",
-      description: "",
-      status: "todo",
-      completed: false,
-      goal_id: undefined,
-      ai_agent: "none",
-      ai_prompt: "",
+  const [taskFormData, setTaskFormData] = useState<
+    Partial<TaskDTO> & {
+      goal_id?: string;
+      ai_agent?: string;
+      ai_prompt?: string;
     }
+  >(
+    task
+      ? {
+          ...task,
+          goal_id: task.goal_id,
+          ai_agent: "none",
+          ai_prompt: "",
+        }
+      : {
+          title: "",
+          description: "",
+          status: "todo",
+          completed: false,
+          goal_id: undefined,
+          ai_agent: "none",
+          ai_prompt: "",
+        }
   );
   const [newTasks, setNewTasks] = useState<
-    Array<{ title: string; description: string; status: string; effort?: TaskEffort; priority?: TaskPriority }>
+    Array<{
+      title: string;
+      description: string;
+      status: string;
+      effort?: TaskEffort;
+      priority?: TaskPriority;
+    }>
   >([]);
-  const [selectedExistingTaskIds, setSelectedExistingTaskIds] = useState<string[]>([]);
+  const [selectedExistingTaskIds, setSelectedExistingTaskIds] = useState<
+    string[]
+  >([]);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [subtasks, setSubtasks] = useState<TaskDTO[]>([]);
 
   const resetForm = () => {
@@ -122,7 +149,8 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       const derivedGoalId =
         sanitizeUuid(
           (task.goal_id as string | undefined) ??
-            ((task as unknown as { goalId?: string })?.goalId ?? null)
+            (task as unknown as { goalId?: string })?.goalId ??
+            null
         ) || undefined;
       setTaskFormData({ ...task, goal_id: derivedGoalId });
       if (task.id) {
@@ -149,7 +177,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
     try {
       const title = taskFormData.title;
       if (!title) return;
-      
+
       const sanitizedGoalId = sanitizeUuid(taskFormData.goal_id || null);
       const sanitizedParentId = sanitizeUuid(taskFormData.parentId || null);
       const sanitizedGroupId = sanitizeUuid(taskFormData.groupId || null);
@@ -185,16 +213,17 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
         const subtasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
         await api.tasks.update(taskFormData.id, {
           ...taskDataToSave,
-          newSubtasks: subtasksToAdd.length > 0
-            ? subtasksToAdd.map((st) => ({
-                title: st.title,
-                description: st.description || undefined,
-                effort: st.effort || undefined,
-                priority: st.priority || undefined,
-                status: (st.status as TaskStatus) || "todo",
-              goalId: sanitizedGoalId,
-              }))
-            : undefined,
+          newSubtasks:
+            subtasksToAdd.length > 0
+              ? subtasksToAdd.map((st) => ({
+                  title: st.title,
+                  description: st.description || undefined,
+                  effort: st.effort || undefined,
+                  priority: st.priority || undefined,
+                  status: (st.status as TaskStatus) || "todo",
+                  goalId: sanitizedGoalId,
+                }))
+              : undefined,
           selectedSubtaskIds:
             sanitizedSelectedSubtaskIds.length > 0
               ? sanitizedSelectedSubtaskIds
@@ -222,16 +251,17 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           isTemplate: taskDataToSave.isTemplate,
           completed: taskDataToSave.completed,
           orderIndex: taskDataToSave.orderIndex,
-          newSubtasks: subtasksToAdd.length > 0
-            ? subtasksToAdd.map((st) => ({
-                title: st.title,
-                description: st.description || undefined,
-                effort: st.effort || undefined,
-                priority: st.priority || undefined,
-                status: (st.status as TaskStatus) || "todo",
-                goalId: goalIdForCreation,
-              }))
-            : undefined,
+          newSubtasks:
+            subtasksToAdd.length > 0
+              ? subtasksToAdd.map((st) => ({
+                  title: st.title,
+                  description: st.description || undefined,
+                  effort: st.effort || undefined,
+                  priority: st.priority || undefined,
+                  status: (st.status as TaskStatus) || "todo",
+                  goalId: goalIdForCreation,
+                }))
+              : undefined,
           existingSubtaskIds:
             sanitizedSelectedSubtaskIds.length > 0
               ? sanitizedSelectedSubtaskIds
@@ -254,6 +284,27 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       console.error("Error saving task:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!taskFormData?.id) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      await api.tasks.delete(taskFormData.id);
+      resetForm();
+      if (typeof onSaved === "function") {
+        await onSaved();
+      } else {
+        onOpenChange(false);
+      }
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -522,17 +573,54 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
             setSelectedExistingTaskIds={setSelectedExistingTaskIds}
           />
 
-          <Button
-            onClick={handleSave}
-            className="w-full"
-            disabled={loading}
-          >
-            {loading
-              ? "Saving..."
-              : taskFormData?.id
-              ? "Save Changes"
-              : "Create Task"}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            {taskFormData?.id && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="w-full sm:w-auto sm:px-6"
+                    disabled={deleting}
+                  >
+                    {deleting ? "Deleting..." : "Delete Task"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Task</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete &quot;
+                      {taskFormData.title}&quot;? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={deleting}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-red-600 hover:bg-red-700"
+                      disabled={deleting}
+                    >
+                      {deleting ? "Deleting..." : "Delete"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+            <Button
+              onClick={handleSave}
+              className="w-full sm:flex-1"
+              disabled={loading || deleting}
+            >
+              {loading
+                ? "Saving..."
+                : taskFormData?.id
+                  ? "Save Changes"
+                  : "Create Task"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
@@ -540,4 +628,3 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 };
 
 export default React.memo(TaskDialog);
-

@@ -1,7 +1,6 @@
-
 import { TaskDTO } from "@self-flow/common/types";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { Badge } from "../ui/badge";
 import {
@@ -14,18 +13,36 @@ import { api } from "@/lib/api-client";
 
 type TaskListItemProps = {
   task: TaskDTO;
+  hiddenInfos?: ("check" | "status" | "effort" | "priority")[];
   level?: number;
   onEditTask: (task: TaskDTO) => void;
+  onStatusChange?: (
+    taskId: string,
+    status: TaskDTO["status"],
+    completed: boolean
+  ) => void;
 };
 
 const TaskListItem = ({
   task,
   level = 0,
+  hiddenInfos = [],
   onEditTask,
+  onStatusChange,
 }: TaskListItemProps) => {
   const [checked, setChecked] = useState(
     task.completed || ["completed", "not done"].includes(task.status || "")
   );
+  const [currentStatus, setCurrentStatus] = useState<TaskDTO["status"] | null>(
+    task.status ?? null
+  );
+
+  useEffect(() => {
+    setChecked(
+      task.completed || ["completed", "not done"].includes(task.status || "")
+    );
+    setCurrentStatus(task.status ?? null);
+  }, [task.completed, task.status]);
 
   const { subtasks: subtasksCache, fetchTaskSubtasks } = useSubtasks();
 
@@ -47,11 +64,25 @@ const TaskListItem = ({
       console.error("Cannot toggle task without ID");
       return;
     }
+
+    const previousStatus = currentStatus ?? "todo";
+    const previousCompleted = checked;
+    const nextStatus: TaskDTO["status"] = completed ? "completed" : "todo";
+
+    setChecked(completed);
+    setCurrentStatus(nextStatus);
+    onStatusChange?.(task.id, nextStatus, completed);
+
     try {
-      await api.tasks.update(task.id, { completed });
-      setChecked(completed);
+      await api.tasks.update(task.id, {
+        completed,
+        status: nextStatus,
+      });
     } catch (error) {
       console.error("Error toggling task completion:", error);
+      setChecked(previousCompleted);
+      setCurrentStatus(previousStatus);
+      onStatusChange?.(task.id, previousStatus, previousCompleted);
     }
   };
 
@@ -71,34 +102,43 @@ const TaskListItem = ({
               )}
             </button>
           )}
-          {!hasSubtasks && <div className="w-4 sm:w-5" />}
         </div>
-        <Checkbox
-          checked={checked}
-          onCheckedChange={(checked) => toggleTaskComplete(task, !!checked)}
-          className="flex-shrink-0 mt-0.5 sm:mt-0"
-        />
+        {!hiddenInfos.includes("check") && (
+          <Checkbox
+            checked={checked}
+            onCheckedChange={(checked) => toggleTaskComplete(task, !!checked)}
+            className="flex-shrink-0 mt-0.5 sm:mt-0"
+          />
+        )}
         <span
           className={`flex-1 min-w-0 text-xs sm:text-sm cursor-pointer hover:text-blue-600 break-words ${
             checked ? "line-through text-gray-500" : ""
-          } ${task.status === "not done" ? "line-through text-red-500" : ""}`}
+          } ${currentStatus === "not done" ? "line-through text-red-500" : ""}`}
           onClick={() => onEditTask?.(task)}
         >
           {task.title}
         </span>
         <div className="flex flex-wrap gap-1 flex-shrink-0">
-          {task.isTemplate && <Badge className="text-[10px] sm:text-xs">Template</Badge>}
-          {task.status && (
-            <Badge className={`text-[10px] sm:text-xs ${getStatusBadgeColor(task.status)}`}>
-              {task.status}
+          {task.isTemplate && (
+            <Badge className="text-[10px] sm:text-xs">Template</Badge>
+          )}
+          {!hiddenInfos.includes("status") && currentStatus && (
+            <Badge
+              className={`text-[10px] sm:text-xs ${getStatusBadgeColor(
+                currentStatus
+              )}`}
+            >
+              {currentStatus}
             </Badge>
           )}
-          {task.effort && (
-            <Badge className={`text-[10px] sm:text-xs ${getEffortBadgeColor(task.effort)}`}>
+          {!hiddenInfos.includes("effort") && task.effort && (
+            <Badge
+              className={`text-[10px] sm:text-xs ${getEffortBadgeColor(task.effort)}`}
+            >
               {task.effort}
             </Badge>
           )}
-          {task.priority && (
+          {!hiddenInfos.includes("priority") && task.priority && (
             <Badge
               className={`text-[10px] sm:text-xs ${getPriorityBadgeColor(task.priority)}`}
             >
@@ -115,6 +155,7 @@ const TaskListItem = ({
               task={subtask}
               level={level + 1}
               onEditTask={onEditTask}
+              onStatusChange={onStatusChange}
             />
           ))}
         </div>
@@ -124,4 +165,3 @@ const TaskListItem = ({
 };
 
 export default memo(TaskListItem);
-

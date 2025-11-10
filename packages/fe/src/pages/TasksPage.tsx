@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,14 +24,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Edit, Trash2, Plus, Search } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { TaskDTO } from "@self-flow/common/types";
+import { TaskDTO, TaskQuery } from "@self-flow/common/types";
 import { getEffortBadgeColor, getStatusBadgeColor } from "@/utils/badgeColors";
 import TaskDialog from "@/components/dialogs/TaskDialog";
 import { api } from "@/lib/api-client";
 
+type TaskQueryFilter = NonNullable<TaskQuery["filters"]>[number];
+
 export default function TasksPage() {
   const { user } = useAuth();
-  const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
+  const [tasks, setTasks] = useState<TaskDTO[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [effortFilter, setEffortFilter] = useState<string>("all");
   const [templateFilter, setTemplateFilter] = useState<string>("all");
@@ -40,68 +42,107 @@ export default function TasksPage() {
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
 
-  const fetchAllTasks = async () => {
-    if (!user) return;
+  const requestCounter = useRef(0);
+
+  const buildFilters = useCallback(() => {
+    const filters: TaskQueryFilter[] = [];
+
+    if (statusFilter !== "all") {
+      filters.push({
+        field: "status",
+        conditions: { eq: statusFilter },
+      });
+    }
+
+    if (!["completed", "not done"].includes(statusFilter)) {
+      filters.push({
+        field: "completed",
+        conditions: { eq: false },
+      });
+    }
+
+    if (effortFilter !== "all") {
+      filters.push({
+        field: "effort",
+        conditions: { eq: effortFilter },
+      });
+    }
+
+    if (templateFilter === "templates") {
+      filters.push({
+        field: "isTemplate",
+        conditions: { eq: true },
+      });
+    } else if (templateFilter === "non-templates") {
+      filters.push({
+        field: "isTemplate",
+        conditions: { eq: false },
+      });
+    }
+
+    return filters;
+  }, [statusFilter, effortFilter, templateFilter]);
+
+  const fetchTasks = useCallback(async () => {
+    if (!user) {
+      setTasks([]);
+      setLoading(false);
+      return;
+    }
+
+    const currentRequest = ++requestCounter.current;
     setLoading(true);
+
+    const trimmedSearch = searchQuery.trim();
+    const filters = buildFilters();
+
+    const query: TaskQuery = {
+      limit: 200,
+      offset: 0,
+      sort: [
+        { field: "orderIndex", direction: "asc" },
+        { field: "createdAt", direction: "desc" },
+      ],
+    };
+
+    if (trimmedSearch) {
+      query.search = trimmedSearch;
+    }
+
+    if (filters.length > 0) {
+      query.filters = filters;
+    }
+
     try {
-      const response = await api.tasks.list(100, 0);
-      setAllTasks(response.data || []);
+      const response = await api.tasks.query(query);
+      if (requestCounter.current === currentRequest) {
+        setTasks(response.data || []);
+      }
     } catch (error) {
       console.error("Error fetching tasks:", error);
+      if (requestCounter.current === currentRequest) {
+        setTasks([]);
+      }
     } finally {
-      setLoading(false);
+      if (requestCounter.current === currentRequest) {
+        setLoading(false);
+      }
     }
-  };
+  }, [user, searchQuery, buildFilters]);
 
   useEffect(() => {
-    if (user) {
-      fetchAllTasks();
-    } else {
-      setLoading(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  const filteredTasks = allTasks.filter((task) => {
-    // Status filter
-    if (statusFilter !== "all" && task.status !== statusFilter) return false;
-
-    if (!["completed", "not done"].includes(statusFilter) && task.completed)
-      return false;
-
-    // Effort filter
-    if (effortFilter !== "all" && task.effort !== effortFilter) return false;
-
-    // Template filter
-    if (templateFilter === "templates" && !task.isTemplate) return false;
-    if (templateFilter === "non-templates" && task.isTemplate) return false;
-
-    // Search filter
-    if (searchQuery.trim() !== "") {
-      const query = searchQuery.toLowerCase();
-      return (
-        task.title?.toLowerCase().includes(query) ||
-        task.description?.toLowerCase().includes(query) ||
-        false
-      );
-    }
-
-    return true;
-  });
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleToggleComplete = async (taskId: string) => {
     if (!user) return;
 
-    const task = allTasks.find((t) => t.id === taskId);
+    const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 
     try {
       await api.tasks.update(taskId, { completed: !task.completed });
-      setAllTasks((prev) =>
-        prev.map((t) =>
-          t.id === taskId ? { ...t, completed: !t.completed } : t
-        )
-      );
+      await fetchTasks();
     } catch (error) {
       console.error("Error toggling task completion:", error);
     }
@@ -122,7 +163,7 @@ export default function TasksPage() {
 
     try {
       await api.tasks.delete(taskId);
-      setAllTasks((prev) => prev.filter((task) => task.id !== taskId));
+      await fetchTasks();
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -190,7 +231,11 @@ export default function TasksPage() {
               </Select>
             </div>
           </div>
-          <Button onClick={handleCreateTask} className="w-full sm:w-auto" size="sm">
+          <Button
+            onClick={handleCreateTask}
+            className="w-full sm:w-auto"
+            size="sm"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Create Task
           </Button>
@@ -201,7 +246,7 @@ export default function TasksPage() {
           onOpenChange={setTaskDialogOpen}
           task={editingTask || undefined}
           onSaved={() => {
-            fetchAllTasks();
+            fetchTasks();
             setTaskDialogOpen(false);
             setEditingTask(null);
           }}
@@ -212,13 +257,13 @@ export default function TasksPage() {
             <CardTitle>Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            {loading && allTasks.length === 0 ? (
+            {loading && tasks.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <p>Loading tasks...</p>
               </div>
-            ) : filteredTasks.length > 0 ? (
+            ) : tasks.length > 0 ? (
               <div className="space-y-3 sm:space-y-4">
-                {filteredTasks.map((task) => (
+                {tasks.map((task) => (
                   <div
                     key={task.id}
                     className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg hover:bg-accent/50"
@@ -232,7 +277,9 @@ export default function TasksPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
                         <h3
                           className={`font-medium break-words ${
-                            task.completed ? "line-through text-muted-foreground" : ""
+                            task.completed
+                              ? "line-through text-muted-foreground"
+                              : ""
                           } ${
                             task.status === "not done"
                               ? "line-through text-red-500"
@@ -298,8 +345,8 @@ export default function TasksPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete Task</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete &quot;{task.title}&quot;?
-                              This action cannot be undone.
+                              Are you sure you want to delete &quot;{task.title}
+                              &quot;? This action cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -328,4 +375,3 @@ export default function TasksPage() {
     </div>
   );
 }
-

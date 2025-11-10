@@ -1,6 +1,11 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { z } from "zod";
-import { TaskDTO, CreateTaskDTO, UpdateTaskDTO } from "@self-flow/common/types";
+import {
+  TaskDTO,
+  CreateTaskDTO,
+  UpdateTaskDTO,
+  TaskQuerySchema,
+} from "@self-flow/common/types";
 import { listTasks } from "@self-flow/be-services/src/task/listTasks";
 import { createTask } from "@self-flow/be-services/src/task/createTask";
 import { createTaskForDate } from "@self-flow/be-services/src/task/createTaskForDate";
@@ -46,7 +51,40 @@ task.openapi(
   async (c) => {
     const userId = getUserId(c);
     const { limit, offset } = c.req.valid("query");
-    const data = await listTasks(userId, limit, offset);
+    const data = await listTasks(userId, { limit, offset });
+    return c.json({ data });
+  }
+);
+
+task.openapi(
+  {
+    method: "post",
+    path: "/query",
+    tags,
+    request: {
+      body: {
+        content: {
+          "application/json": {
+            schema: TaskQuerySchema,
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Query tasks with filters and search",
+        content: {
+          "application/json": {
+            schema: z.object({ data: z.array(TaskDTO) }),
+          },
+        },
+      },
+    },
+  },
+  async (c) => {
+    const userId = getUserId(c);
+    const body = c.req.valid("json");
+    const data = await listTasks(userId, body);
     return c.json({ data });
   }
 );

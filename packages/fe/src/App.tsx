@@ -1,17 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { StackProviderWrapper } from "@/components/providers/StackProviderWrapper";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubtasksProvider } from "@/contexts/SubtasksContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AppLayout from "@/components/layout/AppLayout";
-import HomePage from "@/pages/HomePage";
-import TasksPage from "@/pages/TasksPage";
-import GoalsPage from "@/pages/GoalsPage";
-import EnergyLogsPage from "@/pages/EnergyLogsPage";
-import SignInPage from "@/pages/SignInPage";
-import SignUpPage from "@/pages/SignUpPage";
-import OAuthCallbackPage from "@/pages/OAuthCallbackPage";
+
+const HomePage = lazy(() => import("@/pages/HomePage"));
+const TasksPage = lazy(() => import("@/pages/TasksPage"));
+const GoalsPage = lazy(() => import("@/pages/GoalsPage"));
+const EnergyLogsPage = lazy(() => import("@/pages/EnergyLogsPage"));
+const SignInPage = lazy(() => import("@/pages/SignInPage"));
+const SignUpPage = lazy(() => import("@/pages/SignUpPage"));
+const OAuthCallbackPage = lazy(() => import("@/pages/OAuthCallbackPage"));
 
 function App() {
   return (
@@ -29,7 +30,10 @@ function App() {
                     <Route path="/energy-logs" element={<EnergyLogsPage />} />
                     <Route path="/auth/sign-in" element={<SignInPage />} />
                     <Route path="/auth/sign-up" element={<SignUpPage />} />
-                    <Route path="/handler/oauth-callback" element={<OAuthCallbackPage />} />
+                    <Route
+                      path="/handler/oauth-callback"
+                      element={<OAuthCallbackPage />}
+                    />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </AppLayout>
@@ -43,4 +47,3 @@ function App() {
 }
 
 export default App;
-
