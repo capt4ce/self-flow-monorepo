@@ -1,7 +1,6 @@
+import { getDb } from "@self-flow/db";
 import { taskGoals } from "@self-flow/db/src/drizzle/schema";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Executor } from "../db/executor";
 
 /**
  * Link a single task to a goal
@@ -13,16 +12,15 @@ type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0]
 export async function linkTaskToGoal(
   taskId: string,
   goalId: string,
-  tx?: Transaction,
-  db?: any
+  executor?: Executor
 ): Promise<void> {
-  const executor = tx || db;
-  if (!executor) {
-    throw new Error("Either tx or db must be provided");
-  }
+  const executorToUse = executor || getDb();
 
-  await executor.insert(taskGoals).values({
-    taskId,
-    goalId,
-  });
+  await executorToUse
+    .insert(taskGoals)
+    .values({
+      taskId,
+      goalId,
+    })
+    .onConflictDoNothing();
 }

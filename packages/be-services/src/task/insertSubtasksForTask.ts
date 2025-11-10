@@ -1,16 +1,20 @@
 import { tasks } from "@self-flow/db/src/drizzle/schema";
-import { CreateTaskDTO, TaskDTO } from "@self-flow/common/types";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import {
+  CreateTaskDTO,
+  TaskDTO,
+  TaskEffort,
+  TaskPriority,
+  TaskStatus,
+} from "@self-flow/common/types";
+import type { Executor } from "../db/executor";
 
 interface SubtaskInsertData {
   userId: string;
   title: string;
   description?: string | null;
-  status?: string | null;
-  effort?: string | null;
-  priority?: string | null;
+  status?: TaskStatus | null;
+  effort?: TaskEffort | null;
+  priority?: TaskPriority | null;
   completed?: boolean;
   parentId: string;
   groupId?: string | null;
@@ -31,7 +35,7 @@ export async function insertSubtasksForTask(
   userId: string,
   parentTaskId: string,
   newSubtasks: Array<Omit<CreateTaskDTO, "parentId">>,
-  tx: Transaction
+  executor: Executor
 ): Promise<TaskDTO[]> {
   const subtasksToCreate = newSubtasks
     .filter((st) => st.title?.trim())
@@ -54,7 +58,7 @@ export async function insertSubtasksForTask(
     return [];
   }
 
-  const createdSubtasks = await tx
+  const createdSubtasks = await executor
     .insert(tasks)
     .values(subtasksToCreate)
     .returning();

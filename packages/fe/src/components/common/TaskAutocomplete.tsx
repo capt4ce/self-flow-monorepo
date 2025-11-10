@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,26 +26,31 @@ const TaskAutocomplete = ({
   const [isSearching, setIsSearching] = React.useState(false);
 
   const searchTasks = async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setAvailableTasks([]);
-      return;
-    }
-
     try {
+      setIsSearching(true);
       const response = await api.tasks.search(searchQuery, {
         isTemplate: true,
+        statusEquals: ["todo", "in progress", "blocked"],
       });
       setAvailableTasks(response.data);
     } catch (error) {
       console.error("Error fetching available tasks:", error);
       setAvailableTasks([]);
+    } finally {
+      setIsSearching(false);
     }
   };
 
   React.useEffect(() => {
-    setIsSearching(true);
-    searchTasks(searchQueryToApply).then(() => setIsSearching(false));
+    void searchTasks(searchQueryToApply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQueryToApply]);
+
+  // Prefetch templates on mount
+  React.useEffect(() => {
+    void searchTasks("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggleTaskSelection = (task: TaskDTO) => {
     setSelectedTasks((prev) =>
@@ -61,6 +65,7 @@ const TaskAutocomplete = ({
     setSelectedTasks([]);
     setAvailableTasks([]);
     setSearchQuery("");
+    void searchTasks("");
   };
 
   return (
@@ -107,4 +112,3 @@ const TaskAutocomplete = ({
 };
 
 export default TaskAutocomplete;
-

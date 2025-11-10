@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,48 @@ export default function EnergyLogsPage() {
   const [editNote, setEditNote] = useState("");
   const [editTime, setEditTime] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const hourlyAverages = useMemo(() => {
+    if (energyReadings.length === 0) {
+      return {
+        stats: Array.from({ length: 24 }, (_, hour) => ({
+          hour,
+          average: 0,
+          count: 0,
+        })),
+        sampleSize: 0,
+      };
+    }
+
+    const sortedReadings = [...energyReadings].sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+    const limitedReadings = sortedReadings.slice(-100);
+    const buckets = Array.from({ length: 24 }, () => ({
+      sum: 0,
+      count: 0,
+    }));
+
+    limitedReadings.forEach((reading) => {
+      const date = new Date(reading.timestamp);
+      const hour = Number.isNaN(date.getTime()) ? null : date.getHours();
+      if (hour === null) {
+        return;
+      }
+      buckets[hour].sum += reading.level;
+      buckets[hour].count += 1;
+    });
+
+    return {
+      stats: buckets.map((bucket, hour) => ({
+        hour,
+        average: bucket.count > 0 ? bucket.sum / bucket.count : 0,
+        count: bucket.count,
+      })),
+      sampleSize: limitedReadings.length,
+    };
+  }, [energyReadings]);
 
   useEffect(() => {
     if (user) {
@@ -189,14 +231,77 @@ export default function EnergyLogsPage() {
                 <div className="h-64 flex items-center justify-center text-muted-foreground">
                   Loading energy readings...
                 </div>
-              ) : energyReadings.length > 0 ? (
-                <div className="h-64 flex items-center justify-center text-muted-foreground">
-                  Chart visualization coming soon
-                </div>
               ) : (
-                <div className="h-64 flex items-center justify-center text-muted-foreground">
-                  No energy readings yet
-                </div>
+                <>
+                  {energyReadings.length > 0 ? (
+                    <div className="space-y-4">
+                      {(() => {
+                        const maxAverage =
+                          hourlyAverages.stats.length > 0
+                            ? Math.max(
+                                ...hourlyAverages.stats.map(
+                                  (entry) => entry.average
+                                )
+                              )
+                            : 0;
+                        const maxValue = maxAverage > 0 ? maxAverage : 10;
+                        return (
+                          <>
+                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                              <span>
+                                Average energy by hour (last{" "}
+                                {hourlyAverages.sampleSize}{" "}
+                                {hourlyAverages.sampleSize === 1
+                                  ? "entry"
+                                  : "entries"})
+                              </span>
+                              <span>Scale: 1 to 10</span>
+                            </div>
+                            <div className="overflow-x-auto">
+                              <div className="flex items-end gap-2 h-48 min-w-[720px]">
+                                {hourlyAverages.stats.map(
+                                  ({ hour, average, count }) => {
+                                    const heightPercent = maxValue
+                                      ? Math.round((average / maxValue) * 100)
+                                      : 0;
+                                    return (
+                                      <div
+                                        key={hour}
+                                        className="flex flex-col items-center gap-1 text-xs text-muted-foreground flex-1 min-w-[24px]"
+                                      >
+                                        <div className="relative flex-1 w-full bg-muted rounded-sm overflow-hidden">
+                                          <div
+                                            className="absolute bottom-0 left-0 right-0 bg-blue-500/70 rounded-sm transition-all duration-200"
+                                            style={{
+                                              height: `${heightPercent}%`,
+                                            }}
+                                          />
+                                        </div>
+                                        <span className="font-medium text-foreground">
+                                          {average > 0 ? average.toFixed(1) : "–"}
+                                        </span>
+                                        <span>
+                                          {hour.toString().padStart(2, "0")}h
+                                        </span>
+                                        <span className="text-[10px]">
+                                          {count > 0 ? `${count} logs` : "—"}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <div className="h-64 flex items-center justify-center text-muted-foreground">
+                      No energy readings yet
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>

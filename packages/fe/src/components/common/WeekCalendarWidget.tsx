@@ -65,6 +65,10 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
+    if (goal.category === "Main") {
+      return goal.status !== "done";
+    }
+
     if (goal.status !== "active") return false;
 
     const dateStr = format(date, "yyyy-MM-dd");

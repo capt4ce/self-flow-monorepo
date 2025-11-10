@@ -15,7 +15,6 @@ import { format } from "date-fns";
 
 export default function HomePage() {
   const { user, loading } = useAuth();
-  const [allTasks, setAllTasks] = useState<TaskDTO[]>([]);
   const [goals, setGoals] = useState<GoalDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
@@ -38,104 +37,27 @@ export default function HomePage() {
   const [goalsRefreshKey, setGoalsRefreshKey] = useState(0);
   const { refreshSubtasks } = useSubtasks();
 
-  const fetchAllTasks = async () => {
-    if (!user) return;
-    setIsLoading(true);
-    try {
-      const response = await api.tasks.list(1000, 0);
-      setAllTasks(response.data || []);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const fetchGoals = async () => {
     if (!user) return;
+    setIsLoading(true);
     try {
       const response = await api.goals.list("active");
       setGoals(response.data || []);
     } catch (error) {
       console.error("Error fetching goals:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     if (user && !loading) {
-      fetchAllTasks();
       fetchGoals();
     } else if (!loading && !user) {
       setIsLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading]);
-
-  // Filter tasks by selected date (by creation date)
-  const dailyTasks = useMemo(() => {
-    if (!selectedDate || !(selectedDate instanceof Date)) return [];
-
-    try {
-      const startOfDay = new Date(selectedDate);
-      startOfDay.setHours(0, 0, 0, 0);
-
-      const endOfDay = new Date(selectedDate);
-      endOfDay.setHours(23, 59, 59, 999);
-
-      return allTasks.filter((task) => {
-        if (!task.createdAt || typeof task.createdAt !== "string") return false;
-        try {
-          const taskDate = new Date(task.createdAt);
-          if (isNaN(taskDate.getTime())) return false;
-          return taskDate >= startOfDay && taskDate <= endOfDay;
-        } catch (e) {
-          console.error("Error parsing task date:", task.createdAt, e);
-          return false;
-        }
-      });
-    } catch (e) {
-      console.error("Error filtering tasks by date:", e);
-      return [];
-    }
-  }, [allTasks, selectedDate]);
-
-  const handleDateChange = (date: Date) => {
-    setSelectedDate(date);
-  };
-
-  const handleOpenMonthCalendar = () => {
-    setMonthCalendarOpen(true);
-  };
-
-  const handleMonthCalendarDateSelect = (date: Date | undefined) => {
-    if (date) {
-      const newDate = new Date(date);
-      newDate.setHours(0, 0, 0, 0);
-      setSelectedDate(newDate);
-    }
-  };
-
-  const handleEditTask = (task: TaskDTO) => {
-    setTaskFormData({
-      ...task,
-      status: task.status || "todo",
-      goal_id:
-        task.goal_id && typeof task.goal_id === "string"
-          ? task.goal_id
-          : undefined,
-    });
-    setTaskDialogOpen(true);
-  };
-
-  const handleCreateTask = () => {
-    setTaskFormData({
-      title: "",
-      description: "",
-      status: "todo",
-      completed: false,
-    });
-    setTaskDialogOpen(true);
-  };
 
   // Find today's daily goal for the selected date
   const findTodaysDailyGoal = (date: Date): GoalDTO | null => {
@@ -171,6 +93,51 @@ export default function HomePage() {
         return false;
       }) || null
     );
+  };
+
+  const todaysDailyGoal = useMemo(() => {
+    if (!selectedDate || !(selectedDate instanceof Date)) return null;
+    return findTodaysDailyGoal(selectedDate);
+  }, [goals, selectedDate]);
+
+  const dailyTasks = todaysDailyGoal?.tasks || [];
+
+  const handleDateChange = (date: Date) => {
+    setSelectedDate(date);
+  };
+
+  const handleOpenMonthCalendar = () => {
+    setMonthCalendarOpen(true);
+  };
+
+  const handleMonthCalendarDateSelect = (date: Date | undefined) => {
+    if (date) {
+      const newDate = new Date(date);
+      newDate.setHours(0, 0, 0, 0);
+      setSelectedDate(newDate);
+    }
+  };
+
+  const handleEditTask = (task: TaskDTO) => {
+    const owningGoal =
+      goals.find((goal) => goal.tasks?.some((t) => t.id === task.id)) || null;
+    setTaskFormData({
+      ...task,
+      status: task.status || "todo",
+      goal_id: owningGoal?.id,
+    });
+    setTaskDialogOpen(true);
+  };
+
+  const handleCreateTask = () => {
+    setTaskFormData({
+      title: "",
+      description: "",
+      status: "todo",
+      completed: false,
+      goal_id: todaysDailyGoal?.id,
+    });
+    setTaskDialogOpen(true);
   };
 
   const handleDailyTasksClick = () => {
@@ -293,7 +260,11 @@ export default function HomePage() {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>Tasks ({dailyTasks.length})</CardTitle>
+                <CardTitle>
+                  {todaysDailyGoal
+                    ? `Tasks (${dailyTasks.length})`
+                    : "No Daily Goal Yet"}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {dailyTasks.length > 0 ? (
@@ -308,7 +279,7 @@ export default function HomePage() {
                         />
                       ))}
                   </div>
-                ) : (
+                ) : todaysDailyGoal ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <p>No tasks for this date.</p>
                     <Button
@@ -318,6 +289,18 @@ export default function HomePage() {
                     >
                       <Plus className="h-4 w-4 mr-2" />
                       Create your first task
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No daily goal for this date yet.</p>
+                    <Button
+                      variant="outline"
+                      className="mt-4"
+                      onClick={handleCreateTask}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add a task to create one
                     </Button>
                   </div>
                 )}
@@ -332,8 +315,9 @@ export default function HomePage() {
         open={taskDialogOpen}
         onOpenChange={setTaskDialogOpen}
         task={taskFormData}
+        createForDate={selectedDate}
         onSaved={async () => {
-          await fetchAllTasks();
+          await fetchGoals();
           setTaskDialogOpen(false);
           setTaskFormData({
             title: "",
@@ -342,6 +326,7 @@ export default function HomePage() {
             completed: false,
           });
           await refreshSubtasks();
+          setGoalsRefreshKey((prev) => prev + 1);
         }}
       />
 

@@ -48,13 +48,18 @@ export async function createGoal(
 
       // 4. Link existing tasks to goal if any
       if (data.existingTaskIds && data.existingTaskIds.length > 0) {
-        await linkExistingTasksToGoal(userId, data.existingTaskIds, goalId, tx);
+        await linkExistingTasksToGoal(
+          userId,
+          data.existingTaskIds,
+          goalId,
+          tx
+        );
       }
 
       return goal;
     });
   } else {
     // Simple create without tasks
-    return await insertGoal(userId, data, undefined);
+    return await insertGoal(userId, data, db);
   }
 }

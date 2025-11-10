@@ -1,10 +1,33 @@
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import type { NeonDatabase } from "drizzle-orm/neon-serverless";
+import { neonConfig, Pool } from "@neondatabase/serverless";
 import { getEnvContext, type Env } from "../env-context";
 
-let dbInstance: NeonHttpDatabase | null = null;
-let dbEnv: Env | null = null;
+const isNodeRuntime =
+  typeof process !== "undefined" && !!process.versions?.node;
+
+let cachedDbInstance: NeonDatabase | null = null;
+let cachedEnv: Env | null = null;
+let cachedPool: Pool | null = null;
+
+function ensureWebSocketConstructor(): void {
+  if (typeof WebSocket !== "undefined" || neonConfig.webSocketConstructor) {
+    return;
+  }
+
+  if (typeof require === "undefined") {
+    return;
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const wsModule: any = require("ws");
+    neonConfig.webSocketConstructor =
+      wsModule.WebSocket || wsModule.default || wsModule;
+  } catch {
+    // Ignore; we'll rely on environments that already provide WebSocket
+  }
+}
 
 function getDatabaseUrl(env?: Env): string {
   // Priority order:
@@ -12,66 +35,87 @@ function getDatabaseUrl(env?: Env): string {
   // 2. Env from async context (set by middleware)
   // 3. globalThis.env (Cloudflare Workers)
   // 4. process.env (Node.js/Cloudflare Workers with nodejs_compat)
-  
+
   const contextEnv = env || getEnvContext();
-  
-  const url = contextEnv?.DATABASE_URL
-    || (typeof globalThis !== 'undefined' && (globalThis as any).env?.DATABASE_URL)
-    || (typeof process !== 'undefined' && process.env?.DATABASE_URL)
-    || null;
-  
+
+  const url =
+    contextEnv?.DATABASE_URL ||
+    (typeof globalThis !== "undefined" &&
+      (globalThis as any).env?.DATABASE_URL) ||
+    (typeof process !== "undefined" && process.env?.DATABASE_URL) ||
+    null;
+
   if (!url) {
     throw new Error(
       "DATABASE_URL is required but not provided. " +
-      "Make sure it's configured in wrangler.toml (as [vars] or [env.dev.vars]) or passed via env parameter."
+        "Make sure it's configured in wrangler.toml (as [vars] or [env.dev.vars]) or passed via env parameter."
     );
   }
-  
+
   return url;
 }
 
-function initializeDb(env?: Env): NeonHttpDatabase {
-  // Get env from context if not provided (for backward compatibility)
+function createDbInstance(url: string): { db: NeonDatabase; pool: Pool } {
+  ensureWebSocketConstructor();
+  const pool = new Pool({ connectionString: url });
+  const db = drizzle(pool);
+  return { db, pool };
+}
+
+function initializeDb(env?: Env): NeonDatabase {
   const effectiveEnv = env || getEnvContext();
-  
-  // If env is provided and different from cached env, create new instance
-  if (effectiveEnv && effectiveEnv !== dbEnv) {
-    dbEnv = effectiveEnv;
-    const url = getDatabaseUrl(effectiveEnv);
-    const sql = neon(url);
-    dbInstance = drizzle(sql);
-    return dbInstance;
-  }
-  
-  // If no env provided, use cached instance or initialize with default
-  if (dbInstance) {
-    return dbInstance;
-  }
-  
   const url = getDatabaseUrl(effectiveEnv);
-  const sql = neon(url);
-  dbInstance = drizzle(sql);
-  if (effectiveEnv) {
-    dbEnv = effectiveEnv;
+
+  if (isNodeRuntime) {
+    if (effectiveEnv && effectiveEnv !== cachedEnv) {
+      cachedEnv = effectiveEnv;
+      if (cachedPool) {
+        void cachedPool.end().catch(() => {});
+      }
+      const { db, pool } = createDbInstance(url);
+      cachedDbInstance = db;
+      cachedPool = pool;
+      return db;
+    }
+
+    if (cachedDbInstance) {
+      return cachedDbInstance;
+    }
+
+    const { db, pool } = createDbInstance(url);
+    cachedDbInstance = db;
+    cachedPool = pool;
+    if (effectiveEnv) {
+      cachedEnv = effectiveEnv;
+    }
+    return db;
   }
-  return dbInstance;
+
+  // For non-Node runtimes (e.g., Cloudflare Workers), avoid caching I/O across requests
+  const { db } = createDbInstance(url);
+  return db;
+}
+
+function getCachedDb(): NeonDatabase {
+  if (!cachedDbInstance) {
+    const url = getDatabaseUrl();
+    const { db, pool } = createDbInstance(url);
+    cachedDbInstance = db;
+    cachedPool = pool;
+  }
+  return cachedDbInstance;
 }
 
 // Function to get db - now reads env from context automatically
-export function getDb(env?: Env): NeonHttpDatabase {
+export function getDb(env?: Env): NeonDatabase {
   return initializeDb(env);
 }
 
-// Lazy initialization - will be called when db methods are first accessed
-let _db: NeonHttpDatabase;
-
 // Export db with lazy initialization (for backward compatibility)
-export const db: NeonHttpDatabase = new Proxy({} as NeonHttpDatabase, {
+export const db: NeonDatabase = new Proxy({} as NeonDatabase, {
   get(_target, prop) {
-    if (!_db) {
-      _db = initializeDb();
-    }
-    const value = (_db as any)[prop];
-    return typeof value === 'function' ? value.bind(_db) : value;
-  }
+    const instance = isNodeRuntime ? getCachedDb() : initializeDb();
+    const value = (instance as any)[prop];
+    return typeof value === "function" ? value.bind(instance) : value;
+  },
 });

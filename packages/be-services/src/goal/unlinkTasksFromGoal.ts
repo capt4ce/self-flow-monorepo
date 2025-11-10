@@ -1,8 +1,6 @@
 import { taskGoals } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Executor } from "../db/executor";
 
 /**
  * Unlink tasks from a goal by removing task-goal relationships
@@ -13,18 +11,15 @@ type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0]
 export async function unlinkTasksFromGoal(
   goalId: string,
   taskIds: string[],
-  tx: Transaction
+  executor: Executor
 ): Promise<void> {
   if (taskIds.length === 0) {
     return;
   }
 
-  await tx
+  await executor
     .delete(taskGoals)
     .where(
-      and(
-        eq(taskGoals.goalId, goalId),
-        inArray(taskGoals.taskId, taskIds)
-      )
+      and(eq(taskGoals.goalId, goalId), inArray(taskGoals.taskId, taskIds))
     );
 }

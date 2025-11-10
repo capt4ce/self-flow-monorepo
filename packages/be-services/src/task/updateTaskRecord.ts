@@ -1,18 +1,22 @@
 import { getDb } from "@self-flow/db";
 import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
-import { UpdateTaskDTO, TaskDTO } from "@self-flow/common/types";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import {
+  UpdateTaskDTO,
+  TaskDTO,
+  TaskEffort,
+  TaskPriority,
+  TaskStatus,
+} from "@self-flow/common/types";
+import type { Transaction } from "../db/executor";
 
 interface TaskUpdateData {
   updatedAt: string;
   title?: string;
   description?: string | null;
-  status?: string | null;
-  effort?: string | null;
-  priority?: string | null;
+  status?: TaskStatus | null;
+  effort?: TaskEffort | null;
+  priority?: TaskPriority | null;
   completed?: boolean;
   parentId?: string | null;
   groupId?: string | null;

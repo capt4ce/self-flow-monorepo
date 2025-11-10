@@ -72,6 +72,10 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
+    if (goal.category === "Main") {
+      return goal.status !== "done";
+    }
+
     if (goal.status !== "active") return false;
 
     const dateStr = date.toISOString().split("T")[0];

@@ -66,7 +66,7 @@ export default function TasksPage() {
     // Status filter
     if (statusFilter !== "all" && task.status !== statusFilter) return false;
 
-    if (!["done", "not done"].includes(statusFilter) && task.completed)
+    if (!["completed", "not done"].includes(statusFilter) && task.completed)
       return false;
 
     // Effort filter
@@ -163,7 +163,7 @@ export default function TasksPage() {
                   <SelectItem value="todo">To Do</SelectItem>
                   <SelectItem value="in progress">In Progress</SelectItem>
                   <SelectItem value="blocked">Blocked</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="not done">Not Done</SelectItem>
                 </SelectContent>
               </Select>

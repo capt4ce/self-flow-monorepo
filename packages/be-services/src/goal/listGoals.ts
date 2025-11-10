@@ -1,14 +1,23 @@
 import { getDb } from "@self-flow/db";
-import { goals, taskGoals, tasks, taskGroups } from "@self-flow/db/src/drizzle/schema";
+import {
+  goals,
+  taskGoals,
+  tasks,
+  taskGroups,
+} from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
 import { GoalDTO } from "@self-flow/common/types";
 import type { GoalStatus } from "@self-flow/common/types";
 
-export async function listGoals(userId: string, status: GoalStatus | undefined) {
+export async function listGoals(
+  userId: string,
+  status: GoalStatus | undefined
+) {
   const db = getDb();
   // Ensure status is valid, default to "active" if not provided or invalid
-  const validStatus: "active" | "done" = status === "active" || status === "done" ? status : "active";
-  
+  const validStatus: "active" | "done" =
+    status === "active" || status === "done" ? status : "active";
+
   const goalsList = await db
     .select()
     .from(goals)
@@ -35,18 +44,14 @@ export async function listGoals(userId: string, status: GoalStatus | undefined) 
       const taskIds = taskGoalRelations.map((tg) => tg.taskId);
 
       // Get tasks
-      const tasksList = taskIds.length > 0
-        ? await db
-            .select()
-            .from(tasks)
-            .where(
-              and(
-                eq(tasks.userId, userId),
-                inArray(tasks.id, taskIds)
-              )
-            )
-            .orderBy(tasks.orderIndex)
-        : [];
+      const tasksList =
+        taskIds.length > 0
+          ? await db
+              .select()
+              .from(tasks)
+              .where(and(eq(tasks.userId, userId), inArray(tasks.id, taskIds)))
+              .orderBy(tasks.orderIndex)
+          : [];
 
       // Get task groups
       const groupsList = await db
@@ -55,7 +60,12 @@ export async function listGoals(userId: string, status: GoalStatus | undefined) 
         .where(eq(taskGroups.goalId, goal.id));
 
       // Sort tasks by order_index
-      const sortedTasks = tasksList.sort((a, b) => a.orderIndex - b.orderIndex);
+      const sortedTasks = tasksList
+        .sort((a, b) => (a?.orderIndex ?? 0) - (b?.orderIndex ?? 0))
+        .map((task) => ({
+          ...task,
+          goal_id: goal.id,
+        }));
 
       return {
         ...goal,
@@ -67,4 +77,3 @@ export async function listGoals(userId: string, status: GoalStatus | undefined) 
 
   return goalsWithTasks as GoalDTO[];
 }
-

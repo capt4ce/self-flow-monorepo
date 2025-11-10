@@ -31,11 +31,11 @@ export async function createTask(
   } else {
     // Simple create without subtasks
     const { goalId: _, ...taskData } = data;
-    const task = await insertTask(userId, taskData, undefined);
+    const task = await insertTask(userId, taskData, db);
 
     // If goalId is provided, create task-goal relationship
     if (goalId) {
-      await linkTaskToGoal(task.id, goalId, undefined, db);
+      await linkTaskToGoal(task.id, goalId, db);
     }
 
     return task;

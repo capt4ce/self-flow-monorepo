@@ -123,6 +123,24 @@ export const api = {
   tasks: {
     list: (limit = 20, offset = 0) =>
       fetchAPI<{ data: TaskDTO[] }>(`/tasks?limit=${limit}&offset=${offset}`),
+    createForDate: (
+      date: string,
+      data: CreateTaskDTO & {
+        newSubtasks?: Array<{
+          title: string;
+          description?: string;
+          effort?: string;
+          priority?: string;
+          status?: string;
+          goalId?: string;
+        }>;
+        existingSubtaskIds?: string[];
+      }
+    ) =>
+      fetchAPI<{ data: TaskDTO }>(`/tasks/date/${date}`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     create: (data: CreateTaskDTO & {
       newSubtasks?: Array<{
         title: string;
@@ -181,6 +199,7 @@ export const api = {
         isTemplate?: boolean;
         excludeStatus?: string[];
         excludeCompleted?: boolean;
+        statusEquals?: string[];
       }
     ) => {
       const allTasks = await fetchAPI<{ data: TaskDTO[] }>(
@@ -192,6 +211,12 @@ export const api = {
       if (filters?.isTemplate !== undefined) {
         filtered = filtered.filter((t) => t.isTemplate === filters.isTemplate);
       }
+      if (filters?.statusEquals && filters.statusEquals.length > 0) {
+        const statusSet = new Set(filters.statusEquals.filter(Boolean));
+        filtered = filtered.filter(
+          (t) => t.status && statusSet.has(t.status)
+        );
+      }
       if (filters?.excludeStatus) {
         filtered = filtered.filter(
           (t) => t.status && !filters.excludeStatus?.includes(t.status)
@@ -202,8 +227,9 @@ export const api = {
       }
 
       // Apply search query
-      if (searchQuery.trim()) {
-        const searchTerms = searchQuery
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery) {
+        const searchTerms = trimmedQuery
           .split(" ")
           .filter((term) => term.trim() !== "");
         filtered = filtered.filter((task) =>
@@ -213,7 +239,7 @@ export const api = {
         );
       }
 
-      return { data: filtered.slice(0, 20) };
+      return { data: filtered.slice(0, 100) };
     },
   },
 

@@ -46,6 +46,7 @@ export async function listTasks(userId: string, limit: number = 20, offset: numb
       ...task,
       goalTitle: goal?.title || "",
       goalId: goal?.id || "",
+      goal_id: goal?.id,
     };
   });
 

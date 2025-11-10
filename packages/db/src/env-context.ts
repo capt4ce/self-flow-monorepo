@@ -11,15 +11,15 @@ type Env = {
   FRONTEND_URL?: string;
 };
 
+type AsyncLocalStorageType<T> =
+  import("async_hooks").AsyncLocalStorage<T>;
+
 // Try to use AsyncLocalStorage if available (Node.js 12.17+)
-let asyncLocalStorage: any = null;
+let asyncLocalStorage: AsyncLocalStorageType<{ env?: Env }> | null = null;
 try {
-  if (typeof AsyncLocalStorage !== 'undefined') {
-    asyncLocalStorage = new AsyncLocalStorage<{ env?: Env }>();
-  } else if (typeof require !== 'undefined') {
-    // Fallback for Node.js environments
-    const { AsyncLocalStorage } = require('async_hooks');
-    asyncLocalStorage = new AsyncLocalStorage<{ env?: Env }>();
+  if (typeof require !== "undefined") {
+    const asyncHooks = require("async_hooks") as typeof import("async_hooks");
+    asyncLocalStorage = new asyncHooks.AsyncLocalStorage<{ env?: Env }>();
   }
 } catch {
   // AsyncLocalStorage not available (e.g., Cloudflare Workers)

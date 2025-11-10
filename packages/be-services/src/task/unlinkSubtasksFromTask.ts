@@ -1,8 +1,6 @@
 import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Transaction } from "../db/executor";
 
 /**
  * Unlink subtasks from a task by setting their parentId to null

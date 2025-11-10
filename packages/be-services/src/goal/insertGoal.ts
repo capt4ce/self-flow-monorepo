@@ -1,21 +1,7 @@
 import { getDb } from "@self-flow/db";
 import { goals } from "@self-flow/db/src/drizzle/schema";
 import { CreateGoalDTO, GoalDTO } from "@self-flow/common/types";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<
-  Parameters<NeonHttpDatabase["transaction"]>[0]
->[0];
-
-interface GoalInsertData {
-  userId: string;
-  title: string;
-  description?: string | null;
-  category: CreateGoalDTO["category"];
-  status?: CreateGoalDTO["status"];
-  startDate?: string | null;
-  endDate?: string | null;
-}
+import type { Executor } from "../db/executor";
 
 /**
  * Insert a goal into the database
@@ -27,9 +13,9 @@ interface GoalInsertData {
 export async function insertGoal(
   userId: string,
   data: CreateGoalDTO,
-  tx?: Transaction
+  executor?: Executor
 ): Promise<GoalDTO> {
-  const insertData: GoalInsertData = {
+  const insertData: typeof goals.$inferInsert = {
     userId,
     title: data.title,
     description: data.description || null,
@@ -39,7 +25,9 @@ export async function insertGoal(
     endDate: data.endDate || null,
   };
 
-  const [goal] = await (tx || getDb())
+  const executorToUse = executor || getDb();
+
+  const [goal] = await executorToUse
     .insert(goals)
     .values(insertData)
     .returning();

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -33,12 +33,14 @@ import TaskSearch from "../common/TaskSearch";
 import ParentTaskSearch from "../common/ParentTaskSearch";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api-client";
+import { format } from "date-fns";
 
 interface TaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   task?: (Partial<TaskDTO> & { goal_id?: string }) | null;
   onSaved?: () => void;
+  createForDate?: Date | string;
 }
 
 const TaskDialog: React.FC<TaskDialogProps> = ({
@@ -46,7 +48,36 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
   onOpenChange,
   task,
   onSaved,
+  createForDate,
 }) => {
+  const UUID_REGEX =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+  const sanitizeUuid = (value?: string | null) =>
+    typeof value === "string" && UUID_REGEX.test(value) ? value : undefined;
+
+  const sanitizeUuidList = (ids: Array<string | null | undefined>) =>
+    Array.from(
+      new Set(
+        ids.filter(
+          (id): id is string => typeof id === "string" && UUID_REGEX.test(id)
+        )
+      )
+    );
+
+  const normalizedCreateForDate = useMemo(() => {
+    if (!createForDate) return undefined;
+    if (typeof createForDate === "string") {
+      return createForDate;
+    }
+    try {
+      return format(createForDate, "yyyy-MM-dd");
+    } catch (error) {
+      console.error("Invalid date provided to TaskDialog:", error);
+      return undefined;
+    }
+  }, [createForDate]);
+
   const { user } = useAuth();
   const [taskFormData, setTaskFormData] = useState<Partial<TaskDTO> & { goal_id?: string; ai_agent?: string; ai_prompt?: string }>(
     task ? {
@@ -88,7 +119,12 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
 
   React.useEffect(() => {
     if (task) {
-      setTaskFormData({ ...task, goal_id: task.goal_id });
+      const derivedGoalId =
+        sanitizeUuid(
+          (task.goal_id as string | undefined) ??
+            ((task as unknown as { goalId?: string })?.goalId ?? null)
+        ) || undefined;
+      setTaskFormData({ ...task, goal_id: derivedGoalId });
       if (task.id) {
         const fetchSubtasks = async () => {
           try {
@@ -114,19 +150,35 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
       const title = taskFormData.title;
       if (!title) return;
       
+      const sanitizedGoalId = sanitizeUuid(taskFormData.goal_id || null);
+      const sanitizedParentId = sanitizeUuid(taskFormData.parentId || null);
+      const sanitizedGroupId = sanitizeUuid(taskFormData.groupId || null);
+      const sanitizedTemplateId = sanitizeUuid(taskFormData.templateId || null);
+
       const taskDataToSave: CreateTaskDTO | UpdateTaskDTO = {
         title,
         description: taskFormData.description || undefined,
         effort: taskFormData.effort || undefined,
         status: (taskFormData.status as TaskStatus) || "todo",
         priority: taskFormData.priority || undefined,
-        parentId: taskFormData.parentId || undefined,
-        goalId: taskFormData.goal_id || undefined,
-        groupId: taskFormData.groupId || undefined,
+        parentId: sanitizedParentId,
+        goalId: sanitizedGoalId,
+        groupId: sanitizedGroupId,
         isTemplate: taskFormData.isTemplate || false,
         completed: taskFormData.completed || false,
-        orderIndex: taskFormData.orderIndex || 0,
+        orderIndex:
+          typeof taskFormData.orderIndex === "number"
+            ? taskFormData.orderIndex
+            : undefined,
+        templateId: sanitizedTemplateId,
       };
+
+      const sanitizedSelectedSubtaskIds = sanitizeUuidList(
+        selectedExistingTaskIds
+      );
+      const sanitizedCurrentSubtaskIds = sanitizeUuidList(
+        subtasks.map((st) => st.id)
+      );
 
       if (taskFormData?.id) {
         // Update task with subtasks (batch operation)
@@ -140,15 +192,24 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
                 effort: st.effort || undefined,
                 priority: st.priority || undefined,
                 status: (st.status as TaskStatus) || "todo",
-                goalId: taskFormData.goal_id || undefined,
+              goalId: sanitizedGoalId,
               }))
             : undefined,
-          selectedSubtaskIds: selectedExistingTaskIds,
-          currentSubtaskIds: subtasks.map((st) => st.id!),
+          selectedSubtaskIds:
+            sanitizedSelectedSubtaskIds.length > 0
+              ? sanitizedSelectedSubtaskIds
+              : undefined,
+          currentSubtaskIds:
+            sanitizedCurrentSubtaskIds.length > 0
+              ? sanitizedCurrentSubtaskIds
+              : undefined,
         });
       } else {
         // Create task with subtasks (batch operation)
         const subtasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
+        const goalIdForCreation = normalizedCreateForDate
+          ? undefined
+          : sanitizedGoalId;
         const createData = {
           title,
           description: taskDataToSave.description,
@@ -156,7 +217,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
           status: taskDataToSave.status,
           priority: taskDataToSave.priority,
           parentId: taskDataToSave.parentId,
-          goalId: taskDataToSave.goalId,
+          goalId: goalIdForCreation,
           groupId: taskDataToSave.groupId,
           isTemplate: taskDataToSave.isTemplate,
           completed: taskDataToSave.completed,
@@ -168,12 +229,19 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
                 effort: st.effort || undefined,
                 priority: st.priority || undefined,
                 status: (st.status as TaskStatus) || "todo",
-                goalId: taskFormData.goal_id || undefined,
+                goalId: goalIdForCreation,
               }))
             : undefined,
-          existingSubtaskIds: selectedExistingTaskIds.length > 0 ? selectedExistingTaskIds : undefined,
+          existingSubtaskIds:
+            sanitizedSelectedSubtaskIds.length > 0
+              ? sanitizedSelectedSubtaskIds
+              : undefined,
         };
-        await api.tasks.create(createData);
+        if (normalizedCreateForDate) {
+          await api.tasks.createForDate(normalizedCreateForDate, createData);
+        } else {
+          await api.tasks.create(createData);
+        }
       }
 
       if (typeof onSaved === "function") {
@@ -238,7 +306,7 @@ const TaskDialog: React.FC<TaskDialogProps> = ({
                   <SelectItem value="todo">To Do</SelectItem>
                   <SelectItem value="in progress">In Progress</SelectItem>
                   <SelectItem value="blocked">Blocked</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="not done">Not Done</SelectItem>
                 </SelectContent>
               </Select>

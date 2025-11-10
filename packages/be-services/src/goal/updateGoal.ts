@@ -75,6 +75,6 @@ export async function updateGoal(
     });
   } else {
     // Simple update without tasks
-    return await updateGoalRecord(userId, goalId, data, undefined);
+    return await updateGoalRecord(userId, goalId, data, db);
   }
 }

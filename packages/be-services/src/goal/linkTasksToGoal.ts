@@ -1,8 +1,6 @@
 import { tasks, taskGoals } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Executor } from "../db/executor";
 
 /**
  * Link newly created tasks to a goal
@@ -13,13 +11,13 @@ type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0]
 export async function linkNewTasksToGoal(
   taskIds: string[],
   goalId: string,
-  tx: Transaction
+  executor: Executor
 ): Promise<void> {
   if (taskIds.length === 0) {
     return;
   }
 
-  await tx.insert(taskGoals).values(
+  await executor.insert(taskGoals).values(
     taskIds.map((taskId) => ({
       taskId,
       goalId,
@@ -40,14 +38,14 @@ export async function linkExistingTasksToGoal(
   userId: string,
   taskIds: string[],
   goalId: string,
-  tx: Transaction
+  executor: Executor
 ): Promise<void> {
   if (taskIds.length === 0) {
     return;
   }
 
   // Verify all tasks belong to the user
-  const existingTasks = await tx
+  const existingTasks = await executor
     .select()
     .from(tasks)
     .where(
@@ -57,15 +55,17 @@ export async function linkExistingTasksToGoal(
       )
     );
 
-  if (existingTasks.length !== taskIds.length) {
-    throw new Error("Some tasks not found or do not belong to user");
+  if (existingTasks.length === 0) {
+    return;
   }
 
+  const validTaskIds = Array.from(new Set(existingTasks.map((task) => task.id)));
+
   // Insert task-goal relationships (ignore conflicts for existing relationships)
-  await tx
+  await executor
     .insert(taskGoals)
     .values(
-      taskIds.map((taskId) => ({
+      validTaskIds.map((taskId) => ({
         taskId,
         goalId,
       }))

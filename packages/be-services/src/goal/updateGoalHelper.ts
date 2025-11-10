@@ -2,19 +2,7 @@ import { getDb } from "@self-flow/db";
 import { goals } from "@self-flow/db/src/drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { UpdateGoalDTO, GoalDTO } from "@self-flow/common/types";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
-
-interface GoalUpdateData {
-  updatedAt: string;
-  title?: string;
-  description?: string | null;
-  category?: string;
-  status?: string;
-  startDate?: string | null;
-  endDate?: string | null;
-}
+import type { Executor } from "../db/executor";
 
 /**
  * Update a goal in the database
@@ -29,9 +17,11 @@ export async function updateGoalRecord(
   userId: string,
   goalId: string,
   data: UpdateGoalDTO,
-  tx?: Transaction
+  executor?: Executor
 ): Promise<GoalDTO> {
-  const updateData: GoalUpdateData = {
+  const updateData: Partial<typeof goals.$inferInsert> & {
+    updatedAt: string;
+  } = {
     updatedAt: new Date().toISOString(),
   };
 
@@ -44,7 +34,9 @@ export async function updateGoalRecord(
     updateData.startDate = data.startDate || null;
   if (data.endDate !== undefined) updateData.endDate = data.endDate || null;
 
-  const [goal] = await (tx || getDb())
+  const executorToUse = executor || getDb();
+
+  const [goal] = await executorToUse
     .update(goals)
     .set(updateData)
     .where(and(eq(goals.id, goalId), eq(goals.userId, userId)))

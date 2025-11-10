@@ -1,8 +1,6 @@
 import { tasks } from "@self-flow/db/src/drizzle/schema";
 import { eq, and, inArray } from "drizzle-orm";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Executor } from "../db/executor";
 
 /**
  * Link existing tasks as subtasks by setting their parentId
@@ -17,14 +15,14 @@ export async function linkExistingTasksAsSubtasks(
   userId: string,
   parentTaskId: string,
   subtaskIds: string[],
-  tx: Transaction
+  executor: Executor
 ): Promise<void> {
   if (subtaskIds.length === 0) {
     return;
   }
 
   // Verify all tasks belong to the user
-  const existingTasks = await tx
+  const existingTasks = await executor
     .select()
     .from(tasks)
     .where(
@@ -34,18 +32,22 @@ export async function linkExistingTasksAsSubtasks(
       )
     );
 
-  if (existingTasks.length !== subtaskIds.length) {
-    throw new Error("Some tasks not found or do not belong to user");
+  if (existingTasks.length === 0) {
+    return;
   }
 
+  const validSubtaskIds = Array.from(
+    new Set(existingTasks.map((task) => task.id))
+  );
+
   // Update tasks to set parentId
-  await tx
+  await executor
     .update(tasks)
     .set({ parentId: parentTaskId })
     .where(
       and(
         eq(tasks.userId, userId),
-        inArray(tasks.id, subtaskIds)
+        inArray(tasks.id, validSubtaskIds)
       )
     );
 }

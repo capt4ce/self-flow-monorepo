@@ -46,6 +46,18 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
   initialDate,
   initialTitle,
 }) => {
+  const UUID_REGEX =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
+  const sanitizeUuidList = (ids: Array<string | null | undefined>) =>
+    Array.from(
+      new Set(
+        ids.filter(
+          (id): id is string => typeof id === "string" && UUID_REGEX.test(id)
+        )
+      )
+    );
+
   const isEditing = !!goal?.id;
   const { user } = useAuth();
   const defaultDate = initialDate || new Date();
@@ -102,7 +114,9 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
           : format(new Date(), "yyyy-MM-dd"),
       });
       setGoalTasks(goal.tasks || []);
-      setSelectedExistingTaskIds((goal.tasks || []).map((t: TaskDTO) => t.id));
+      setSelectedExistingTaskIds(
+        sanitizeUuidList((goal.tasks || []).map((t: TaskDTO) => t.id))
+      );
     } else {
       resetForm();
     }
@@ -126,6 +140,10 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
       if (goal?.id) {
         // Update goal with tasks (batch operation)
         const tasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
+        const sanitizedSelectedIds = sanitizeUuidList(selectedExistingTaskIds);
+        const sanitizedCurrentIds = sanitizeUuidList(
+          goalTasks.map((t: TaskDTO) => t.id)
+        );
         await api.goals.update(goal.id, {
           ...goalData,
           newTasks:
@@ -138,12 +156,17 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                   templateId: t.templateId || undefined,
                 }))
               : undefined,
-          selectedTaskIds: selectedExistingTaskIds,
-          currentTaskIds: goalTasks.map((t: TaskDTO) => t.id),
+          selectedTaskIds: sanitizedSelectedIds.length
+            ? sanitizedSelectedIds
+            : undefined,
+          currentTaskIds: sanitizedCurrentIds.length
+            ? sanitizedCurrentIds
+            : undefined,
         });
       } else {
         // Create goal with tasks (batch operation)
         const tasksToAdd = newTasks.filter((t) => t.title.trim() !== "");
+        const sanitizedExistingIds = sanitizeUuidList(selectedExistingTaskIds);
         await api.goals.create({
           ...goalData,
           newTasks:
@@ -157,9 +180,7 @@ const GoalFormDialog: React.FC<GoalFormDialogProps> = ({
                 }))
               : undefined,
           existingTaskIds:
-            selectedExistingTaskIds.length > 0
-              ? selectedExistingTaskIds
-              : undefined,
+            sanitizedExistingIds.length > 0 ? sanitizedExistingIds : undefined,
         });
       }
 

@@ -16,9 +16,12 @@
     "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "pg": "^8.16.3",
-    "postgres": "^3.4.7"
+    "postgres": "^3.4.7",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
-    "drizzle-kit": "^0.31.4"
+    "drizzle-kit": "^0.31.4",
+    "@types/ws": "^8.5.12",
+    "@types/node": "^20.14.11"
   }
 }

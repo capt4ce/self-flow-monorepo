@@ -4,9 +4,7 @@ import { insertSubtasksForTask } from "../task/insertSubtasksForTask";
 import { linkTaskToGoal } from "../task/linkTaskToGoal";
 import { linkNewTasksToGoal } from "../goal/linkTasksToGoal";
 import { linkExistingTasksAsSubtasks } from "../task/linkExistingTasksAsSubtasks";
-import type { NeonHttpDatabase } from "drizzle-orm/neon-http";
-
-type Transaction = Parameters<Parameters<NeonHttpDatabase["transaction"]>[0]>[0];
+import type { Executor } from "../db/executor";
 
 export interface CreateTaskWithSubtasksDTO extends CreateTaskDTO {
   newSubtasks?: Array<Omit<CreateTaskDTO, "parentId">>;
@@ -26,19 +24,19 @@ export interface CreateTaskWithSubtasksDTO extends CreateTaskDTO {
 export async function createTaskWithSubtasks(
   userId: string,
   taskData: Omit<CreateTaskWithSubtasksDTO, "goalId">,
-  tx: Transaction,
+  executor: Executor,
   goalId?: string
 ): Promise<TaskDTO> {
   // Extract subtasks data before passing to insertTask
   const { newSubtasks, existingSubtaskIds, ...taskDataWithoutSubtasks } = taskData;
 
   // 1. Create the main task
-  const task = await insertTask(userId, taskDataWithoutSubtasks, tx);
+  const task = await insertTask(userId, taskDataWithoutSubtasks, executor);
   const taskId = task.id;
 
   // 2. Link task to goal if goalId provided
   if (goalId) {
-    await linkTaskToGoal(taskId, goalId, tx);
+    await linkTaskToGoal(taskId, goalId, executor);
   }
 
   // 3. Handle subtasks if any
@@ -53,7 +51,7 @@ export async function createTaskWithSubtasks(
         userId,
         taskId,
         newSubtasks,
-        tx
+        executor
       );
 
       // Link subtasks to goal if goalId provided
@@ -61,7 +59,7 @@ export async function createTaskWithSubtasks(
         await linkNewTasksToGoal(
           createdSubtasks.map((subtask) => subtask.id),
           goalId,
-          tx
+          executor
         );
       }
     }
@@ -72,7 +70,7 @@ export async function createTaskWithSubtasks(
         userId,
         taskId,
         existingSubtaskIds,
-        tx
+        executor
       );
     }
   }
