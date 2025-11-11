@@ -28,57 +28,6 @@ export default defineConfig({
   },
   build: {
     outDir: "dist",
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (!id.includes("node_modules")) {
-            return;
-          }
-
-          const isPackage = (pkg: string) =>
-            id.includes(`node_modules/${pkg}/`) ||
-            id.endsWith(`node_modules/${pkg}`);
-
-          if (
-            isPackage("react") ||
-            isPackage("react-dom") ||
-            isPackage("scheduler")
-          ) {
-            return "vendor-react";
-          }
-
-          if (id.includes("@radix-ui")) {
-            return "vendor-react";
-          }
-
-          if (id.includes("react-router") || id.includes("react-router-dom")) {
-            return "vendor-router";
-          }
-
-          if (
-            id.includes("date-fns") ||
-            id.includes("react-day-picker") ||
-            id.includes("lucide-react")
-          ) {
-            return "vendor-date-charts";
-          }
-
-          if (
-            id.includes("@hello-pangea/dnd") ||
-            id.includes("cmdk") ||
-            id.includes("@stackframe/react") ||
-            id.includes("embla-carousel-react")
-          ) {
-            return "vendor-ui-extras";
-          }
-
-          if (id.includes("react-hook-form")) {
-            return "vendor-forms";
-          }
-
-          return "vendor";
-        },
-      },
-    },
+    chunkSizeWarningLimit: 2000,
   },
 });

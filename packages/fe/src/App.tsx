@@ -5,7 +5,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { SubtasksProvider } from "@/contexts/SubtasksContext";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AppLayout from "@/components/layout/AppLayout";
-
 const HomePage = lazy(() => import("@/pages/HomePage"));
 const TasksPage = lazy(() => import("@/pages/TasksPage"));
 const GoalsPage = lazy(() => import("@/pages/GoalsPage"));
