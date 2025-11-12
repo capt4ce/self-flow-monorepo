@@ -1,10 +1,12 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
 import {
   TaskDTO,
   CreateTaskDTO,
   UpdateTaskDTO,
-  TaskQuerySchema,
+  TaskFilterDefinition,
+  TaskSortOption,
 } from "@self-flow/common/types";
 import { listTasks } from "@self-flow/be-services/src/task/listTasks";
 import { createTask } from "@self-flow/be-services/src/task/createTask";
@@ -17,6 +19,35 @@ import { listTaskSubtaskCount } from "@self-flow/be-services/src/task/listTaskSu
 
 const tags = ["Tasks"];
 export const task = new OpenAPIHono();
+
+function parseJsonParam<T>(
+  value: string | undefined,
+  schema: z.ZodType<T>,
+  errorMessage: string
+): T | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    return schema.parse(parsed);
+  } catch {
+    throw new HTTPException(400, { message: errorMessage });
+  }
+}
+
+const TaskListQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(500).optional(),
+  offset: z.coerce.number().int().min(0).optional(),
+  search: z.string().max(256).optional(),
+  filters: z.string().optional().openapi({
+    description: "JSON encoded array of filter definitions",
+  }),
+  sort: z.string().optional().openapi({
+    description: "JSON encoded array of sort options",
+  }),
+});
 
 function getUserId(c: any): string {
   const userId = c.get("userId");
@@ -32,10 +63,7 @@ task.openapi(
     path: "/",
     tags,
     request: {
-      query: z.object({
-        limit: z.coerce.number().optional().default(20),
-        offset: z.coerce.number().optional().default(0),
-      }),
+      query: TaskListQuerySchema,
     },
     responses: {
       200: {
@@ -50,41 +78,30 @@ task.openapi(
   },
   async (c) => {
     const userId = getUserId(c);
-    const { limit, offset } = c.req.valid("query");
-    const data = await listTasks(userId, { limit, offset });
-    return c.json({ data });
-  }
-);
-
-task.openapi(
-  {
-    method: "post",
-    path: "/query",
-    tags,
-    request: {
-      body: {
-        content: {
-          "application/json": {
-            schema: TaskQuerySchema,
-          },
-        },
-      },
-    },
-    responses: {
-      200: {
-        description: "Query tasks with filters and search",
-        content: {
-          "application/json": {
-            schema: z.object({ data: z.array(TaskDTO) }),
-          },
-        },
-      },
-    },
-  },
-  async (c) => {
-    const userId = getUserId(c);
-    const body = c.req.valid("json");
-    const data = await listTasks(userId, body);
+    const {
+      limit = 20,
+      offset = 0,
+      search,
+      filters: filtersJson,
+      sort: sortJson,
+    } = c.req.valid("query");
+    const filters = parseJsonParam(
+      filtersJson,
+      z.array(TaskFilterDefinition),
+      "Invalid filters parameter"
+    );
+    const sort = parseJsonParam(
+      sortJson,
+      z.array(TaskSortOption),
+      "Invalid sort parameter"
+    );
+    const data = await listTasks(userId, {
+      limit,
+      offset,
+      search,
+      filters,
+      sort,
+    });
     return c.json({ data });
   }
 );

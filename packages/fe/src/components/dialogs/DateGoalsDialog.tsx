@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,14 +12,15 @@ import { X, Plus, Check } from "lucide-react";
 import { format } from "date-fns";
 import { GoalDTO, GoalCategory } from "@self-flow/common/types";
 import { TaskDTO } from "@self-flow/common/types";
-import { api } from "@/lib/api-client";
-import { useAuth } from "@/contexts/AuthContext";
 import GoalFormDialog from "./GoalFormDialog";
 
 interface DateGoalsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   date: Date | null;
+  goals: GoalDTO[];
+  isLoading?: boolean;
+  onGoalSaved?: () => Promise<void> | void;
 }
 
 // Goal category colors matching the timeline
@@ -45,30 +46,11 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
   open,
   onOpenChange,
   date,
+  goals,
+  isLoading = false,
+  onGoalSaved,
 }) => {
-  const { user } = useAuth();
-  const [goals, setGoals] = useState<GoalDTO[]>([]);
-  const [loading, setLoading] = useState(false);
   const [goalFormDialogOpen, setGoalFormDialogOpen] = useState(false);
-
-  // Fetch goals when dialog opens
-  useEffect(() => {
-    if (!open || !user || !date) return;
-
-    const fetchGoals = async () => {
-      setLoading(true);
-      try {
-        const response = await api.goals.list("active");
-        setGoals(response.data || []);
-      } catch (error) {
-        console.error("Error fetching goals:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGoals();
-  }, [open, user, date]);
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
@@ -145,17 +127,12 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
     return format(date, "EEEE, MMMM d, yyyy");
   };
 
-  const handleGoalSaved = () => {
-    // Refresh goals after creating/updating
-    if (!user) return;
-    api.goals
-      .list("active")
-      .then((response) => {
-        setGoals(response.data || []);
-      })
-      .catch((error) => {
-        console.error("Error refreshing goals:", error);
-      });
+  const handleGoalSaved = async () => {
+    try {
+      await onGoalSaved?.();
+    } catch (error) {
+      console.error("Error refreshing goals after save:", error);
+    }
   };
 
   if (!date) return null;
@@ -191,7 +168,7 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
               Create New Goal
             </Button>
 
-            {loading ? (
+            {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
                 Loading goals...
               </div>

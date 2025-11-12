@@ -81,7 +81,6 @@ export default function HomePage() {
     return today;
   });
   const [monthCalendarOpen, setMonthCalendarOpen] = useState(false);
-  const [goalsRefreshKey, setGoalsRefreshKey] = useState(0);
   const { refreshSubtasks } = useSubtasks();
   const [activeTab, setActiveTab] = useState<"list" | "kanban">("list");
 
@@ -374,8 +373,6 @@ export default function HomePage() {
         if (reorderPayload.length > 0) {
           await api.tasks.reorder(reorderPayload);
         }
-
-        setGoalsRefreshKey((prev) => prev + 1);
       } catch (error) {
         console.error("Error updating task order/status after drag:", error);
         await fetchGoals();
@@ -523,7 +520,9 @@ export default function HomePage() {
         selectedDate={selectedDate}
         onDateChange={handleDateChange}
         onOpenMonthCalendar={handleOpenMonthCalendar}
-        goalsRefreshKey={goalsRefreshKey}
+        goals={goals}
+        isLoadingGoals={isLoading}
+        onRefreshGoals={fetchGoals}
       />
 
       {/* Main Content */}
@@ -767,7 +766,6 @@ export default function HomePage() {
             completed: false,
           });
           await refreshSubtasks();
-          setGoalsRefreshKey((prev) => prev + 1);
         }}
       />
 
@@ -792,7 +790,6 @@ export default function HomePage() {
           await fetchGoals();
           setGoalDialogOpen(false);
           setEditingGoal(null);
-          setGoalsRefreshKey((prev) => prev + 1);
         }}
       />
     </div>

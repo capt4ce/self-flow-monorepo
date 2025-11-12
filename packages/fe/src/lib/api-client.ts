@@ -16,10 +16,9 @@ import type {
 
 // In development, use relative URL which will be proxied by Vite
 // In production, use the full API URL from environment variable
-const API_BASE_URL =
-  import.meta.env.DEV
-    ? "/api" // Use relative URL in development (proxied by Vite)
-    : import.meta.env.VITE_API_URL || "http://localhost:8787/api";
+const API_BASE_URL = import.meta.env.DEV
+  ? "/api" // Use relative URL in development (proxied by Vite)
+  : import.meta.env.VITE_API_URL || "http://localhost:8787/api";
 
 // Extend Window interface for token getter
 declare global {
@@ -82,36 +81,70 @@ async function fetchAPI<T>(
   return response.json();
 }
 
+function buildTasksListPath(params: TaskQuery): string {
+  const trimmedSearch = params.search?.trim() ?? "";
+  const hasSearch = trimmedSearch.length > 0;
+  const filters =
+    params.filters && params.filters.length > 0 ? params.filters : undefined;
+  const sort = params.sort && params.sort.length > 0 ? params.sort : undefined;
+  const limit = params.limit ?? (hasSearch || filters || sort ? 100 : 20);
+  const offset = params.offset ?? 0;
+
+  const searchParams = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  if (hasSearch) {
+    searchParams.set("search", trimmedSearch);
+  }
+
+  if (filters) {
+    searchParams.set("filters", JSON.stringify(filters));
+  }
+
+  if (sort) {
+    searchParams.set("sort", JSON.stringify(sort));
+  }
+
+  return `/tasks?${searchParams.toString()}`;
+}
+
 export const api = {
   // Goals
   goals: {
     list: (status: string) =>
       fetchAPI<{ data: GoalDTO[] }>(`/goals?status=${status}`),
-    create: (data: CreateGoalDTO & {
-      newTasks?: Array<{
-        title: string;
-        description?: string;
-        effort?: string;
-        status?: string;
-        templateId?: string;
-      }>;
-      existingTaskIds?: string[];
-    }) =>
+    create: (
+      data: CreateGoalDTO & {
+        newTasks?: Array<{
+          title: string;
+          description?: string;
+          effort?: string;
+          status?: string;
+          templateId?: string;
+        }>;
+        existingTaskIds?: string[];
+      }
+    ) =>
       fetchAPI<{ data: GoalDTO }>("/goals", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: UpdateGoalDTO & {
-      newTasks?: Array<{
-        title: string;
-        description?: string;
-        effort?: string;
-        status?: string;
-        templateId?: string;
-      }>;
-      selectedTaskIds?: string[];
-      currentTaskIds?: string[];
-    }) =>
+    update: (
+      id: string,
+      data: UpdateGoalDTO & {
+        newTasks?: Array<{
+          title: string;
+          description?: string;
+          effort?: string;
+          status?: string;
+          templateId?: string;
+        }>;
+        selectedTaskIds?: string[];
+        currentTaskIds?: string[];
+      }
+    ) =>
       fetchAPI<{ data: GoalDTO }>(`/goals/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),
@@ -132,44 +165,10 @@ export const api = {
       }
 
       const params: TaskQuery = paramsOrLimit ?? {};
-      const shouldUseAdvancedEndpoint =
-        Boolean(params.search?.trim()) ||
-        Boolean(params.filters && params.filters.length > 0) ||
-        Boolean(params.sort && params.sort.length > 0);
-
-      if (shouldUseAdvancedEndpoint) {
-        const body: TaskQuery = {
-          ...params,
-          limit: params.limit ?? 100,
-          offset: params.offset ?? 0,
-          filters: params.filters && params.filters.length > 0 ? params.filters : undefined,
-          sort: params.sort && params.sort.length > 0 ? params.sort : undefined,
-        };
-
-        return fetchAPI<{ data: TaskDTO[] }>("/tasks/query", {
-          method: "POST",
-          body: JSON.stringify(body),
-        });
-      }
-
-      const limit = params.limit ?? 20;
-      const offset = params.offset ?? 0;
-      return fetchAPI<{ data: TaskDTO[] }>(
-        `/tasks?limit=${limit}&offset=${offset}`
-      );
+      return fetchAPI<{ data: TaskDTO[] }>(buildTasksListPath(params));
     },
     query: (query: TaskQuery) =>
-      fetchAPI<{ data: TaskDTO[] }>("/tasks/query", {
-        method: "POST",
-        body: JSON.stringify({
-          ...query,
-          limit: query.limit ?? 100,
-          offset: query.offset ?? 0,
-          filters:
-            query.filters && query.filters.length > 0 ? query.filters : undefined,
-          sort: query.sort && query.sort.length > 0 ? query.sort : undefined,
-        }),
-      }),
+      fetchAPI<{ data: TaskDTO[] }>(buildTasksListPath(query)),
     createForDate: (
       date: string,
       data: CreateTaskDTO & {
@@ -188,33 +187,38 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    create: (data: CreateTaskDTO & {
-      newSubtasks?: Array<{
-        title: string;
-        description?: string;
-        effort?: string;
-        priority?: string;
-        status?: string;
-        goalId?: string;
-      }>;
-      existingSubtaskIds?: string[];
-    }) =>
+    create: (
+      data: CreateTaskDTO & {
+        newSubtasks?: Array<{
+          title: string;
+          description?: string;
+          effort?: string;
+          priority?: string;
+          status?: string;
+          goalId?: string;
+        }>;
+        existingSubtaskIds?: string[];
+      }
+    ) =>
       fetchAPI<{ data: TaskDTO }>("/tasks", {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    update: (id: string, data: UpdateTaskDTO & {
-      newSubtasks?: Array<{
-        title: string;
-        description?: string;
-        effort?: string;
-        priority?: string;
-        status?: string;
-        goalId?: string;
-      }>;
-      selectedSubtaskIds?: string[];
-      currentSubtaskIds?: string[];
-    }) =>
+    update: (
+      id: string,
+      data: UpdateTaskDTO & {
+        newSubtasks?: Array<{
+          title: string;
+          description?: string;
+          effort?: string;
+          priority?: string;
+          status?: string;
+          goalId?: string;
+        }>;
+        selectedSubtaskIds?: string[];
+        currentSubtaskIds?: string[];
+      }
+    ) =>
       fetchAPI<{ data: TaskDTO }>(`/tasks/${id}`, {
         method: "PUT",
         body: JSON.stringify(data),

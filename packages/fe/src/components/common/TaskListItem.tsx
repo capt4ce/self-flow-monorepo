@@ -1,5 +1,5 @@
 import { TaskDTO } from "@self-flow/common/types";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { Badge } from "../ui/badge";
@@ -47,17 +47,53 @@ const TaskListItem = ({
   const { subtasks: subtasksCache, fetchTaskSubtasks } = useSubtasks();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const toggleExpand = useCallback(() => {
+  const [isLoadingSubtasks, setIsLoadingSubtasks] = useState(false);
+
+  const cachedSubtasksForTask = subtasksCache?.[task.id];
+  const initialSubtasks = task.subtasks ?? [];
+  const resolvedSubtasks = cachedSubtasksForTask ?? initialSubtasks;
+
+  const hasKnownSubtasks =
+    resolvedSubtasks.length > 0 || (task.subtaskCount ?? 0) > 0;
+  const showExpandButton = hasKnownSubtasks || isLoadingSubtasks;
+
+  const toggleExpand = useCallback(async () => {
     if (!task.id) {
       console.error("Cannot expand task without ID");
       return;
     }
-    setIsExpanded(!isExpanded);
-    fetchTaskSubtasks(task.id);
-  }, [setIsExpanded, isExpanded, fetchTaskSubtasks, task]);
 
-  const hasSubtasks = task.subtaskCount && task.subtaskCount > 0;
-  const cachedSubtasks = subtasksCache?.[task.id] || [];
+    const nextExpanded = !isExpanded;
+    setIsExpanded(nextExpanded);
+
+    if (!nextExpanded) {
+      return;
+    }
+
+    const hasCached = !!cachedSubtasksForTask;
+
+    if (!hasCached) {
+      if (initialSubtasks.length > 0) {
+        await fetchTaskSubtasks(task);
+        return;
+      }
+
+      setIsLoadingSubtasks(true);
+      try {
+        await fetchTaskSubtasks(task);
+      } catch (error) {
+        console.error("Failed to load subtasks:", error);
+      } finally {
+        setIsLoadingSubtasks(false);
+      }
+    }
+  }, [
+    task,
+    isExpanded,
+    cachedSubtasksForTask,
+    initialSubtasks.length,
+    fetchTaskSubtasks,
+  ]);
 
   const toggleTaskComplete = async (task: TaskDTO, completed: boolean) => {
     if (!task.id) {
@@ -90,12 +126,15 @@ const TaskListItem = ({
     <div key={task.id} className={`${level > 0 ? "ml-4 sm:ml-6" : ""}`}>
       <div className="flex items-start sm:items-center gap-2 p-2 border rounded hover:bg-gray-50">
         <div className="flex items-center gap-1 flex-shrink-0">
-          {!!hasSubtasks && (
+          {showExpandButton && (
             <button
               onClick={toggleExpand}
-              className="p-0.5 hover:bg-gray-200 rounded"
+              className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-60"
+              disabled={isLoadingSubtasks}
             >
-              {isExpanded ? (
+              {isLoadingSubtasks ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : isExpanded ? (
                 <ChevronDown size={14} />
               ) : (
                 <ChevronRight size={14} />
@@ -147,9 +186,9 @@ const TaskListItem = ({
           )}
         </div>
       </div>
-      {isExpanded && hasSubtasks && (
+      {isExpanded && resolvedSubtasks.length > 0 && (
         <div className="mt-1">
-          {cachedSubtasks.map((subtask) => (
+          {resolvedSubtasks.map((subtask) => (
             <TaskListItem
               key={subtask.id}
               task={subtask}

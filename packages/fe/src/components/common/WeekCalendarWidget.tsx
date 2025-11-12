@@ -1,11 +1,9 @@
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { api } from "@/lib/api-client";
 import { GoalDTO, GoalCategory } from "@self-flow/common/types";
-import { useAuth } from "@/contexts/AuthContext";
 import DateGoalsDialog from "@/components/dialogs/DateGoalsDialog";
 import { format } from "date-fns";
 
@@ -13,7 +11,9 @@ interface WeekCalendarWidgetProps {
   selectedDate: Date;
   onDateChange: (date: Date) => void;
   onOpenMonthCalendar: () => void;
-  goalsRefreshKey?: number;
+  goals: GoalDTO[];
+  isLoadingGoals?: boolean;
+  onRefreshGoals?: () => Promise<void> | void;
 }
 
 // Goal category colors in order (top to bottom)
@@ -39,29 +39,13 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
   selectedDate,
   onDateChange,
   onOpenMonthCalendar,
-  goalsRefreshKey,
+  goals,
+  isLoadingGoals = false,
+  onRefreshGoals,
 }) => {
   const [weekOffset, setWeekOffset] = useState(0);
-  const [goals, setGoals] = useState<GoalDTO[]>([]);
-  const { user } = useAuth();
   const [dateGoalsDialogOpen, setDateGoalsDialogOpen] = useState(false);
   const [selectedDateForDialog, setSelectedDateForDialog] = useState<Date | null>(null);
-
-  // Fetch goals when user is available or when refresh key changes
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchGoals = async () => {
-      try {
-        const response = await api.goals.list("active");
-        setGoals(response.data || []);
-      } catch (error) {
-        console.error("Error fetching goals:", error);
-      }
-    };
-
-    fetchGoals();
-  }, [user, goalsRefreshKey]);
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
@@ -386,6 +370,9 @@ const WeekCalendarWidget: React.FC<WeekCalendarWidgetProps> = ({
         open={dateGoalsDialogOpen}
         onOpenChange={setDateGoalsDialogOpen}
         date={selectedDateForDialog}
+        goals={goals}
+        isLoading={isLoadingGoals}
+        onGoalSaved={onRefreshGoals}
       />
     </div>
   );

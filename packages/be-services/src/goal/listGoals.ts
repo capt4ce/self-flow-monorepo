@@ -25,55 +25,141 @@ export async function listGoals(
     .orderBy(goals.createdAt);
 
   // Get tasks for each goal
-  const goalsWithTasks = await Promise.all(
-    goalsList.map(async (goal) => {
-      // Get task-goal relationships
-      const taskGoalRelations = await db
-        .select()
-        .from(taskGoals)
-        .where(eq(taskGoals.goalId, goal.id));
+  if (goalsList.length === 0) {
+    return [] as GoalDTO[];
+  }
 
-      if (taskGoalRelations.length === 0) {
+  const goalIds = goalsList.map((goal) => goal.id);
+
+  const [taskRows, groupRows] = await Promise.all([
+    db
+      .select({
+        goalId: taskGoals.goalId,
+        task: tasks,
+      })
+      .from(taskGoals)
+      .innerJoin(
+        tasks,
+        and(eq(taskGoals.taskId, tasks.id), eq(tasks.userId, userId))
+      )
+      .where(inArray(taskGoals.goalId, goalIds))
+      .orderBy(taskGoals.goalId, tasks.orderIndex),
+    db
+      .select({
+        goalId: taskGroups.goalId,
+        group: taskGroups,
+      })
+      .from(taskGroups)
+      .where(inArray(taskGroups.goalId, goalIds)),
+  ]);
+
+  const parentTaskIds = taskRows.map((row) => row.task.id);
+
+  const subtaskRows =
+    parentTaskIds.length > 0
+      ? await db
+          .select()
+          .from(tasks)
+          .where(
+            and(
+              eq(tasks.userId, userId),
+              inArray(tasks.parentId, parentTaskIds)
+            )
+          )
+          .orderBy(tasks.parentId, tasks.orderIndex)
+      : [];
+
+  const subtaskIds = subtaskRows.map((task) => task.id);
+
+  const grandchildRows =
+    subtaskIds.length > 0
+      ? await db
+          .select({
+            parentId: tasks.parentId,
+          })
+          .from(tasks)
+          .where(
+            and(eq(tasks.userId, userId), inArray(tasks.parentId, subtaskIds))
+          )
+      : [];
+
+  const grandchildCountMap = new Map<string, number>();
+  for (const row of grandchildRows) {
+    if (!row.parentId) continue;
+    grandchildCountMap.set(
+      row.parentId,
+      (grandchildCountMap.get(row.parentId) ?? 0) + 1
+    );
+  }
+
+  type TaskSelect = typeof tasks.$inferSelect;
+  type TaskGroupSelect = typeof taskGroups.$inferSelect;
+
+  const tasksByGoal = new Map<string, TaskSelect[]>();
+  for (const row of taskRows) {
+    const list = tasksByGoal.get(row.goalId);
+    if (list) {
+      list.push(row.task);
+    } else {
+      tasksByGoal.set(row.goalId, [row.task]);
+    }
+  }
+
+  const taskGroupsByGoal = new Map<string, TaskGroupSelect[]>();
+  for (const row of groupRows) {
+    const list = taskGroupsByGoal.get(row.goalId);
+    if (list) {
+      list.push(row.group);
+    } else {
+      taskGroupsByGoal.set(row.goalId, [row.group]);
+    }
+  }
+
+  const subtasksByParent = new Map<string, TaskSelect[]>();
+  for (const subtask of subtaskRows) {
+    if (!subtask.parentId) {
+      continue;
+    }
+
+    const existing = subtasksByParent.get(subtask.parentId);
+    if (existing) {
+      existing.push(subtask);
+    } else {
+      subtasksByParent.set(subtask.parentId, [subtask]);
+    }
+  }
+
+  for (const [, subtasks] of subtasksByParent) {
+    subtasks.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
+  }
+
+  const goalsWithTasks = goalsList.map((goal) => {
+    const relatedTasks = (tasksByGoal.get(goal.id) ?? [])
+      .map((task) => {
+        const subtasks = (subtasksByParent.get(task.id) ?? []).map(
+          (subtask) => ({
+            ...subtask,
+            goal_id: goal.id,
+            subtaskCount: grandchildCountMap.get(subtask.id) ?? 0,
+            subtasks: [],
+          })
+        );
+
         return {
-          ...goal,
-          tasks: [],
-          taskGroups: [],
-        };
-      }
-
-      const taskIds = taskGoalRelations.map((tg) => tg.taskId);
-
-      // Get tasks
-      const tasksList =
-        taskIds.length > 0
-          ? await db
-              .select()
-              .from(tasks)
-              .where(and(eq(tasks.userId, userId), inArray(tasks.id, taskIds)))
-              .orderBy(tasks.orderIndex)
-          : [];
-
-      // Get task groups
-      const groupsList = await db
-        .select()
-        .from(taskGroups)
-        .where(eq(taskGroups.goalId, goal.id));
-
-      // Sort tasks by order_index
-      const sortedTasks = tasksList
-        .sort((a, b) => (a?.orderIndex ?? 0) - (b?.orderIndex ?? 0))
-        .map((task) => ({
           ...task,
           goal_id: goal.id,
-        }));
+          subtaskCount: subtasks.length,
+          subtasks,
+        };
+      })
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0));
 
-      return {
-        ...goal,
-        tasks: sortedTasks,
-        taskGroups: groupsList,
-      };
-    })
-  );
+    return {
+      ...goal,
+      tasks: relatedTasks,
+      taskGroups: taskGroupsByGoal.get(goal.id) ?? [],
+    };
+  });
 
   return goalsWithTasks as GoalDTO[];
 }

@@ -133,9 +133,7 @@ function addScalarConditions(
 
   if (condition.is !== undefined) {
     clauses.push(
-      condition.is
-        ? sql`${column} IS TRUE`
-        : sql`${column} IS FALSE`
+      condition.is ? sql`${column} IS TRUE` : sql`${column} IS FALSE`
     );
   }
 }
@@ -169,9 +167,7 @@ function addContainsCondition(
   if (!column || !condition.contains) return;
 
   const value = `%${condition.contains.toLowerCase()}%`;
-  clauses.push(
-    sql`LOWER(${column}) LIKE ${value}`
-  );
+  clauses.push(sql`LOWER(${column}) LIKE ${value}`);
 }
 
 function addGoalConditions(
@@ -203,8 +199,9 @@ function addGoalConditions(
   }
 
   if (eqValues.length > 0) {
-    const goalExistsClauses = eqValues.map((goalId) =>
-      sql<boolean>`EXISTS (
+    const goalExistsClauses = eqValues.map(
+      (goalId) =>
+        sql<boolean>`EXISTS (
         SELECT 1
         FROM ${taskGoals} tg
         WHERE tg.task_id = ${tasks.id}
@@ -213,15 +210,27 @@ function addGoalConditions(
     );
 
     if (goalExistsClauses.length === 1) {
-      clauses.push(goalExistsClauses[0]);
+      clauses.push(goalExistsClauses[0]!);
     } else {
-      clauses.push(or(...goalExistsClauses));
+      const castClauses = goalExistsClauses.map(
+        (clause) => clause as SQL<unknown>
+      );
+      const [firstClause, ...restClauses] = castClauses as [
+        SQL<unknown>,
+        ...SQL<unknown>[],
+      ];
+      const combined = restClauses.reduce<SQL<unknown>>(
+        (acc, clause) => or(acc, clause) as SQL<unknown>,
+        firstClause
+      );
+      clauses.push(combined);
     }
   }
 
   if (neqValues.length > 0) {
-    const goalNotExistsClauses = neqValues.map((goalId) =>
-      sql<boolean>`NOT EXISTS (
+    const goalNotExistsClauses = neqValues.map(
+      (goalId) =>
+        sql<boolean>`NOT EXISTS (
         SELECT 1
         FROM ${taskGoals} tg
         WHERE tg.task_id = ${tasks.id}
@@ -230,9 +239,20 @@ function addGoalConditions(
     );
 
     if (goalNotExistsClauses.length === 1) {
-      clauses.push(goalNotExistsClauses[0]);
+      clauses.push(goalNotExistsClauses[0]!);
     } else {
-      clauses.push(and(...goalNotExistsClauses));
+      const castClauses = goalNotExistsClauses.map(
+        (clause) => clause as SQL<unknown>
+      );
+      const [firstClause, ...restClauses] = castClauses as [
+        SQL<unknown>,
+        ...SQL<unknown>[],
+      ];
+      const combined = restClauses.reduce<SQL<unknown>>(
+        (acc, clause) => and(acc, clause) as SQL<unknown>,
+        firstClause
+      );
+      clauses.push(combined);
     }
   }
 
@@ -272,22 +292,11 @@ function buildSortClauses(sort?: TaskSortOption[]): SQL<unknown>[] {
   return clauses;
 }
 
-export async function listTasks(
-  userId: string,
-  params: TaskQueryOptions = {}
-) {
+export async function listTasks(userId: string, params: TaskQueryOptions = {}) {
   const db = getDb();
-  const {
-    limit = 20,
-    offset = 0,
-    filters,
-    search,
-    sort,
-  } = params ?? {};
+  const { limit = 20, offset = 0, filters, search, sort } = params ?? {};
 
-  const whereClauses: SQL<unknown>[] = [
-    eq(tasks.userId, userId),
-  ];
+  const whereClauses: SQL<unknown>[] = [eq(tasks.userId, userId)];
 
   const normalizedFilters = normalizeFilters(filters);
 
@@ -315,12 +324,20 @@ export async function listTasks(
           sql<boolean>`LOWER(${tasks.title}) LIKE ${value}`,
           sql<boolean>`LOWER(${tasks.description}) LIKE ${value}`
         );
-      });
+      }) as SQL<unknown>[];
 
       if (perTermClauses.length === 1) {
-        whereClauses.push(perTermClauses[0]);
+        whereClauses.push(perTermClauses[0]!);
       } else {
-        whereClauses.push(and(...perTermClauses));
+        const [firstClause, ...restClauses] = perTermClauses as [
+          SQL<unknown>,
+          ...SQL<unknown>[],
+        ];
+        const combined = restClauses.reduce<SQL<unknown>>(
+          (acc, clause) => and(acc, clause) as SQL<unknown>,
+          firstClause
+        );
+        whereClauses.push(combined);
       }
     }
   }
@@ -337,44 +354,90 @@ export async function listTasks(
       ? orderByClauses
       : [asc(tasks.orderIndex), asc(tasks.createdAt)];
 
-  let query = db
-    .select()
-    .from(tasks);
+  let query = db.select().from(tasks);
 
   if (whereCondition) {
-    query = query.where(whereCondition as any);
+    query = query.where(whereCondition as any) as typeof query;
   }
 
   // Apply ordering
-  query = query.orderBy(...(finalOrderBy as [SQL<unknown>, ...SQL<unknown>[]]));
+  query = query.orderBy(
+    ...(finalOrderBy as [SQL<unknown>, ...SQL<unknown>[]])
+  ) as typeof query;
 
   if (limit !== undefined) {
-    query = query.limit(limit);
+    query = query.limit(limit) as typeof query;
   }
 
   if (offset) {
-    query = query.offset(offset);
+    query = query.offset(offset) as typeof query;
   }
 
   const tasksList = await query;
 
   const taskIds = tasksList.map((t) => t.id);
+
+  const subtaskRows =
+    taskIds.length > 0
+      ? await db
+          .select()
+          .from(tasks)
+          .where(
+            and(eq(tasks.userId, userId), inArray(tasks.parentId, taskIds))
+          )
+          .orderBy(tasks.parentId, tasks.orderIndex)
+      : [];
+
+  const subtaskIds = subtaskRows.map((task) => task.id);
+
+  const grandchildRows =
+    subtaskIds.length > 0
+      ? await db
+          .select({
+            parentId: tasks.parentId,
+          })
+          .from(tasks)
+          .where(
+            and(eq(tasks.userId, userId), inArray(tasks.parentId, subtaskIds))
+          )
+      : [];
+
+  const grandchildCountMap = new Map<string, number>();
+  for (const row of grandchildRows) {
+    if (!row.parentId) continue;
+    grandchildCountMap.set(
+      row.parentId,
+      (grandchildCountMap.get(row.parentId) ?? 0) + 1
+    );
+  }
+
+  type TaskSelect = typeof tasks.$inferSelect;
+  const subtasksByParent = new Map<string, TaskSelect[]>();
+  for (const subtask of subtaskRows) {
+    if (!subtask.parentId) {
+      continue;
+    }
+    const existing = subtasksByParent.get(subtask.parentId);
+    if (existing) {
+      existing.push(subtask);
+    } else {
+      subtasksByParent.set(subtask.parentId, [subtask]);
+    }
+  }
+
   const taskGoalRelations =
     taskIds.length > 0
-    ? await db
-        .select()
-        .from(taskGoals)
-        .where(inArray(taskGoals.taskId, taskIds))
-    : [];
+      ? await db
+          .select()
+          .from(taskGoals)
+          .where(inArray(taskGoals.taskId, taskIds))
+      : [];
 
   const goalIds = [...new Set(taskGoalRelations.map((tg) => tg.goalId))];
   const goalsList =
     goalIds.length > 0
-    ? await db
-        .select()
-        .from(goals)
-        .where(inArray(goals.id, goalIds))
-    : [];
+      ? await db.select().from(goals).where(inArray(goals.id, goalIds))
+      : [];
 
   const goalMap = new Map<string, (typeof goalsList)[number]>();
   goalsList.forEach((goal) => goalMap.set(goal.id, goal));
@@ -385,15 +448,22 @@ export async function listTasks(
   const tasksWithGoals = tasksList.map((task) => {
     const tg = taskGoalMap.get(task.id);
     const goal = tg ? goalMap.get(tg.goalId) : null;
+    const subtasks = (subtasksByParent.get(task.id) ?? []).map((subtask) => ({
+      ...subtask,
+      goal_id: goal?.id ?? null,
+      subtaskCount: grandchildCountMap.get(subtask.id) ?? 0,
+      subtasks: [],
+    }));
 
     return {
       ...task,
       goalTitle: goal?.title ?? "",
       goalId: goal?.id ?? null,
       goal_id: goal?.id ?? null,
+      subtaskCount: subtasks.length,
+      subtasks,
     };
   });
 
   return tasksWithGoals as TaskDTO[];
 }
-
