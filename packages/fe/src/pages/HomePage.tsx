@@ -513,6 +513,8 @@ export default function HomePage() {
     }
   };
 
+  const todaysGoal = findTodaysDailyGoal(selectedDate);
+
   return (
     <div className="flex flex-col min-h-full">
       {/* Week Calendar Widget - positioned below header */}
@@ -539,13 +541,13 @@ export default function HomePage() {
                   Daily Tasks
                 </h1>
                 <p className="text-sm sm:text-base text-muted-foreground truncate">
-                  {(() => {
-                    const todaysGoal = findTodaysDailyGoal(selectedDate);
-                    return (
-                      todaysGoal?.title || formatSelectedDate(selectedDate)
-                    );
-                  })()}
+                  {todaysGoal?.title || formatSelectedDate(selectedDate)}
                 </p>
+                {todaysDailyGoal?.description && (
+                  <p style={{ whiteSpace: "pre-wrap", fontSize: "0.7rem" }}>
+                    {todaysGoal?.description}
+                  </p>
+                )}
               </div>
               <Button
                 onClick={handleCreateTask}
