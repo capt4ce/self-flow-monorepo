@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Dialog,
@@ -13,6 +12,7 @@ import { format } from "date-fns";
 import { GoalDTO, GoalCategory } from "@self-flow/common/types";
 import { TaskDTO } from "@self-flow/common/types";
 import GoalFormDialog from "./GoalFormDialog";
+import TaskDialog from "./TaskDialog";
 
 interface DateGoalsDialogProps {
   open: boolean;
@@ -51,6 +51,9 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
   onGoalSaved,
 }) => {
   const [goalFormDialogOpen, setGoalFormDialogOpen] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<GoalDTO | null>(null);
+  const [editingTask, setEditingTask] = useState<TaskDTO | null>(null);
 
   // Check if a goal is active on a specific date
   const isGoalActiveOnDate = (goal: GoalDTO, date: Date): boolean => {
@@ -83,9 +86,7 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
   const getGoalsByCategory = () => {
     if (!date) return {};
 
-    const activeGoals = goals.filter((goal) =>
-      isGoalActiveOnDate(goal, date)
-    );
+    const activeGoals = goals.filter((goal) => isGoalActiveOnDate(goal, date));
 
     const grouped: Partial<Record<GoalCategory, GoalDTO[]>> = {};
 
@@ -106,7 +107,10 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
     0
   );
 
-  const formatDateRange = (startDate: string | null, endDate: string | null) => {
+  const formatDateRange = (
+    startDate: string | null,
+    endDate: string | null
+  ) => {
     if (!startDate && !endDate) return "";
     if (startDate && endDate) {
       const start = new Date(startDate);
@@ -130,8 +134,31 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
   const handleGoalSaved = async () => {
     try {
       await onGoalSaved?.();
+      setEditingGoal(null);
     } catch (error) {
       console.error("Error refreshing goals after save:", error);
+    }
+  };
+
+  const handleGoalClick = (goal: GoalDTO) => {
+    setEditingGoal(goal);
+    setGoalFormDialogOpen(true);
+  };
+
+  const handleTaskClick = (task: TaskDTO, goalId?: string) => {
+    setEditingTask({
+      ...task,
+      goal_id: goalId || task.goal_id,
+    } as TaskDTO);
+    setTaskDialogOpen(true);
+  };
+
+  const handleTaskSaved = async () => {
+    try {
+      await onGoalSaved?.();
+      setEditingTask(null);
+    } catch (error) {
+      console.error("Error refreshing goals after task save:", error);
     }
   };
 
@@ -146,7 +173,8 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
               Goals for {formatFullDate(date)}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
-              {totalActiveGoals} active {totalActiveGoals === 1 ? "goal" : "goals"}
+              {totalActiveGoals} active{" "}
+              {totalActiveGoals === 1 ? "goal" : "goals"}
             </p>
             <Button
               variant="ghost"
@@ -161,7 +189,10 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
           <div className="space-y-4">
             {/* Create New Goal Button */}
             <Button
-              onClick={() => setGoalFormDialogOpen(true)}
+              onClick={() => {
+                setEditingGoal(null);
+                setGoalFormDialogOpen(true);
+              }}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -202,10 +233,16 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
                         goal.completedTaskCount ||
                         tasks.filter((t) => t.completed).length;
                       const progress =
-                        taskCount > 0 ? (completedTaskCount / taskCount) * 100 : 0;
+                        taskCount > 0
+                          ? (completedTaskCount / taskCount) * 100
+                          : 0;
 
                       return (
-                        <Card key={goal.id} className="bg-white">
+                        <Card
+                          key={goal.id}
+                          className="bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={() => handleGoalClick(goal)}
+                        >
                           <CardHeader className="pb-3">
                             <div className="flex items-start justify-between gap-2 mb-2">
                               <h4 className="font-semibold text-base flex-1">
@@ -214,7 +251,10 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
                               <div className="flex flex-col items-end">
                                 {(goal.startDate || goal.endDate) && (
                                   <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                    {formatDateRange(goal.startDate, goal.endDate)}
+                                    {formatDateRange(
+                                      goal.startDate,
+                                      goal.endDate
+                                    )}
                                   </span>
                                 )}
                                 {taskCount > 0 && (
@@ -245,13 +285,18 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
                               <div className="space-y-2">
                                 {tasks.map((task: TaskDTO) => {
                                   const isCompleted =
-                                    task.completed || task.status === "completed";
+                                    task.completed ||
+                                    task.status === "completed";
                                   const isNotDone = task.status === "not done";
 
                                   return (
                                     <div
                                       key={task.id}
-                                      className="flex items-center gap-2"
+                                      className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded px-2 py-1 -mx-2 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleTaskClick(task, goal.id);
+                                      }}
                                     >
                                       <div
                                         className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
@@ -297,13 +342,30 @@ const DateGoalsDialog: React.FC<DateGoalsDialogProps> = ({
       {/* Goal Form Dialog */}
       <GoalFormDialog
         open={goalFormDialogOpen}
-        onOpenChange={setGoalFormDialogOpen}
-        goal={null}
+        onOpenChange={(open) => {
+          setGoalFormDialogOpen(open);
+          if (!open) {
+            setEditingGoal(null);
+          }
+        }}
+        goal={editingGoal}
         onSaved={handleGoalSaved}
+      />
+
+      {/* Task Dialog */}
+      <TaskDialog
+        open={taskDialogOpen}
+        onOpenChange={(open) => {
+          setTaskDialogOpen(open);
+          if (!open) {
+            setEditingTask(null);
+          }
+        }}
+        task={editingTask}
+        onSaved={handleTaskSaved}
       />
     </>
   );
 };
 
 export default DateGoalsDialog;
-
